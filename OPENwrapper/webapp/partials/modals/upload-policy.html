@@ -1,0 +1,16 @@
+<div class="modal fade" id="upload-policy">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Upload Policy</h3>
+            </div>
+            <div class="modal-body" style="max-height: 550px; overflow: scroll">
+                <input id="fileUploader" type="file" upload="policyFile" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button id="uploadPolicyBtn" type="button" class="btn btn-success" ng-click="uploadPolicy(policyFile)">Finish</button>
+                <button id="closeUploadPolicyBtn" type="button" ng-click="resetFileUpload()" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

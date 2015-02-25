@@ -1,0 +1,26 @@
+<div class="modal fade" id="preview">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Preview Transform</h3>
+            </div>
+            <div class="modal-body" style="max-height: 550px; overflow: scroll">
+                <h4>Transform To Preview: {{currentPolicy.id}}</h4>
+                <p>Enter the URL of the image to apply the transform to</p>
+                <input id="previewUrlInpt" type="text" ng-model="previewUrl" class="form-control">
+                <button id="previewPolicyBtn" class="btn-success btn pull-right" style="margin-top: 10px" ng-click="previewFullPolicy(previewUrl, currentPolicy.transformations)">Preview</button>
+                <div ng-show="isPreviewComplete">
+                    <img ng-hide="isPreviewError" ng-src="{{previewImageSrc}}" ng-click="window.open(previewImageSrc,'Image','width=largeImage.stylewidth,height=largeImage.style.height,resizable=1');">
+                    <p class="center-block" ng-show="isPreviewError">This image format cannot be loaded in this browser. Try another browser or update this policy if you would like the image to render.</p>
+                    <!--[if !IE]> -->
+                    <a id="downloadPreviewImageLink" ng-hide="isIE()" class="center-block" href="{{previewImageSrc}}" download="{{currentPolicy.id}}-preview">Download Image</a>
+                    <p ng-show="isIE()" class="center-block">Unfortunately IE does not allow downloading of data URI's</p>
+                    <!-- <![endif]-->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closePreviewBtn" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

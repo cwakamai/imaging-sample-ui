@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="col-sm-6">
+        <input id="imageFilterInpt" type="text" ng-disabled="findBy === 'all'" class="form-control" id="tag" placeholder="Search by..." ng-model="searchTag">
+    </div>
+    <div class="col-sm-6">
+        <search-group term="findBy" filter="searchTag"></search-group>
+        <button id="imageSearchBtn" class="btn btn-info" ng-click="searchImages(findBy, searchTag)">Search</button>
+    </div>
+</div>
+<nav class="text-center" ng-if="pageNumbers.length > 1">
+    <ul class="pagination">
+        <li class="pointer" ng-class="{disabled: currentPage === 1}">
+            <a id="prevPageLink" ng-click="prevPage()" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li id="{{index}}PageLink" class="pointer" ng-repeat="index in pageNumbers" ng-click="goToImagePage(index)" ng-class="{active: currentPage === index}"><a>{{index}}</a>
+        </li>
+        <li class="pointer" ng-class="{disabled: currentPage === pageNumbers.length}">
+            <a id="nextPageLink" ng-click="nextPage()" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+<p ng-if="pageNumbers.length == 0" class="padding-top">Search for Images to Choose From</p>
+<div class="row padding-top">
+    <div class="col-sm-12 col-md-12">
+        <div class="row padding-bottom" ng-if="pageNumbers.length > 0">
+            <span class="col-sm-6 col-md-6">
+                <button id="selectAllImagesBtn" class="btn btn-success pull-left" ng-show="selectAll" ng-click="selectAllImage()">Select All</button>
+                <button id="deselectAllImagesBtn" class="btn btn-primary pull-left" ng-hide="selectAll" ng-click="deselectAllImage()">Deselect All</button>
+            </span>
+            <span class="col-sm-6 col-md-6">
+                <button id="selectCurrentPageImagesBtn" class="btn btn-success pull-right" ng-show="selectCurrentPage" ng-click="toggleCurrentPage()">Select Current Page</button>
+                <button id="deselectCurrentPageImagesBtn" class="btn btn-primary pull-right" ng-hide="selectCurrentPage" ng-click="toggleCurrentPage()">Deselect Current Page</button>
+            </span>
+        </div>
+        <ul class="list-group">
+            <li class="list-group-item" ng-class="{'selected-list-item': image.selected}" ng-repeat="image in visibleImages">
+                <div class="row">
+                    <div class="col-md-2">
+                        <a href="{{image.url | bypass}}" target="_blank">
+                            <img ng-src="{{image.url | bypass}}" class="list-icon img-responsive">
+                        </a>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="ellipsis-overflow side-padding">
+                            ID: {{image.id}} | URL: {{image.url}}
+                        </p>
+                    </div>
+                    <div class="col-md-1">
+                        <input id="selectImage_{{$index}}" type="checkbox" ng-model="image.selected" class="pull-right" ng-click="toggleSelectImage(image)">
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

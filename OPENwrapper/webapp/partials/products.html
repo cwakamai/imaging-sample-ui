@@ -1,0 +1,204 @@
+<div ng-switch="productsView">
+    <div ng-switch-when="catalog">
+        <form class="padding-bottom padding-top row">
+            <div class="col-sm-6">
+                <input id="filterProductInpt" type="text" class="form-control" id="tag" placeholder="Filter by name" ng-model="filterName">
+            </div>
+            <div class="col-sm-6">
+                <button id="addProductBtn" class="btn btn-success pull-right" ng-click="goAddProduct()" style="margin-left:10px">Add Product</button>
+            </div>
+        </form>
+        <div ng-if="currentProducts.length > 0">
+            <main>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">
+                                Product ID
+                            </th>
+                            <th style="width: 50%;">
+                                Product Name
+                            </th>
+                            <th style="width: 5%">
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="product in currentProducts | filter:filterName | orderBy:'id'" class="pointer">
+                            <td id="selectProductByID{{index}}Btn" ng-click="selectProduct(product)">
+                                <span>{{product.id}}</span>
+                            </td>
+                            <td id="selectProductByName{{index}}Btn" ng-click="selectProduct(product)">
+                                <span>{{product.name}}</span>
+                            </td>
+                            <td id="removeProduct{{index}}Btn" class="text-center" ng-click="removeProduct(product)">
+                                <span class="glyphicon glyphicon-remove remove-icon"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </main>
+        </div>
+        <div ng-if="currentProducts === null || currentProducts.length === 0">
+            <p class="dull-header">You have no products, go ahead and add some!</p>
+        </div>
+    </div>
+    <div ng-switch-when="product">
+        <div class="row">
+            <div class="col-md-12">
+                <a id="backToProductsLink" href="" class="pull-left" ng-click="goCatalogView();">Back to Product Catalog</a>
+            </div>
+        </div>
+        <header>
+            <h3>Product Name: {{selectedProduct.name}}</h3>
+            <h4>Product ID: {{selectedProduct.id}}</h4>
+            <hr>
+        </header>
+        <main>
+            <h4 class="dull-header">
+                Product Tags
+            </h4>
+            <p ng-show="selectedProduct.tags === null || selectedProduct.tags.length === 0">There are no tags associated with {{selectedProduct.name}}</p>
+            <ul class="side-padding">
+                <li ng-repeat="tag in selectedProduct.tags" class="row" style="list-style: none;">
+                    <div class="col-md-1">
+                        <span id="removeTagBtn" class="glyphicon glyphicon-remove remove-icon" ng-click="removeTagFromProduct(tag)"></span>
+                    </div>
+                    <div class="col-md-11">
+                        <span>{{tag}}</span>
+                    </div>
+                </li>
+            </ul>
+            <form class="padding-bottom row">
+                <div class="form-group">
+                    <label for="tag" class="col-sm-2 control-label form-label-right">Add a Tag</label>
+                    <div class="col-sm-7">
+                        <input id="newTagInput" type="text" class="form-control" id="tag" placeholder="Enter a New Tag" ng-model="addTags">
+                    </div>
+                    <div class="col-sm-3">
+                        <button id="addTagsBtn" class="btn btn-default" ng-click="addTagsToProduct(addTags)">Add</button>
+                    </div>
+                </div>
+            </form>
+            <h4 class="dull-header padding-top">
+                Product Images
+            </h4>
+            <p ng-show="selectedProductImages === null || selectedProductImages.length === 0">There are no images associated with {{selectedProduct.name}}</p>
+            <div class="padding-bottom">
+                <a ng-if="selectedProductImages.length > 0" href="" ng-click="removeAllProductImages()">Remove All</a>
+            </div>
+            <div class="row side-padding" ng-repeat="image in selectedProductImages">
+                <div class="col-md-1">
+                    <span id="removeImage{{index}}Btn" class="glyphicon glyphicon-remove remove-icon" ng-click="removeImageFromProduct(image)"></span>
+                </div>
+                <div class="col-md-1">
+                    <img ng-src="{{image.url}}" class="list-icon img-responsive">
+                </div>
+                <div class="col-md-10">
+                    Image Id: {{image.id}}
+                </div>
+            </div>
+        </main>
+    </div>
+    <div ng-switch-when="add">
+        <main class="row padding-bottom">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <a id="backProductLink" href="" class="pull-left" ng-click="goCatalogView();">Back to Product Catalog</a>
+                </div>
+            </div>
+            <div ng-switch="addProductsStep">
+                <div ng-switch-when="addDetail">
+                    <form role="form" class="row">
+                        <div class="col-md-10 col-md-offset-1">
+                            <h3>Add a Product</h3>
+                        </div>
+                        <div class="form-group col-md-3 col-md-offset-1" ng-class="product.id == null ? 'has-error' : ''">
+                            <label for="productId" class="dull-header">Product Id*</label>
+                            <input id="productIdInpt" type="text" class="form-control" id="productId" placeholder="Enter Product Id" ng-model="product.id">
+                        </div>
+                        <div class="form-group col-md-6 col-md-offset-1" ng-class="product.name == null ? 'has-error' : ''">
+                            <label for="productName" class="dull-header">Product Name*</label>
+                            <input id="productNameInpt" type="text" class="form-control" id="productName" placeholder="Enter Product Name" ng-model="product.name">
+                        </div>
+                        <div class="form-group col-md-10 col-md-offset-1">
+                            <label for="productName" class="dull-header">Product Tags</label>
+                            <input id="productTagsInpt" type="text" class="form-control" id="productName" placeholder="Enter Tags (comma separated)" ng-model="product.tags">
+                        </div>
+                        <div class="form-group col-md-10 col-md-offset-1">
+                            <button id="createProductBtn" type="button" style="margin-left:5px" class="btn btn-info pull-right" ng-click="createProduct(product); goAddImages()">Create Product and Add Images</button>
+                            <button id="createAndAddImgBtn" type="button" class="btn btn-success pull-right" ng-click="createProduct(product); goCatalogView()">Create Product</button>
+
+                        </div>
+                    </form>
+                </div>
+                <div ng-switch-when="addImages">
+                    <div class="row">
+                        <div class="col-md-10 col-md-offset-1">
+                            <div class="row">
+                                <h4 class="pull-left side-padding">Add Images to {{product.name}}</h4>
+                                <div class="pull-right">
+                                    <button id="addNewImageBtn" ng-show="addExistingImages" class="btn btn-info" ng-click="addExistingImages = false">Add New Images</button>
+                                    <button id="addExistingImageBtn" ng-show="!addExistingImages" class="btn btn-info" ng-click="addExistingImages = true">Add Existing Images</button>
+                                </div>
+                            </div>
+                            <div ng-show="!addExistingImages">
+                                <hr>
+                                <div class="form-group row padding-bottom side-padding">
+                                    <label for="imageUrl" class="control-label dull-header">Image URLs</label>
+                                    <textarea id="imageUrlInpt" class="form-control" placeholder="New line separated urls" ng-model="product.newImageUrls" rows="10"></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button id="backToProductBtn" type="button" class="btn btn-warning pull-left" ng-click="goCatalogView()">Back to Catalog</button>
+                                        <button id="finishAddImagesBtn" type="button" class="btn btn-primary pull-right" ng-click="addImagesToProduct(product, product.newImageUrls)">Finish</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-show="addExistingImages">
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <input id="searchImagesInpt" type="text" ng-disabled="findBy === 'all'" class="form-control" id="tag" placeholder="Search by..." ng-model="searchTag">
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <search-group term="findBy" filter="searchTag"></search-group>
+                                        <button id="searchImagesBtn" class="btn btn-info" ng-click="getImages(findBy, searchTag)">Search</button>
+                                    </div>
+                                </div>
+                                <div class="row side-padding">
+                                    <hr>
+                                </div>
+                                <ul class="list-group">
+                                    <p ng-show="filteredImages === null || filteredImages.length == 0 ">
+                                        <em>No Images</em>
+                                    </p>
+                                    <li class="list-group-item dropdown" ng-class="{'selected-list-item': image.selected}" ng-repeat="image in filteredImages | orderBy: 'id'">
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <img ng-src="{{image.url}}" class="list-icon img-responsive">
+                                            </div>
+                                            <div class="col-md-5">
+                                                Image Id: {{image.id}}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input id="selectImage{{index}}Inpt" type="checkbox" ng-model="image.selected" class="pull-right">
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div class="row">
+			                        <div class="col-md-12">
+			                            <button id="backToProductBtn" type="button" class="btn btn-warning pull-left" ng-click="goCatalogView()">Back to Catalog</button>
+			                            <button id="addExistingImagesBtn" type="button" class="btn btn-primary pull-right" ng-click="addExistingImagesToProduct(product, filteredImages)">Finish</button>
+			                        </div>
+			                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<div ng-include="'partials/modals/product-progress.html'"></div>

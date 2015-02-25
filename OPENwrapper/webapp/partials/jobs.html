@@ -1,0 +1,163 @@
+<div ng-switch="jobView">
+    <div ng-switch-when="jobList">
+        <form class="padding-bottom side-padding row">
+            <div class="col-sm-5">
+                <input id="all-jobs" type="radio" ng-model="jobType" value="all" ng-change="changeFilter(jobType)">
+                <label for="all-jobs">All Jobs</label>
+                <br/>
+                <input id="processing-jobs" type="radio" ng-model="jobType" value="processing" ng-change="changeFilter(jobType)">
+                <label for="processing-jobs"> Processing Jobs</label>
+                <br/>
+                <input id="failed-jobs" type="radio" ng-model="jobType" value="complete_fail" ng-change="changeFilter(jobType)">
+                <label for="failed-jobs"> Failed Jobs</label>
+                <br/>
+                <input id="successful-jobs" type="radio" ng-model="jobType" value="complete_success" ng-change="changeFilter(jobType)">
+                <label for="successful-jobs"> Successful Jobs</label>
+                <br/>
+            </div>
+            <div class="col-sm-7">
+                <button id="createJobBtn" style="margin-left:10px" class="btn btn-success pull-right" ng-click="goCreateJob()">Create a Job</button>
+            </div>
+        </form>
+        <main class="side-padding">
+            <paged-job-list filter="jobType" limit="45" view="goViewJob(job)"></paged-job-list>
+        </main>
+    </div>
+    <div ng-switch-when="createJob">
+        <div class="row">
+            <div class="col-md-5 col-md-offset-1">
+                <a href="" id="backJobsLink" class="pull-left" ng-click="goListJobs()">Back to Job Catalog</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <h3>Add a Job</h3>
+            </div>
+            <div ng-if="isProductEnabled" class="col-md-10 col-md-offset-1">
+                <label class="dull-header">Job Type*</label>
+                <div class="btn-group">
+                    <button id="imageTypeBtn" type="button" class="btn btn-default" ng-click="resetNewJob(); newJob.type = 'image'" ng-class="{active: newJob.type == 'image'}">Image</button>
+                    <button id="productTypeBtn" type="button" class="btn btn-default" ng-click="resetNewJob(); newJob.type = 'product'" ng-class="{active: newJob.type == 'product'}">Product</button>
+                </div>
+            </div>
+            <form role="form">
+                <div class="form-group col-md-3 col-md-offset-1" ng-show="newJob.type === 'product'">
+                    <label for="productId" class="dull-header">Product Ids*</label>
+                    <select id="chooseProductSelect" class="form-control" style="float: none" ng-options="product as product.name for product in products" ng-model="newJob.addProduct" ng-change="addProductToJob(newJob.addProduct)" required>
+                        <option value="">Choose a Product</option>
+                    </select>
+                    <div class="inner-content">
+                        <h4>Products Added</h4>
+                        <p ng-show="selectedProducts.length === 0">None Added</p>
+                        <ul>
+                            <li ng-repeat="product in selectedProducts">{{product.name}}
+                                <span class="glyphicon glyphicon-remove" style="color:red;" ng-click="removeProductFromJob($index)"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+            <div class="col-md-6 col-md-offset-1" ng-show="newJob.type === 'image'">
+                <label for="imageId" class="dull-header">Image URLs*</label>
+                <selectable-paged-image-list images="images" selected-images="selectedImages" limit="50"></selectable-paged-image-list>
+            </div>
+            <form role="form">
+                <div class="form-group col-md-3 col-md-offset-1">
+                    <label for="productName" class="dull-header">Policy Ids*</label>
+                    <select id="choosePolicySelect" class="form-control" style="float: none" ng-options="policy as policy.id for policy in policies" ng-model="newJob.addPolicy" ng-change="addPolicyToJob(newJob.addPolicy)" required>
+                        <option value="">Choose a Policy</option>
+                    </select>
+                    <div class="inner-content">
+                        <h4>Policy Added</h4>
+                        <p ng-show="selectedPolicies.length === 0">None Added</p>
+                        <ul>
+                            <li ng-repeat="policy in selectedPolicies">
+                                <span id="policy_{{policy.id}}">{{policy.id}}</span>
+                                <span id="removePolicyJobBtn" class="glyphicon glyphicon-remove" style="color:red;" ng-click="removePolicyFromJob($index)"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+            <div ng-class="newJob.viewerName == null ? 'has-error' : ''" class="form-group col-md-10 col-md-offset-1" ng-show="newJob.type === 'product'">
+                <label for="productName" class="dull-header">Viewer Name*</label>
+                <input required type="text" class="form-control" id="viewerName" ng-model="newJob.viewerName">
+            </div>
+            <div class="form-group col-md-10 col-md-offset-1">
+                <button id="addJobBtn" type="button" style="margin-left:5px" class="btn btn-info pull-right" ng-click="addJob(newJob)">Add Job</button>
+            </div>
+        </div>
+    </div>
+    <div ng-switch-when="detailJob">
+        <div class="row">
+            <div class="col-md-8">
+                <a id="backJobsLink" href="" class="pull-left" ng-click="goListJobs();">Back to Jobs</a>
+            </div>
+            <div class="col-md-4">
+                <button id="refreshJobItemsBtn" class="btn btn-info pull-right" ng-click="getJobItems(currentJob);">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </button>
+            </div>
+        </div>
+        <header>
+            <h3>Job ID: {{currentJob.id}}</h3>
+            <h4>{{currentJob.itemType}}</h4>
+            <h4 class="dull-header">{{currentJob.state}}</h4>
+        </header>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Item ID</th>
+                    <th>Status</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="jobItem in currentJobItems">
+                    <td>
+                        {{jobItem.id}}
+                    </td>
+                    <td>
+                        {{jobItem.status}}
+                    </td>
+                    <td>
+                        <div ng-if="jobItem.status != 'FAILED'">
+                            N/A
+                        </div>
+                        <div ng-if="jobItem.status == 'FAILED'">
+                            <span ng-repeat="error in jobItem.errors">
+                            {{error.errorDate}}: {{error.errorMessage}}
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div ng-show="showProgress">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4>Legend</h4>
+                    <div style="display:table">
+                        <canvas class="success-swatch"></canvas>
+                        Passed - Number of images that have been successfully transformed
+                    </div>
+                    <div style="display:table">
+                        <canvas class="pending-swatch"></canvas>
+                        Pending - Number of images waiting to be processed
+                    </div>
+                    <div style="display:table">
+                        <canvas class="failed-swatch"></canvas>
+                        Failed - Number of images that were unable to be transformed.
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <bulk-status show="true" passed="itemsPassed" pending="itemsPending" failed="itemsFailed">
+                        </im-bulk-status>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

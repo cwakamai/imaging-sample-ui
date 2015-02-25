@@ -1,0 +1,101 @@
+<div ng-switch="imageView">
+    <div ng-switch-when="add">
+        <div class="row padding-bottom">
+            <div class="col-md-10">
+                <a id="backImagesLink" href="" class="pull-left" ng-click="goCatalogView();">Back to Image Catalog</a>
+            </div>
+            <div class="col-md-2">
+                <div class="pull-right" style="margin-left: 10px">
+                    <button id="addImagesWithIdsBtn" ng-show="!addImagesWithIds" class="btn btn-info" ng-click="addImagesWithIds=true">Add Individual Images</button>
+                    <button id="addBulkImagesBtn" ng-show="addImagesWithIds" class="btn btn-info" ng-click="addImagesWithIds=false">Add Bulk Images</button>
+                </div>
+            </div>
+        </div>
+        <form class="form-horizontal row" role="form" ng-submit="addImage(addImageFields)">
+            <div class="col-md-12">
+
+                <div ng-show="addImagesWithIds">
+                    <div class="row">
+                        <div class="side-padding">
+                            <label class="control-label dull-header">Source Image URL</label>
+                        </div>
+                        <div class="col-md-12 padding-bottom">
+                            <input id="imageUrlInpt" class="form-control" type="text" placeholder="http://www.example.com/source_image.jpg" ng-model="addImageFields.newImageUrl">
+                        </div>
+                        <div class="side-padding">
+                            <label class="control-label dull-header" style="padding-left: 0px; text-aline: left">Target Path</label>
+                        </div>
+                        <div class="col-md-12 padding-bottom">
+                            <input id="imageIdInpt" class="form-control" type="text" placeholder="/images/myImage.jpg" ng-model="addImageFields.newImageId">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BY LIST OF URLS -->
+                <div ng-show="!addImagesWithIds" class="ng-hide">
+                    <!-- list of new line separated urls -->
+                    <div class="form-group row side-padding padding-bottom">
+                        <label for="buldImageUrl" class="control-label dull-header">Source Image URLs</label>
+                        <textarea id="bulkImageUrlsInpt" class="form-control" placeholder="New line separated urls." ng-model="addImageFields.newBulkUrls" rows="10"></textarea>
+                    </div>
+                </div>
+
+                <!-- Image Tag Input -->
+                <div class="form-group row side-padding padding-bottom">
+                    <label for="tag" class="control-label dull-header">Tags</label>
+                    <input id="imageTagsInpt" type="text" class="form-control" ng-model="addImageFields.newTag" placeholder="Comma Separated Tag Names">
+                </div>
+            </div>
+            <!-- Submit -->
+            <div class="form-group col-sm-10">
+                <div class="col-sm-3 col-sm-offset-5">
+                    <button type="submit" id="addNewImagesBtn" class="btn btn-success" style="width: 100%;">Add Images</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div ng-switch-when="catalog">
+        <div class="row form-horizontal padding-top">
+            <div class="col-md-4 col-sm-4">
+                <input type="text" id="imageSearchContentInpt" ng-disabled="findBy === 'all'" class="form-control" id="tagFilter" ng-model="filterContent" placeholder="ID or tag or URL">
+            </div>
+            <div class="col-md-5 col-sm-4">
+                <search-group term="findBy" filter="filterContent"></search-group>
+                <button id="imageSearchBtn" class="btn btn btn-primary" ng-click="getImages(findBy, filterContent)" style="margin-left: 10px;">Search</button>
+            </div>
+            <div class="col-md-3 col-sm-2">
+                <button id="goAddImagesBtn" class="btn btn btn-success pull-right" ng-click="goAddImages()" style="margin-left: 10px;">Add Images</button>
+            </div>
+        </div>
+        <hr class="dark-line side-padding">
+        <div class="row" ng-if="images.length > 0 && isProductEnabled">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button id="selectAllImagesBtn" class="btn btn-success" ng-click="selectAllImages()">
+                        Select All
+                    </button>
+                    <button id="deselectAllImagesBtn" class="btn btn-warning" ng-click="deselectAllImages()">
+                        Deselect All
+                    </button>
+                    <button id="addToProductBtn" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                        Add To Product
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel" style="margin-left: 15px">
+                        <li id="selectProductBtn" role="presentation" ng-repeat="product in products | orderBy: 'name'" ng-click="addImagesToProduct(product)">
+                            <a role="menuitem" tabindex="-1" href="">
+                                <span>{{product.name}}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="images.length > 0">
+            <div class="col-md-12">
+                <paged-image-list images="images" limit="10" show-product="isProductEnabled" remove="removeImage(imageId, index)" ></paged-image-list>
+            </div>
+        </div>
+        <p ng-if="images.length == 0" class="dull-header">Search for images</p>
+    </div>
+</div>

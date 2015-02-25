@@ -1,0 +1,323 @@
+<div ng-switch="policyView">
+    <div ng-switch-when="catalog">
+        <form class="padding-bottom padding-top side-padding row">
+            <div class="col-sm-6">
+                <input id="policySearchInpt" type="text" class="form-control" id="tag" placeholder="Filter By ID" ng-model="searchCriteria">
+            </div>
+            <div class="col-sm-6">
+                <button id="addPolicyBtn" style="margin-left:10px" class="btn btn-success pull-right" ng-click="goCreatePolicy()">Add Policy</button>
+                <button id="uplaodPolicyBtn" style="margin-left:10px" class="btn btn-primary pull-right" ng-click="goUploadPolicy()">Upload Policy</button>
+            </div>
+        </form>
+        <main>
+            <paged-policy-list policies="userPolicies" limit="20" remove="removePolicy(policyId)" select="goPolicy(policyId)"></paged-policy-list>
+        </main>
+    </div>
+    <div ng-switch-when="policy">
+        <div class="row">
+            <div class="col-md-5 col-md-offset-1">
+                <a id="goPolicyCatalogLink" href="" class="pull-left" ng-click="goPolicyCatalog()">Back to Policy Catalog</a>
+            </div>
+            <div class="col-md-5">
+                <div class="btn-group pull-right">
+                    <button id="policyOptionsBtn" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <span class="glyphicon glyphicon-menu-hamburger"></span> Options <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <download policy="currentPolicy" />
+                        </li>
+                        <li><a href="" id="policyPreviewBtn" type="button" style="margin-right: 5px;" ng-click="openPreview()">Preview</a>
+                        </li>
+                        <li><a href="" id="duplicatePolicyBtn" type="button" style="margin-right: 5px;" ng-click="goCreatePolicyFromBase(currentPolicy)">Duplicate</a>
+                        </li>
+                        <li><a href="" id="editPolicyBtn" type="button" style="margin-right: 5px;" ng-click="goEditPolicy(currentPolicy)">Edit</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10 col-md-offset-1">
+            <h3>{{currentPolicy.id}}</h3>
+            <h4>Current Version: {{currentPolicy.currentVersion}}</h4>
+
+            <h4>Transformations</h4>
+            <h5 class="side-padding">
+                <span ng-if="!(currentPolicy.transformations) || !(currentPolicy.transformations.length)">None Specified</span>
+            <h5>
+            <div ng-repeat="transformation in currentPolicy.transformations">
+                <div class="side-padding">
+                    <h5>Step {{$index +1}}</h5>
+                    <transform-step transform="transformation"></transform-step>
+                </div>
+            </div>
+            <h4>Resolutions</h4>
+            <h5 class="side-padding">
+                <strong>Widths: </strong>
+                <span ng-if="!(currentPolicy.resolutions.widths) || !(currentPolicy.resolutions.widths.length)">None Specified</span>
+                <span ng-if="!!(currentPolicy.resolutions.widths) && !!(currentPolicy.resolutions.widths.length)" ng-repeat="(setting, values) in currentPolicy.resolutions.widths">
+                    {{ !(values) ? 'Unspecified' : values}}
+                </span>
+            </h5>
+            <h5 class="side-padding">
+                <strong>Quality: </strong>
+                <span ng-if="!(currentPolicy.outputs.defaults.quality)">None Specified</span>
+                <span ng-if="!!(currentPolicy.outputs.defaults.quality)">
+                    {{ !(currentPolicy.outputs.defaults.quality) ? 'Unspecified' : currentPolicy.outputs.defaults.quality}}
+                </span>
+            </h5>
+        </div>
+    </div>
+    <div ng-switch-when="createPolicy">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <a href="" class="pull-left" ng-click="goPolicyCatalog()">Back to Policy Catalog</a>
+            </div>
+        </div>
+        <header class="row padding-top padding-bottom breadcrumbs">
+            <div class=" col-md-10 col-md-offset-1 ">
+                <div class="col-sm-2 quarter-width text-center add-transform-first" ng-class="{active: currentStep === 0, complete: currentStep > 0}">
+                    <span ng-show="currentStep < 1">1.</span>
+                    <span ng-hide="currentStep < 1" class="glyphicon glyphicon-ok"></span>
+                    <span class="nav-label">Create Plan</span>
+                </div>
+                <div class="col-sm-2 quarter-width text-center add-transform" ng-class="{active: currentStep === 1, pending: currentStep < 1, complete: currentStep > 1}">
+                    <span ng-show="currentStep < 2">2.</span>
+                    <span ng-hide="currentStep < 2" class="glyphicon glyphicon-ok"></span>
+                    <span class="nav-label">Transforms</span>
+                </div>
+                <div class="col-sm-2 quarter-width text-center add-transform" ng-class="{active: currentStep === 2, pending: currentStep < 2, complete: currentStep > 2}">
+                    <span ng-show="currentStep < 3">3.</span>
+                    <span ng-hide="currentStep < 3" class="glyphicon glyphicon-ok"></span>
+                    <span class="nav-label">Resolutions</span>
+                </div>
+                <div class="col-sm-2 quarter-width text-center add-transform" ng-class="{active: currentStep === 3, pending: currentStep < 3, complete: currentStep > 3}">
+                    <span ng-show="currentStep < 4">4.</span>
+                    <span ng-hide="currentStep < 4" class="glyphicon glyphicon-ok"></span>
+                    <span class="nav-label">Review</span>
+                </div>
+            </div>
+        </header>
+        <main class="row">
+            <div ng-switch="currentStep">
+                <div ng-switch-when="0">
+                    <div class="row inner-content">
+                        <div class="col-sm-4 col-sm-offset-4">
+                            <div class="form-group row">
+                                <label class="text-center">Policy ID *</label>
+                                <input id="policyIDInpt" required type="text" class="form-control vertical-margin-1x" placeholder="Make it unique to add or use an existing to update" ng-model="policyId">
+                                <label class="info-text" ng-if="policyId && !policyDoesExist(policyId)">
+                                    <span class="glyphicon glyphicon-ok" style="color:green"></span> Policy ID has not been used.
+                                </label>
+                                <label class="info-text" ng-if="policyId && policyDoesExist(policyId)">
+                                    <span class="glyphicon glyphicon-alert" style="color:gold"></span> Policy ID has was used. Overwriting existing policy.
+                                </label>
+                            </div>
+                            <div class="form-group row">
+                                <label class="text-center">Preview Image URL</label>
+                                <input id="policyPreviewUrlInpt" type="text" class="form-control vertical-margin-1x" placeholder="Image URL" ng-model="previewUrl">
+                            </div>
+                            <div id="goAddTransformsBtn" class="pull-right nav-hover" ng-click="goAddTransforms(policyId, previewUrl)">
+                                <span class="nav-continue">Next</span>
+                                <span class="glyphicon glyphicon-chevron-right arrow-size"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-switch-when="1">
+                    <div class="row inner-content">
+                        <div class="col-md-2 col-md-offset-1">
+                            <div id="goStartPlanBtn" class="pull-left nav-hover" ng-click="goStartPlan()">
+                                <span class="glyphicon glyphicon-chevron-left arrow-size"></span>
+                                <span class="nav-continue">Back</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="text-center">Add Transforms to Policy</h3>
+                        </div>
+                        <div class="col-md-2">
+                            <div id="goSetResolutionsBtn" class="pull-right nav-hover" ng-click="goSetResolutions(transformSteps)">
+                                <span class="nav-continue">Next</span>
+                                <span class="glyphicon glyphicon-chevron-right arrow-size"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row inner-content">
+                        <div ng-class="previewUrl ? 'col-md-3' : 'col-md-5 col-md-offset-1'">
+                            <label class="dull-header">Transforms</label>
+                            <select id="selectTransforms" class="form-control" style="float: none" ng-options="transform.name for transform in availableTransforms" ng-model="transformToAdd" ng-change="addTransformToPolicy(transformToAdd); transformToAdd = null">
+                                <option value="">None Selected</option>
+                            </select>
+                        </div>
+                        <div ng-class="previewUrl ? 'col-md-3' : 'col-md-5'">
+                            <label class="dull-header">Policies</label>
+                            <select id="selectUserPolicies" class="form-control" style="float: none" ng-options="userPolicy.id for userPolicy in includablePolicies" ng-model="policyToAdd" ng-change="addUserTransformToPolicy(policyToAdd); policyToAdd = null;">
+                                <option value="">None Selected</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 text-center" ng-if="previewUrl">
+                            <p class="dull-header">Policy Preview</p>
+                            <div ng-click="refreshPreview(transformSteps)" class="pointer refresh-preview">
+                                <span class="glyphicon glyphicon-refresh"></span>
+                                <label> Refresh Preview</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row inner-content">
+                        <div ng-class="previewUrl ? 'col-md-6' : 'col-md-8 col-md-offset-2'">
+                            <p ng-show="transformSteps.length === 0" class="text-center">No Transforms are added</p>
+                            <div id="transformStep{{$index + 1}}" class="input-group input-group-lg col-sm-11 padding-bottom" ng-repeat="transformStep in transformSteps">
+                                <span class="input-group-addon">{{$index + 1}}</span>
+                                <div style="padding: 10px; border: 1px solid #ccc;">
+                                    <h4>{{transformStep.name}}</h4>
+                                    <div ng-repeat="input in transformStep.inputs">
+                                        <div ng-if="inputShouldBeDisplayed(input, transformStep)">
+                                            <label ng-if="input.name" class="control-label">
+                                                <em>{{input.name | capitalize}}</em>
+                                                <span ng-show="input.required">*</span>
+                                            </label>
+                                            <input id="intInput{{$index + 1}}" ng-if="input.type === 'int'" type="number" max="{{input.max}}" min="{{input.min}}" class="form-control" ng-init="input.value = input.value == null ? input.default : input.value" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
+
+
+                                            <input id="intResizeInput{{$index + 1}}" ng-if="input.type === 'intResize'" type="number" max="{{input.max}}" min="{{input.min}}" class="form-control" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
+
+                                            <input id="floatInput{{$index + 1}}" ng-if="input.type === 'float'" type="number" step="any" max="{{input.max}}" min="{{input.min}}" class="form-control" ng-init="input.value = input.value == null ? input.default : input.value" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
+
+                                            <span ng-if="input.type === 'booleanComposite'">
+                                                <input id="booleanCompositeInput{{$index + 1}}" type="checkbox" ng-init="input.value = input.value == null ? input.default : input.value" style="margin: 10px; font-size: 2em;" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value" ng-change="onChangeOfDisablingCompositeScaling(transformStep)">
+                                            </span>
+
+                                            <span ng-if="input.type === 'booleanResize'">
+                                                <input id="booleanResizeInput{{$index + 1}}" type="checkbox" ng-init="input.value = input.value == null ? input.default : input.value" style="margin: 10px; font-size: 2em;" ng-disabled="!bothHeightAndWidthSpecified(transformStep)" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
+                                            </span>
+
+                                            <div ng-if="input.type === 'image'">
+                                                <input id="compImageUrlInpt{{$index}}" type="text" class="form-control" placeholder="Image URL" style="float: none" ng-required="{{input.required}}" ng-model="input.imageUrl">
+                                            </div>
+
+                                            <select id="selectOptionInpt{{$index + 1}}" class="form-control" ng-if="input.type === 'options'" style="float: none" ng-init="input.value = input.value == null ? input.default : input.value" ng-options="option as option for option in constructs[input.options]" ng-model="input.value">
+                                                <option value="">Default</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span id="removeTransformStepBtn{{$index + 1}}" class="input-group-addon" ng-click="removeTransformStep($index)">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div ng-class="previewUrl ? 'col-md-4 col-md-offset-1' : 'col-md-8 col-md-offset-2'">
+                            <div ng-if="previewUrl">
+                                <img id="previewImg" class="img-responsive" ng-src="{{previewImageSrc}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-switch-when="2">
+                    <div class="row inner-content">
+                        <div class="col-md-2 col-md-offset-1">
+                            <div id="goBackAddTransforms" class="pull-left nav-hover" ng-click="goAddTransforms(policyId, previewUrl)">
+                                <span class="glyphicon glyphicon-chevron-left arrow-size"></span>
+                                <span class="nav-continue">Back</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h3 class="text-center">Set Resolutions
+                            </h3>
+                        </div>
+                        <div class="col-md-2">
+                            <div id="goReviewPolicy" class="pull-right nav-hover" ng-click="goReviewPolicy(policyResolutions, policyOutput)">
+                                <span class="nav-continue">Next</span>
+                                <span class="glyphicon glyphicon-chevron-right arrow-size"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-md-offset-4">
+                            <form>
+                                <div class="form-group">
+                                    <label>Widths</label>
+                                    <span class="info-text side-padding">If nothing is specified defaults of 5000, 2048, 1024, 640, 320 will be used</span>
+                                    <input id="policyWidthsInpt" type="text" class="form-control" ng-model="policyResolutions.widths" placeholder="Comma separated list of widths">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-md-offset-4">
+                            <div class="step-spacing">
+                                <label>Quality</label>
+                                <span class="info-text side-padding">Range 1-100, Recommended: 90</span>
+                                <input id="policyQualityInpt" type="number" class="form-control" max="100" min="1" ng-init="policyOutput.quality = policyOutput.quality==null ? 90 : policyOutput.quality" ng-model="policyOutput.quality" placeholder="Output Quality">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-switch-when="3">
+                    <div class="row inner-content">
+                        <div class="col-md-2 col-md-offset-1">
+                            <div id="goBackResolutionsBtn" class="pull-left nav-hover" ng-click="goSetResolutions(transformSteps)">
+                                <span class="glyphicon glyphicon-chevron-left arrow-size"></span>
+                                <span class="nav-continue">Back</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h3 class="text-center">Review Your Policy
+                            </h3>
+                        </div>
+                        <div class="col-md-2">
+                            <div id="goFinishPolicyBtn" class="pull-right nav-hover" ng-click="createPolicy()">
+                                <span class="nav-continue">Finish</span>
+                                <span class="nav-next"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-offset-1 col-md-offset-6 text-center">
+                            <p class="dull-header">Preview Image</p>
+                            <div ng-if="!previewUrl">
+                                <span>No Preview Image was specified</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row inner-content">
+                        <div class="col-md-6 col-md-offset-2">
+                            <h3>{{policyId}}</h3>
+                            <h4>Transforms</h4>
+                            <ol>
+                                <li ng-repeat="step in transformSteps">
+                                    {{step.name}}
+                                </li>
+                            </ol>
+                            <h4>Resolutions</h4>
+
+                            <h5>Widths</h5>
+                            <div class="side-padding">
+                                <p ng-if="policyResolutions.widths == null">Defaults Used</p>
+                                <p>{{policyResolutions.widths}}</p>
+                            </div>
+
+                            <h5>Quality</h5>
+                            <div class="side-padding">
+                                <p ng-if="policyOutput.quality == null">None Specified</p>
+                                <p> {{policyOutput.quality}} </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <img class="img-responsive" ng-src="{{previewImageSrc}}">
+                        </div>
+                    </div>
+                </div>
+                <div ng-switch-when="4">
+                    <div class="col-sm-6 col-sm-offset-3">
+                        <h3 class="text-center">Great! Your policy was Created/Updated!
+                        </h3>
+                        <button id="addAnotherPolicyBtn" class="btn btn-success center-block" ng-click="goCreatePolicy()">Click to Add Another</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<div ng-include="'partials/modals/upload-policy.html'"></div>
+<div ng-include="'partials/modals/preview.html'"></div>
