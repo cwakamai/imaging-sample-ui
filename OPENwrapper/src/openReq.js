@@ -42,10 +42,10 @@ var EdgeGrid = require('./api.js'),
 var logStream = fs.createWriteStream("imna.log", {flags:'a'});
 logger.token('config', function () {
   return config.toString();
-})
+});
 
-if (config.client_token == null || config.client_secret == null
-    || config.access_token == null || config.base_uri == null) {
+if (config.client_token === null || config.client_secret === null ||
+  config.access_token === null || config.base_uri === null) {
   console.log("CONFIG ERROR: Missing config values");
 }
 
@@ -59,7 +59,7 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
     client_token = config.client_token,
     client_secret = config.client_secret,
     access_token = config.access_token,
-    base_uri = config.base_uri
+    base_uri = config.base_uri;
 
     path = apiRequest.originalUrl,
     lunaToken = apiRequest.header("luna-token"),
@@ -68,12 +68,12 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
     contentType = apiRequest.header("Content-Type") || "application/json";
 
   var eg = new EdgeGrid(client_token, client_secret, access_token, base_uri);
-  
+
   if (method === "OPTIONS") {
     apiResponse.setHeader("Access-Control-Allow-Origin", "*");
-    apiResponse.setHeader("Access-Control-Allow-Headers", "Luna-Token, Content-Length, Content-Type, X-Codingpedia, x-requested-with")
-    apiResponse.setHeader("Access-Control-Expose-Headers", "content-length")
-    apiResponse.setHeader("Access-Control-Expose-Methods", "GET, POST, OPTIONS")
+    apiResponse.setHeader("Access-Control-Allow-Headers", "Luna-Token, Content-Length, Content-Type, X-Codingpedia, x-requested-with");
+    apiResponse.setHeader("Access-Control-Expose-Headers", "content-length");
+    apiResponse.setHeader("Access-Control-Expose-Methods", "GET, POST, OPTIONS");
     apiResponse.send(HttpStatus.OK);
   } else {
     if (args.openEnabled !== 'n'){
@@ -101,17 +101,17 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
       }
 
       eg.send(function (data, response) {
-      
+
         apiResponse.set('Content-Type', response.headers['content-type']);
         console.log("RESPONSE RECEIVED:");
         console.log("MIME Type:"+response.headers['content-type']+"\n");
         apiResponse.setHeader("Access-Control-Allow-Origin", "*");
-        
+
         try {
           apiResponse.status(response.statusCode).send(data);
         } catch (e) {
           apiResponse.set('content-type', 'application/problem+json');
-          console.log(e);
+          //console.log(e);
           apiResponse.status(response.statusCode).send(data);
         }
       });
@@ -127,7 +127,7 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
           'Content-Type': contentType,
           'Content-Length': data.length
         }
-      }
+      };
       // Set up the request
       var post_req = http.request(post_options, function(res) {
           res.setEncoding('utf8');
@@ -135,13 +135,13 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
               console.log('Response: ' + chunk);
           });
       });
-    
+
       post_req.write(data);
       post_req.end();
 
     }
   }
-};
+}
 
 var server = express();
 server.set('port', args.port);
@@ -150,7 +150,7 @@ server.use(function(req, res, next) {
   req.rawBody = '';
   req.setEncoding('utf8');
 
-  req.on('data', function(chunk) { 
+  req.on('data', function(chunk) {
     req.rawBody += chunk;
   });
 

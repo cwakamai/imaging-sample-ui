@@ -27,6 +27,7 @@ sudo make install
 #### Using Package Manager
 ```sh
 sudo apt-get install git nodejs npm
+npm install -g bower
 ```
 
 #### Download Repository and Install Node Packages
@@ -34,6 +35,8 @@ sudo apt-get install git nodejs npm
 git clone https://github.com/akamai-open/imaging-sample-ui.git
 cd ./imaging-sample-ui/OPENwrapper
 npm install
+cd webapp
+bower install
 ```
 
 ### Mac
@@ -44,11 +47,17 @@ npm install
 
 + [Install Node.js](https://www.nodejs.org/download)
 
+```sh
+npm install -g bower
+```
+
 
 ```sh
-git clone https://github.com/akamai-open/imaging-sample-ui.git
-cd ./imaging-sample-ui/OPENwrapper
+git clone https://github.com/ImageManagement/ImSamples.git imSampleWebUI
+cd ./imSampleWebUI/OPENwrapper
 npm install
+cd webapp
+bower install
 ```
 
 ### Windows
@@ -59,8 +68,11 @@ npm install
 
 
 ```cmd
+npm install -g bower
 dir \path\to\ImSampleWebUI
 npm install
+dir webapp
+bower install
 ```
 
 ## Running the application
