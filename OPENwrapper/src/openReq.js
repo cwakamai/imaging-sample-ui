@@ -18,6 +18,7 @@ var EdgeGrid = require('./api.js'),
   url = require('url'),
   logger = require('morgan'),
   http = require('http'),
+  https = require('https'),
   HttpStatus = require('http-status-codes'),
   fs = require('fs'),
   args = require('nomnom')
@@ -50,6 +51,7 @@ if (config.client_token === null || config.client_secret === null ||
 }
 
 function sendRequestToAPI(apiRequest, apiResponse, next) {
+
   if (apiRequest.path.indexOf('/imaging') !== 0){
     next();
     return;
@@ -119,26 +121,38 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
       var request_url = url.parse(base_uri + path, true);
 
       var post_options = {
-      host: request_url.hostname,
-      port: '80',
-      path: path,
-      method: method,
-      headers: {
-          'Content-Type': contentType,
-          'Content-Length': data.length
-        }
+        host: request_url.hostname,
+        port: '80',
+        path: path,
+        method: method,
+        headers: {
+            'Content-Type': contentType,
+            'Content-Length': data.length
+          }
       };
+
       // Set up the request
-      var post_req = http.request(post_options, function(res) {
-          res.setEncoding('utf8');
-          res.on('data', function (chunk) {
-              console.log('Response: ' + chunk);
+      var secure_post_req = https.request(post_options, function(res){
+        res.setEncoding('utf8');
+        
+        if (res.statusCode >= 400){
+          var post_req = http.request(post_options, function(http_response) {
+              http_response.setEncoding('utf8');
+              http_response.on('data', function (http_chunk) {
+                  console.log('Response: ' + http_chunk);
+              });
           });
+          post_req.write(data);
+          post_req.end();
+        } else {
+          res.on('data', function(chunk){
+            console.log('Response: ' + chunk);
+          });
+          secure_post_req.write(data);
+          secure_post_req.end();
+        }
+
       });
-
-      post_req.write(data);
-      post_req.end();
-
     }
   }
 }

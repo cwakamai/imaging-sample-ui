@@ -1,0 +1,17 @@
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.DS_Store
+
+lib-cov
+pids
+logs
+results
+build
+
+OPENwrapper/node_modules
+OPENwrapper/webapp/bower_components

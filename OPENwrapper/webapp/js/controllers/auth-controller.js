@@ -31,7 +31,7 @@
 
             scope.login = function(lunaToken) {
                 ApiConnector.verifyLunaToken(lunaToken).then(function(data) {
-                    if (typeof data.httpStatus === 'undefined') {
+                    if (data && typeof data.httpStatus === 'undefined') {
                         AuthService.setLunaToken(lunaToken);
                         AuthService.goToLandingPage();
                     } else {

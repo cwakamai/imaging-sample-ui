@@ -75,7 +75,7 @@ dir webapp
 bower install
 ```
 
-## Running the application
+## Running the application server
 
 ### Unix-based systems
 ```sh
@@ -107,7 +107,7 @@ node OPENwrapper/index.js -p 6000
 node OPENwrapper/index.js -c /path/to/config.json
 ```
 
-This will run the server with the specified configuration file which **MUST** be valid JSON
+This will run the server with the specified configuration file which **MUST** be valid JSON. If you haven't changed the configuration, it should be running at [http://localhost:8421](http://localhost:8421)
 
 ## Sample DAM UI Deployment
 
@@ -163,7 +163,8 @@ Launch a web browser and navigate to the web server URL
 > Licensed under the Apache License, Version 2.0 (the "License");
 > you may not use this file except in compliance with the License.
 >
-> You may obtain a copy of the License at 
+> A copy of the License is distributed with this software, or you
+> may obtain a copy of the License at 
 >
 >    http://www.apache.org/licenses/LICENSE-2.0
 >
