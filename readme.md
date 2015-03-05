@@ -11,7 +11,7 @@ In order to use the Sample Application, you will need a set of Image Management 
 
 ### Linux
 
-Note that if you are using Ubuntu 12.04 the npm package may be broken. 
+Note that if you are using Ubuntu 12.04 the npm package may be broken.
 
 #### Install From Source
 ```sh
@@ -32,7 +32,7 @@ npm install -g bower
 
 #### Download Repository and Install Node Packages
 ```sh
-git clone https://github.com/akamai-open/imaging-sample-ui.git
+git clone https://github.com/akamai-open/imaging-sample-ui.git imaging-sample-ui
 cd ./imaging-sample-ui/OPENwrapper
 npm install
 cd webapp
@@ -53,8 +53,8 @@ npm install -g bower
 
 
 ```sh
-git clone https://github.com/ImageManagement/ImSamples.git imSampleWebUI
-cd ./imSampleWebUI/OPENwrapper
+git clone https://github.com/akamai-open/imaging-sample-ui.git imaging-sample-ui
+cd ./imaging-sample-ui/OPENwrapper
 npm install
 cd webapp
 bower install
@@ -77,12 +77,15 @@ bower install
 
 ## Running the application server
 
+You will need to modify the file in imaging-sample-ui/OPENwrapper/src/conf.json to use the credentials
+you recieved from Luna
+
 ### Unix-based systems
 ```sh
-cd <path>/OPENwrapper
+cd <path_to>/imaging-sample-ui
 ./run.sh
 ```
-You may need to ```chmod 775 run.sh``` before you can run the program. 
+You may need to ```chmod 775 run.sh``` before you can run the program.
 
 ### Windows Systems
 Open cmd.exe
@@ -113,7 +116,7 @@ This will run the server with the specified configuration file which **MUST** be
 
 ### Install Bower Package Manager
 
-Bower is a package manager used to retrieve web project dependencies. 
+Bower is a package manager used to retrieve web project dependencies.
 
 #### Unix-based Systems
 To install, run
@@ -121,7 +124,7 @@ To install, run
 ```npm install -g bower
 ```
 
-Then run the following command to install the project dependencies. 
+Then run the following command to install the project dependencies.
 
 ``` bower install
 ```
@@ -137,7 +140,7 @@ Download the following libraries
 + [Bootstrap 3.3.2](http://getbootstrap.com/getting-started/)
 
 
-Place the libraries in ```OPENwrapper/webapp``` and update the paths in the ```OPENwrapper/webapp/index.html```   
+Place the libraries in ```OPENwrapper/webapp``` and update the paths in the ```OPENwrapper/webapp/index.html```
 
 
 ### Configuration
@@ -159,12 +162,12 @@ Launch a web browser and navigate to the web server URL
 ## License
 
 > Copyright 2015 Akamai Technologies, Inc. All Rights Reserved.
-> 
+>
 > Licensed under the Apache License, Version 2.0 (the "License");
 > you may not use this file except in compliance with the License.
 >
 > A copy of the License is distributed with this software, or you
-> may obtain a copy of the License at 
+> may obtain a copy of the License at
 >
 >    http://www.apache.org/licenses/LICENSE-2.0
 >
