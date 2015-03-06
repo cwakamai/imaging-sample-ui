@@ -4,7 +4,7 @@ This package is provided as an easy way to get started using Akamai's Image Mana
 
 This Sample Application illustrates how all of the Image Manager APIs can be used.
 
-In order to use the Sample Application, you will need a set of Image Management {OPEN} credentials, and the API token generated when enabling Image Management in Property Manager.
+In order to use the Sample Application, you will need a set of Image Manager {OPEN} credentials, and the API token generated when enabling Image Manager in Property Manager.
 
 
 ## {OPEN} Node.js Server Installation
