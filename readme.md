@@ -77,8 +77,20 @@ bower install
 
 ## Running the application server
 
-You will need to modify the file in imaging-sample-ui/OPENwrapper/src/conf.json to use the credentials
-you recieved from Luna
+### Configuration
+
+By default the Sample DAM application will expect the OPEN Node.js server to be listening at the same origin, if you like to change this
+
++ Edit ```/path/to/sampleapp/OPENwrapper/webapp/js/configuration.js```
++ Change the apiHost to your new url, with the format of *protocol://domain:port/*
+For example
+```
+var apiHost = "http://sampledomain:6000/";
+```
++ Edit ```/path/to/sampleapp/OPENwrapper/webapp/js/services/authentication.js```
++ Change the "contractId" to match the Contract Id you have from Luna
++ Edit path/to/sampleapp/OPENwrapper/src/conf.json
++ Change the credentials to the ones you recieved from Luna
 
 ### Unix-based systems
 ```sh
@@ -121,16 +133,19 @@ Bower is a package manager used to retrieve web project dependencies.
 #### Unix-based Systems
 To install, run
 
-```npm install -g bower
+```
+npm install -g bower
 ```
 
 Then run the following command to install the project dependencies.
 
-``` bower install
+```
+bower install
 ```
 
 Ensure all libraries are in ```OPENwrapper/webapp/bower_components```
  or update ```OPENwrapper/webapp/index.html``` if you placed them elsewhere
+
 #### Windows Systems
 
 Download the following libraries
@@ -142,21 +157,9 @@ Download the following libraries
 
 Place the libraries in ```OPENwrapper/webapp``` and update the paths in the ```OPENwrapper/webapp/index.html```
 
-
-### Configuration
-
-By default the Sample DAM application will expect the OPEN Node.js server to be listening at the same origin, if you like to change this
-
-+ Navigate to ```/path/to/sampleapp/webapp/js/configuration.js```
-+ Change the apiHost to your new url, with the format of *protocol://domain:port/*
-
-```
-var apiHost = "http://sampledomain:6000/";
-```
-
 ### Launch
-Launch a web browser and navigate to the web server URL
 
+Launch a web browser and navigate to the web server URL
 
 
 ## License

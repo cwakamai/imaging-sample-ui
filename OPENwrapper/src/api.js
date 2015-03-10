@@ -55,7 +55,7 @@ EdgeGrid.prototype.auth = function(request, callback) {
   if (callback && typeof callback == "function") {
     callback(this);
   }
-
+  console.log(_request);
   return this;
 };
 
@@ -67,9 +67,9 @@ EdgeGrid.prototype.send = function(callback) {
 
   var parts = url.parse(request.url);
   request.hostname = parts.hostname;
-  request.port = parts.port || "80";
+  request.port = parts.port || "443";
 
-  var req = http.request(request, function(response) {
+  var req = https.request(request, function(response) {
     response.on('data', function(d) {
       data += d;
     });
