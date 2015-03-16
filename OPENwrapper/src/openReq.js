@@ -1,9 +1,9 @@
 // Copyright 2015 Akamai Technologies, Inc. All Rights Reserved.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 //
-// You may obtain a copy of the License at 
+// You may obtain a copy of the License at
 //
 //    http://www.apache.org/licenses/LICENSE-2.0
 //
@@ -57,11 +57,14 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
     return;
   }
 
-  var 
+  var
     client_token = config.client_token,
     client_secret = config.client_secret,
     access_token = config.access_token,
     base_uri = config.base_uri;
+
+    if (base_uri.substr(base_uri.length - 1) == "/")
+      base_uri = base_uri.substr(0,base_uri.length - 1)
 
     path = apiRequest.originalUrl,
     lunaToken = apiRequest.header("luna-token"),
@@ -134,7 +137,7 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
       // Set up the request
       var secure_post_req = https.request(post_options, function(res){
         res.setEncoding('utf8');
-        
+
         if (res.statusCode >= 400){
           var post_req = http.request(post_options, function(http_response) {
               http_response.setEncoding('utf8');

@@ -17,8 +17,8 @@ Note that if you are using Ubuntu 12.04 the npm package may be broken.
 ```sh
 sudo apt-get install g++ curl libssl-dev apache2-utils
 wget http://nodejs.org/dist/v0.10.36/node-v0.10.36.tar.gz
-tar –xvf node-v0.10.35.tar.gz
-mv node-v0.10.35
+tar –xvf node-v0.10.36.tar.gz
+cd node-v0.10.36
 ./configure
 make
 sudo make install
@@ -29,6 +29,7 @@ sudo make install
 sudo apt-get install git nodejs npm
 npm install -g bower
 ```
+Note that for some versions of Linux the nodejs package may be broken and you might be better off installing from source
 
 #### Download Repository and Install Node Packages
 ```sh
@@ -87,8 +88,6 @@ For example
 ```
 var apiHost = "http://sampledomain:6000/";
 ```
-+ Edit ```/path/to/sampleapp/OPENwrapper/webapp/js/services/authentication.js```
-+ Change the "contractId" to match the Contract Id you have from Luna
 + Edit path/to/sampleapp/OPENwrapper/src/conf.json
 + Change the credentials to the ones you recieved from Luna
 
