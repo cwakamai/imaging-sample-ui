@@ -63,7 +63,7 @@ bower install
 
 ### Windows
 + [Install Node.js](https://www.nodejs.org/download)
-+ [Download Sample Client Package](https://github.com/ImageManagement/ImSampleClient/archive/master.zip)
++ [Download Sample Client Package](https://github.com/akamai-open/imaging-sample-ui/archive/master.zip)
 + Unzip the folder
 + Open a command line: **cmd.exe**
 
