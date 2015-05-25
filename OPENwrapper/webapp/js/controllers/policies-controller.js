@@ -29,7 +29,7 @@
 
             //LOCAL VARIABLES
             var validatedTransformations = [];
-            var MAX_NUM_POLICIES = 5;
+            var MAX_NUM_POLICIES = 32;
 
             //SCOPE FUNCTIONS
 
