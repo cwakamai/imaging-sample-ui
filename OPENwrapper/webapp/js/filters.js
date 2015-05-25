@@ -53,8 +53,6 @@
         };
     }).filter('bypass', function() {
         return function(url) {
-            var bypass_url = url + "?aki_bypass=true";
-
             return bypass_url;
         };
     });
