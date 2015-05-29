@@ -1,5 +1,5 @@
 /*
- * policies-controller.js
+ * readyforweb-policies-controller.js
  *
  * For more information visit https://developer.akamai.com
  *
@@ -22,16 +22,14 @@
 (function() {
     'use strict';
 
-    var app = angular.module('ImageManagementSample.controllers.policy', []);
+    var app = angular.module('ImageManagementSample.controllers.rfwpolicies', []);
 
-    app.controller('PolicyCtrl', ['$scope', 'ApiConnector', 'SystemConstants', 'ResourceFactory',
+    app.controller('RFWPoliciesCtrl', ['$scope', 'ApiConnector', 'SystemConstants', 'ResourceFactory',
         function(scope, ApiConnector, SystemConstants, ResourceFactory) {
-
+            
             //LOCAL VARIABLES
             var validatedTransformations = [];
             var MAX_NUM_POLICIES = 32;
-
-            //SCOPE FUNCTIONS
 
             //NAVIGATION
             scope.goStartPlan = function() {
@@ -44,24 +42,24 @@
             };
 
             // Go to the Add Transform step of create policy
-            scope.goAddTransforms = function(policyId, url) {
+            scope.goAddTransforms = function(rfwPolicyId, url) {
                 if (url) {
                     scope.previewUrl = url;
                 }
-                if (policyId !== null && typeof policyId !== 'undefined') {
-                    scope.getPolicies().then(function() {
+                if (rfwPolicyId !== null && typeof rfwPolicyId !== 'undefined') {
+                    scope.getRFWPolicies().then(function() {
 
                         scope.includablePolicies = [];
-                        $.each(scope.userPolicies, function(index, policy) {
-                            if (policy.id != policyId) {
+                        $.each(scope.userRFWPolicies, function(index, policy) {
+                            if (policy.id != rfwPolicyId) {
                                 scope.includablePolicies.push(policy);
                             }
                         });
 
-                        if (validateMaxNumPolicies(scope.userPolicies, policyId)) {
+                        if (validateMaxNumPolicies(scope.userRFWPolicies, rfwPolicyId)) {
                             alert("You have reached the maximum number of policies.");
                         } else {
-                            scope.policyId = policyId;
+                            scope.rfwPolicyId = rfwPolicyId;
                             previewPartialPolicy(ResourceFactory.validateAndCreateTransformResource(scope.transformSteps));
                             scope.currentStep = 1;
                         }
@@ -80,7 +78,7 @@
             };
 
             // Go to the Review step of create policy
-            scope.goReviewPolicy = function(resolutions, output, qualityType) {
+            scope.goReviewRFWPolicy = function(resolutions, output, qualityType) {
                 if (qualityType==="pQuality") {
                     scope.policyOutput.pQuality = output;
                 }
@@ -90,9 +88,11 @@
 
                     if (resolutions.widths && typeof resolutions.widths === 'string' && resolutions.widths.length > 0) {
                         resolutions.widths = resolutions.widths.replace(/[^0-9]/g, ' ').trim().replace(/\s+/g, ',');
-                        if (resolutions.widths.split(',').length > 8) {
-                            errorMessages.push("The maximum number of width allowed is 8.");
+                        if (resolutions.widths.split(',').length !== 1) {
+                            errorMessages.push("RFW Policies may only contain one width.");
                         }
+                    } else {
+                    	 errorMessages.push("RFW Policies must specify a width.");
                     }
 
                     if (output) {
@@ -139,8 +139,8 @@
                 scope.currentPolicy = null;
             };
 
-            scope.goPolicy = function(policyId) {
-                scope.selectPolicy(policyId).then(function(policy) {
+            scope.goRFWPolicy = function(rfwPolicyId) {
+                scope.selectRFWPolicy(rfwPolicyId).then(function(policy) {
                     if (policy) {
                         scope.policyView = 'policy';
                     }
@@ -148,18 +148,18 @@
             };
 
             // POLICY OPERATIONS
-            scope.getPolicies = function() {
-                return ApiConnector.getAllPolicies().then(function(policies) {
-                    if (policies) {
-                        scope.userPolicies = policies.items;
+            scope.getRFWPolicies = function() {
+                return ApiConnector.getRFWPolicies().then(function(rfwPolicies) {
+                    if (rfwPolicies) {
+                        scope.userRFWPolicies = rfwPolicies.items;
                     } else {
-                        scope.userPolicies = null;
+                        scope.userRFWPolicies = null;
                     }
                 });
             };
 
-            scope.selectPolicy = function(policyId) {
-                return ApiConnector.getPolicy(policyId).then(function(policy) {
+            scope.selectRFWPolicy = function(rfwPolicyId) {
+                return ApiConnector.getRFWPolicy(rfwPolicyId).then(function(policy) {
                     if (policy) {
                         scope.currentPolicy = policy;
                     } else {
@@ -169,16 +169,16 @@
                 });
             };
 
-            scope.removePolicy = function(policyId) {
-                ApiConnector.deletePolicy(policyId).then(function(success) {
+            scope.removeRFWPolicy = function(rfwPolicyId) {
+                ApiConnector.deleteRFWPolicy(rfwPolicyId).then(function(success) {
                     if (success) {
-                        scope.getPolicies();
+                        scope.getRFWPolicies();
                     }
                 });
             };
 
             scope.createPolicy = function() {
-                if (scope.policyId !== null && !angular.isUndefined(scope.policyId)) {
+                if (scope.rfwPolicyId !== null && !angular.isUndefined(scope.rfwPolicyId)) {
 
                     var widths = [];
                     if (scope.policyResolutions.widths !== null && typeof scope.policyResolutions.widths === 'string' && scope.policyResolutions.widths !== "") {
@@ -191,22 +191,15 @@
 
                     var outputs = ResourceFactory.createOutputResource(defaults);
 
-                    var policyResource = ResourceFactory.createPolicyResource(scope.policyId, validatedTransformations, resolutions, outputs);
+                    var policyResource = ResourceFactory.createPolicyResource(scope.rfwPolicyId, validatedTransformations, resolutions, outputs);
 
-                    ApiConnector.addPolicy(policyResource).then(function(success) {
+                    ApiConnector.addRFWPolicy(policyResource).then(function(success) {
                         scope.resetNewPolicyFields();
                         scope.currentStep = 4;
                     }, function(error) {
                         alert("Failed to create policy.\nServer returned HTTP " + error.status + ": " + error.data.detail);
                     });
                 }
-            };
-
-            scope.policyDoesExist = function(policyId) {
-                if (policyId) {
-                    return findPolicyFromPoliciesArray(scope.userPolicies, policyId);
-                }
-                return false;
             };
 
             // Setup for when creating a new policy and using another policy as base 
@@ -287,7 +280,7 @@
             // adding a user defined transform to a policy's transformation
             scope.addUserTransformToPolicy = function(userTransform) {
                 if (userTransform) {
-                    scope.selectPolicy(userTransform.id).then(function(policy) {
+                    scope.selectRFWPolicy(userTransform.id).then(function(policy) {
                         var transformPolicy = {
                             name: policy.id,
                             inputs: [{
@@ -341,7 +334,6 @@
             };
 
             // PREVIEW TRANSFORM
-
             scope.openPreview = function() {
                 $("#preview").modal();
                 scope.previewImageSrc = null;
@@ -403,12 +395,12 @@
                 scope.policyFile = policyFile;
                 var newPolicyJson = angular.fromJson(scope.policyFile);
 
-                if (validateMaxNumPolicies(scope.userPolicies, newPolicyJson.id)) {
+                if (validateMaxNumPolicies(scope.userRFWPolicies, newPolicyJson.id)) {
                     alert("You have reached the maximum number of policies.");
                 } else {
-                    ApiConnector.addPolicy(newPolicyJson).then(function(success) {
+                    ApiConnector.addRFWPolicy(newPolicyJson).then(function(success) {
                         if (success) {
-                            scope.getPolicies();
+                            scope.getRFWPolicies();
                             scope.resetFileUpload();
                             $("#upload-policy").modal('hide');
                         }
@@ -440,7 +432,7 @@
             // LOCAL FUNCTIONS
 
             function setNewPolicyConstants() {
-                scope.policyId =
+                scope.rfwPolicyId =
                     scope.previewUrl =
                     scope.currentPolicy =
                     scope.transformToAdd =
@@ -451,7 +443,7 @@
                 // Initialize the constants 
                 scope.availableTransforms = angular.copy(SystemConstants.getSystemTransforms());
                 scope.constructs = SystemConstants.getConstructs();
-                scope.getPolicies();
+                // scope.getRFWPolicies();
             }
 
             function getPreviewImage(transformations, previewUrl) {
@@ -486,10 +478,10 @@
                 }
             }
 
-            function validateMaxNumPolicies(existingPolicies, newPolicyId) {
+            function validateMaxNumPolicies(existingRFWPolicies, newPolicyId) {
                 var maxPoliciesReached = false;
-                if (existingPolicies && existingPolicies.length >= MAX_NUM_POLICIES) {
-                    maxPoliciesReached = !findPolicyFromPoliciesArray(existingPolicies, newPolicyId);
+                if (existingRFWPolicies && existingRFWPolicies.length >= MAX_NUM_POLICIES) {
+                    maxPoliciesReached = !findPolicyFromPoliciesArray(existingRFWPolicies, newPolicyId);
                 }
                 return maxPoliciesReached;
             }
@@ -504,7 +496,7 @@
                 return policyFound;
             }
 
-            function init() {
+        	function init() {
                 scope.showUpload = false;
                 scope.isPreviewError = false;
                 scope.isPreviewComplete = false;
@@ -523,9 +515,11 @@
                 scope.policyView = 'catalog';
 
                 scope.resetNewPolicyFields();
-                scope.getPolicies();
+                scope.getRFWPolicies();
             }
             init();
         }
+        
     ]);
-})();
+})
+();

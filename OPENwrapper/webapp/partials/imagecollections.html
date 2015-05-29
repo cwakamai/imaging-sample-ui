@@ -1,0 +1,322 @@
+<div ng-switch="icView">
+    <div ng-switch-when="catalog">
+        <form class="padding-bottom padding-top side-padding row">
+            <div class="col-sm-4">
+                <input id="imageCollectionSearchInpt" type="text" class="form-control col-md-5" id="tag" placeholder="Filter By ID" ng-model="searchCriteria"></input>
+            </div>
+            <div class="pull-right">
+                <button id="createImageCollectionBtn" class="btn btn-success" ng-click="goCreateImageCollection()">
+                        Create Image Collection
+                </button>
+                <button id="uploadImageCollectionBtn" class="btn btn-primary" ng-click="goUploadImageCollection()">
+                        Upload Image Collection
+                </button>
+                <button id="pasteImageCollectionBtn" class="btn btn-primary" ng-click="goPasteImageCollection()">
+                        Paste Image Collection
+                </button>
+            </div>
+        </form>
+        <hr></hr>
+        <main>
+            <paged-image-collection-list imagecollections="userImageCollections" remove="removeImageCollection(imageCollectionID)" select="viewImageCollection(imageCollectionID)">
+        	</paged-image-collection-list>
+        </main>
+    </div>
+    <div ng-switch-when="pasteCollection">
+    	<div class="row">
+            <div class="col-md-10">
+                <a class="pull-left" ng-click="resetICFields()">
+                	Back to Image Collection Menu
+                </a>
+            </div>
+        </div>
+	    <form class="padding-top padding-bottom">
+	    	<div id="imageCollectionJsonDiv" class="form-group">
+				<label for="imageCollectionJSON">
+					Image Collection JSON
+				</label>
+				<textarea id="imageCollectionJSON" class="form-control" ng-model="icContainer.json" ng-required="true" type="text" placeholder="Paste or type valid Image Collection JSON here"></textarea>
+	    	</div>
+	        <div id="icButtons" class="form-group">
+	        	<label for="addImageCollectionBtn"></label>
+	            <button id="addImageCollectionBtn" class="btn btn-success" 
+	            ng-click="addImageCollection()">
+	        		Add Image Collection
+	        	</button>
+			</div>
+	    </form>
+	</div>
+    <div ng-switch-when="viewImageCollection">
+        <div class="row">
+            <div class="col-md-5 col-md-offset-1">
+                <a id="goPolicyCatalogLink" href="" class="pull-left" ng-click="goViewImageCollections()">
+                    Back to Image Collection Catalog
+                </a>
+            </div>
+            <div class="col-md-5">
+                <div class="btn-group pull-right">
+                    <button id="imageCollectionOptionsBtn" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <span class="glyphicon glyphicon-menu-hamburger"></span> Options <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <downloadic imagecollection="currentImageCollection"></downloadic>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10 col-md-offset-1">
+            <h3>{{currentImageCollection.id}}</h3>
+            <h4>Description</h4>
+            <div ng-if="currentImageCollection.hasOwnProperty('definition')">
+                <div ng-if="currentImageCollection.definition.hasOwnProperty('type')">
+                    <div class="side-padding">
+                        <h5> Type: </h5>
+                        <div class="side-padding">
+                            {{currentImageCollection.definition.type}} 
+                        </div>
+
+                        <h5> {{currentImageCollection.definition.type}} Images: </h5>
+                        <div ng-if"currentImageCollection.definition.hasOwnProperty('items')" ng-repeat="image in currentImageCollection.definition.items">
+                            <div class="side-padding">
+                                Image ID: <a href="{{image.imageId}}">{{image.imageId}}</a>
+                            </div>
+                            <div class="side-padding">
+                                Type: {{image.type}}
+                            </div>
+                            <hr ng-if="(currentImageCollection.definition.items.length > 0) && ($index != currentImageCollection.definition.items.length-1)"></hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4>Tags</h4>
+            <div class="side-padding">
+                <span ng-repeat="tag in currentImageCollection.tags">
+                    {{tag}}<span ng-if="$index != currentImageCollection.tags.length-1">,</span>
+                </span>
+            </div>
+        </div>
+    </div>
+	<div ng-switch-when="createCollection">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <a href="" class="pull-left" ng-click="resetICFields()">
+                	Back to Image Collection Catalog
+                </a>
+            </div>
+        </div>
+        <header class="row padding-top padding-bottom breadcrumbs">
+            <div class=" col-md-10 col-md-offset-1 ">
+                <div class="col-sm-2 quarter-width text-center add-transform-first" ng-class="{active: currentStep === 0, complete: currentStep > 0}">
+                    <span ng-show="currentStep < 1">1.</span>
+                    <span ng-hide="currentStep < 1" class="glyphicon glyphicon-ok"></span>
+                    <span class="nav-label">Create ID</span>
+                </div>
+                <div class="col-sm-2 quarter-width text-center add-transform" ng-class="{active: currentStep === 1, pending: currentStep < 1, complete: currentStep > 1}">
+                    <span ng-show="currentStep < 2">2.</span>
+                    <span ng-hide="currentStep < 2" class="glyphicon glyphicon-ok"></span>
+                    <span class="nav-label">Type and Tags</span>
+                </div>
+                <div class="col-sm-2 quarter-width text-center add-transform" ng-class="{active: currentStep === 2, pending: currentStep < 2, complete: currentStep > 2}">
+                    <span ng-show="currentStep < 3">3.</span>
+                    <span ng-hide="currentStep < 3" class="glyphicon glyphicon-ok"></span>
+                    <span class="nav-label">Add Images</span>
+                </div>
+                <div class="col-sm-2 quarter-width text-center add-transform" ng-class="{active: currentStep === 3, pending: currentStep < 3, complete: currentStep > 3}">
+                    <span ng-show="currentStep < 4">4.</span>
+                    <span ng-hide="currentStep < 4" class="glyphicon glyphicon-ok"></span>
+                    <span class="nav-label">Review</span>
+                </div>
+            </div>
+        </header>
+        <div ng-switch="currentStep">
+            <!-- ID -->
+            <div ng-switch-when="0">
+                <div class="row inner-content">
+                    <div class="col-sm-4 col-sm-offset-4">
+                        <div class="form-group row">
+                            <label class="text-center">Image Collection ID *</label>
+                            <input id="IcIDInpt" required type="text" class="form-control vertical-margin-1x" placeholder="Make it unique to add or use an existing ID to update" ng-model="IcId"></input>
+                            <label class="info-text" ng-if="IcId && !imageCollectionExists(IcId)">
+                                <span class="glyphicon glyphicon-ok" style="color:green"></span> Image Collection ID is free.
+                            </label>
+                            <label class="info-text" ng-if="IcId && imageCollectionExists(IcId)">
+                                <span class="glyphicon glyphicon-alert" style="color:gold"></span> This Image Collection ID has been used. Overwriting existing Image Collection.
+                            </label>
+                        </div>
+                        <div id="goAddImageCollectionBtn" class="pull-right nav-hover" ng-click="goChooseType(IcId)">
+                            <span class="nav-continue">Next</span>
+                            <span class="glyphicon glyphicon-chevron-right arrow-size"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-switch-when="1">
+                <div class="row">
+                    <div class="col-md-8 padding-bottom">
+                        <div class="row col-md-8 col-md-offset-2">
+                            <label class="text-center">Image Collection Tags</label>
+                            <input id="icTags" class="form-control" style="float: none" placeholder="Comma Separated" ng-model="icTags"></input>
+                        </div>
+                    </div>
+                    <div class="col-md-4 padding-bottom">
+                        <div class="row col-md-6">
+                            <label class="text-center">Image Collection Type</label>
+                            <select id="selectIcType" class="form-control" style="float: none" ng-options="type for type in icTypes" ng-model="icType">
+                                <option value="">None Selected</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 padding-top">
+                        <div class="col-md-10 col-md-offset-1">
+                            <div id="backToIdBtn" class="pull-left nav-hover" ng-click="goBackToId()">
+                                <span class="glyphicon glyphicon-chevron-left arrow-size"></span>
+                                <span class="nav-continue">Back</span>
+                            </div>
+                            <div id="addImagesBtn" class="pull-right nav-hover" ng-click="goAddImagesToIC(icType, icTags)">
+                                <span class="nav-continue">Next</span>
+                                <span class="glyphicon glyphicon-chevron-right arrow-size"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-switch-when="2">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class="row">
+                            <h4 class="pull-left side-padding">Add new images to {{currentImageCollection.id}}</h4>
+                            <div class="pull-right">
+                                <button id="addNewImageBtn" ng-show="addExistingImages" class="btn btn-info" ng-click="addExistingImages = false">Add New Images</button>
+                                <button id="addExistingImageBtn" ng-show="!addExistingImages" class="btn btn-info" ng-click="addExistingImages = true">Add Existing Images</button>
+                            </div>
+                        </div>
+                        <div ng-show="!addExistingImages">
+                            <hr>
+                            <div class="form-group row padding-bottom side-padding">
+                                <label for="imageUrl" class="control-label dull-header">Image URLs</label>
+                                <textarea id="imageUrlInpt" class="form-control" placeholder="New line separated urls" ng-model="currentImageCollection.newImageUrls" rows="10"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="backToProductBtn" class="pull-left nav-hover" ng-click="goBackToType()">
+                                        <span class="glyphicon glyphicon-chevron-left arrow-size"></span>
+                                        <span class="nav-continue">Back</span>
+                                    </div>
+                                    <div id="finishAddImagesBtn" class="pull-right nav-hover" ng-click="goReviewNewIC(currentImageCollection.newImageUrls)">
+                                        <span class="nav-continue">Review</span>
+                                        <span class="glyphicon glyphicon-chevron-right arrow-size"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-show="addExistingImages">
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <input id="searchImagesInpt" type="text" ng-disabled="findBy === 'all'" class="form-control" id="tag" placeholder="Search by..." ng-model="searchTag">
+                                </div>
+                                <div class="col-sm-9">
+                                    <search-group term="findBy" filter="searchTag"></search-group>
+                                    <button id="searchImagesBtn" class="btn btn-info" ng-click="getFilteredImages(findBy, searchTag)">Search</button>
+                                </div>
+                            </div>
+                            <div class="row side-padding">
+                                <hr>
+                            </div>
+                            <ul class="list-group">
+                                <p ng-show="filteredImages === null || filteredImages.length == 0">
+                                    <em>No Images</em>
+                                </p>
+
+                                <li class="list-group-item dropdown" ng-class="{'selected-list-item': image.selected}" ng-repeat="image in filteredImages | orderBy: 'id'">
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <img ng-src="{{image.url}}" class="list-icon img-responsive">
+                                        </div>
+                                        <div class="col-md-5">
+                                            Image Id: {{image.id}}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input id="selectImage{{index}}Inpt" type="checkbox" ng-model="image.selected" class="pull-right">
+                                        </div>
+                                    </div>
+                                </li>
+
+                            </ul>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button id="backToIdBtn" type="button" class="btn btn-warning pull-left" ng-click="goBackToId()">
+                                        Back
+                                    </button>
+                                    <button id="addExistingImagesBtn" type="button" class="btn btn-primary pull-right" ng-click="goReviewIC(filteredImages)">
+                                        Review
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Review -->
+            <div ng-switch-when="3">
+                <div class="col-md-10 col-md-offset-1">
+                    <h3>{{currentImageCollection.icId}}</h3>
+                    <h4>Description</h4>
+                    <div ng-if="currentImageCollection.hasOwnProperty('definition')">
+                        <div ng-if="currentImageCollection.definition.hasOwnProperty('type')">
+                            <div class="side-padding">
+                                <h5> Type: </h5>
+                                <div class="side-padding">
+                                    {{currentImageCollection.definition.type}} 
+                                </div>
+
+                                <h5> {{currentImageCollection.definition.type}} Images: </h5>
+                                <div ng-if"currentImageCollection.definition.hasOwnProperty('items')" ng-repeat="image in currentImageCollection.definition.items">
+                                    <div class="side-padding">
+                                        Image ID: <a href="{{image.imageId}}">{{image.imageId}}</a>
+                                    </div>
+                                    <div class="side-padding">
+                                        Type: {{image.type}}
+                                    </div>
+                                    <hr ng-if="(currentImageCollection.definition.items.length > 0) && ($index != currentImageCollection.definition.items.length-1)"></hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>Tags</h4>
+                    <div class="side-padding">
+                        <span ng-repeat="tag in currentImageCollection.icTags">
+                            {{tag}}<span ng-if="$index != currentImageCollection.icTags.length-1">,</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-4 col-md-offset-5">
+                    <button id="completeIcBtn" type="button" class="btn btn-primary pull-left" ng-click="goCompleteIC()">
+                        Create Image Collection
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="backToAddImagesBtn" class="pull-left nav-hover" ng-click="goBackToAddImages()">
+                            <span class="glyphicon glyphicon-chevron-left arrow-size"></span>
+                            <span class="nav-continue">Back</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Complete -->
+            <div ng-switch-when="4">
+                <div class="col-md-4 col-md-offset-4">
+                    <h3 class="text-center">
+                        Your image collection was Created!
+                    </h3>
+                    <button id="addAnotherICBtn" class="btn btn-success center-block" ng-click="goStartPlan()">Click to add Another</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-include="'partials/modals/upload-image-collection.html'"></div>
+	    	

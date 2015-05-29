@@ -27,6 +27,7 @@
 
     app.factory('ResourceFactory', function() {
         return {
+// IMAGES
             createImageResource: function(url, id, tags, products) {
                 var imageResource = {
                     url: url,
@@ -36,33 +37,42 @@
                 };
                 return imageResource;
             },
-            createImageCollectionResource: function(imageResources) {
-                var imageCollectionResource = {
+            createImageSetResource: function(imageResources) {
+                var imageSetResource = {
                     items: imageResources,
                     totalItems: imageResources.length,
                     itemKind: "IMAGE"
                 };
 
+                return imageSetResource;
+            },
+// IMAGE COLLECTIONS
+            createImageCollectionResource: function(id, tags, definition, imageIds){
+                var imageCollectionResource = {
+                    id: id,
+                    tags: tags,
+                    definition: definition,
+                    imageIds: imageIds
+                };
                 return imageCollectionResource;
             },
-            createProductResource: function(id, name, imageIds, tags) {
-                var productResource = {
-                    id: id,
-                    name: name,
-                    imageIds: imageIds,
-                    tags: tags,
-                };
-                return productResource;
-            },
-            createProductCollectionResource: function(productResources) {
-                var productCollectionResource = {
-                    items: productResources,
-                    totalItems: productResources.length,
-                    itemKind: "PRODUCT"
-                };
+            createIcDefinitionResource: function(type, items){
+                var itemsArray = [];
+                $.each(items.items, function(index, item) {
+                    var image = {
+                        type: "AkaImage",
+                        imageId: item.id
+                    };
+                    itemsArray.push(image);
+                });
 
-                return productCollectionResource;
+                var icDefinition = {
+                    type: type,
+                    items: itemsArray,
+                };
+                return icDefinition;
             },
+// JOBS
             createProductJobResource: function(viewerName, productIds, policyIds) {
                 var jobProductResource = {
                     viewerName: viewerName,
@@ -71,13 +81,14 @@
                 };
                 return jobProductResource;
             },
-            createImageJobResource: function(imageIds, policyIds) {
+            createImageJobResource: function(imageIds, policyId) {
                 var jobImageResource = {
                     imageIds: imageIds,
-                    policyIds: policyIds
+                    policyId: policyId
                 };
                 return jobImageResource;
             },
+// POLICIES
             createPolicyResource: function(id, transformations, resolutions, outputs) {
                 var policyResource = {
                     id: id
@@ -98,13 +109,12 @@
                 return policyResource;
             },
             createPolicyCollectionResource: function(policyResources) {
-                var policyCollectionResource = {
+                var policySetResource = {
                     totalItems: policyResources.length,
                     itemKind: "POLICY",
                     items: policyResources
                 };
-                return policyCollectionResource;
-
+                return policySetResource;
             },
             createPolicyResolutionResource: function(interpolation, widths) {
                 var policyResolutionResource = {};
@@ -121,23 +131,19 @@
                 }
 
                 return policyResolutionResource;
-
             },
-            createOutputResource: function(defaults, presets, definitions) {
-                var policyOutputResource = {
-                    defaults: defaults, // 
-                    presets: presets, // either/both Browsers and Formats
-                    definitions: definitions
-                };
-                return policyOutputResource;
-            },
-            createPolicyOutputsDefaultsResource: function(quality, minSubSampling, desiredSubSampling) {
+            createPolicyOutputsDefaultsResource: function(quality, perceptualQuality) {
                 var policyOutputsDefaultsResource = {
                     quality: quality,
-                    minSubSampling: minSubSampling,
-                    desiredSubSampling: desiredSubSampling
+                    perceptualQuality: perceptualQuality
                 };
                 return policyOutputsDefaultsResource;
+            },
+            createOutputResource: function(defaults) {
+                var policyOutputResource = {
+                    defaults: defaults
+                };
+                return policyOutputResource;
             },
             createPolicyLogResource: function(id, policy, user) {
                 var policyLogResource = {
@@ -147,7 +153,6 @@
                 };
 
                 return policyLogResource;
-
             },
             validateAndCreateTransformResource: function(transformSteps) {
                 if (transformSteps === undefined) transformSteps = [];
@@ -160,64 +165,68 @@
                     var transform = {
                         transformation: transformStep.name
                     };
-
-                    $.each(transformStep.inputs, function(index, input) {
-                        if (input.type === "int" || input.type === "intResize" || input.type === "booleanResize" || input.type === "booleanComposite" || input.type === "options") {
-                            if (input.value) {
-                                transform[input.name] = input.value;
-                            } else if (input.required) {
-                                if (transformStep.name === 'Resize' && transformStep.inputs[Math.abs(index - 1)].value) {
+                    
+                    if (transformStep.inputs) {
+                        $.each(transformStep.inputs, function(index, input) {
+                            if (input.type === "int" || input.type === "intResize" || input.type === "booleanResize" || input.type === "booleanComposite" || input.type === "options") {
+                                if (null !== input.value || typeof input.value !== "undefined" || !isNaN(input.value)) {
                                     transform[input.name] = input.value;
-                                } else {
+                                } else if (input.required) {
+                                    if (transformStep.name === 'Resize' && transformStep.inputs[Math.abs(index - 1)].value) {
+                                        transform[input.name] = input.value;
+                                    } else {
+                                        invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
+                                    }
+                                }
+                            }
+                            if (input.type === "float") {
+                                // The check is performed to interpret 0 as true
+                                if (null !== input.value && typeof input.value !== "undefined" && !isNaN(input.value)) {
+                                    if (input.minInclusive) {
+                                        if (input.value <= input.max && input.value >= input.min) {
+                                            transform[input.name] = input.value;
+                                        } else {
+                                            invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
+                                        }
+                                    } else {
+                                        if (input.value <= input.max && input.value > input.min) {
+                                            transform[input.name] = input.value;
+                                        } else {
+                                            invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
+                                        }
+                                    }
+                                } else if (input.required) {
                                     invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
                                 }
                             }
-                        }
-                        if (input.type === "float") {
-                            // The check is perform to interpret 0 as true
-                            if (null !== input.value && typeof input.value !== "undefined" && !isNaN(input.value)) {
-                                if (input.minInclusive) {
-                                    if (input.value <= input.max && input.value >= input.min) {
-                                        transform[input.name] = input.value;
-                                    } else {
-                                        invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
-                                    }
+                            if (input.type === "image") {
+                                if (input.imageUrl) {
+                                    transform[input.name] = {
+                                        url: input.imageUrl
+                                    };
                                 } else {
-                                    if (input.value <= input.max && input.value > input.min) {
-                                        transform[input.name] = input.value;
-                                    } else {
-                                        invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
-                                    }
+                                    invalidInputMessages.push("The image URL in " + transform.transformation + " is invalid. ");
                                 }
-                            } else if (input.required) {
-                                invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
                             }
-                        }
-                        if (input.type === "image") {
-                            if (input.imageUrl) {
-                                transform[input.name] = {
-                                    url: input.imageUrl
-                                };
-                            } else {
-                                invalidInputMessages.push("The image URL in " + transform.transformation + " is invalid. ");
+                            if (input.type === "transform") {
+                                if (input.value && input.value.length > 0) {
+                                    transform.transformation = "Compound";
+                                    transform.transformations = input.value;
+                                } else {
+                                    transform = null;
+                                }
                             }
-                        }
-                        if (input.type === "transform") {
-                            if (input.value && input.value.length > 0) {
-                                transform.transformation = "Compound";
-                                transform.transformations = input.value;
-                            } else {
-                                transform = null;
-                            }
-                        }
-                    });
+                        });
+                    // If it is not the special case of the no-input command Grayscale then it is invalid
+                    } else if (transformStep.name !== "Grayscale")
+                        invalidInputMessages.push("The transformation " + transformStep.name + " does not have any inputs!");
 
                     if (invalidInputMessages.length === 0 && transform !== null) {
-                        // No error, so the image needed to be added to the compsite transofmr arguments as well
+                        // No error, so the image needed to be added to the compsite transformer arguments as well
                         policyTransforms.push(transform);
                     }
                 });
-
+                
                 if (invalidInputMessages.length === 0) {
                     return policyTransforms;
                 } else {

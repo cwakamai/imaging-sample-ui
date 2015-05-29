@@ -33,10 +33,11 @@
         'ImageManagementSample.directives',
         'ImageManagementSample.controllers.auth',
         'ImageManagementSample.controllers.nav',
-        'ImageManagementSample.controllers.job',
+        'ImageManagementSample.controllers.rfwsetup',
+        'ImageManagementSample.controllers.rfwpolicies',
         'ImageManagementSample.controllers.policy',
         'ImageManagementSample.controllers.image',
-        'ImageManagementSample.controllers.product'
+        'ImageManagementSample.controllers.imagecollection'
     ]).
     config(['$routeProvider', '$compileProvider',
         function(routeProvider, compileProvider) {
@@ -48,21 +49,31 @@
                 templateUrl: 'partials/images.html',
                 controller: 'ImageCtrl'
             });
+
+            routeProvider.when('/imagecollections', {
+                templateUrl: 'partials/imagecollections.html',
+                controller: 'ImageCollectionCtrl'
+            });
+
             routeProvider.when('/policy', {
                 templateUrl: 'partials/policies.html',
                 controller: 'PolicyCtrl'
             });
-            routeProvider.when('/jobs', {
-                templateUrl: 'partials/jobs.html',
-                controller: 'JobsCtrl'
-            });
-            routeProvider.when('/products', {
-                templateUrl: 'partials/products.html',
-                controller: 'ProductCtrl'
-            });
+
+            routeProvider.when('/rfwsetup', {
+                templateUrl: 'partials/rfwsetup.html',
+                controller: 'RFWSetupCtrl'
+            }); 
+
+            routeProvider.when('/rfwpolicies', {
+                templateUrl: 'partials/rfwpolicies.html',
+                controller: 'RFWPoliciesCtrl'
+            });            
+
             routeProvider.when('/login', {
                 templateUrl: 'partials/login.html'
             });
+
             routeProvider.otherwise({
                 redirectTo: '/login'
             });

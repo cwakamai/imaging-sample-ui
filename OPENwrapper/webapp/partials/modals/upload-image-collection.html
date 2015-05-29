@@ -1,0 +1,20 @@
+<div class="modal fade" id="upload-image-collection">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Upload Image Collection</h3>
+            </div>
+            <div class="modal-body" style="max-height: 550px; overflow: scroll">
+                <input id="fileUploader" type="file" upload="imageCollectionFile" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button id="uploadImageCollectionBtn" type="button" class="btn btn-success" ng-click="uploadImageCollection(imageCollectionFile)">
+                    Finish
+                </button>
+                <button id="closeUploadImageCollectionBtn" type="button" ng-click="resetFileUpload()" class="btn btn-default" data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

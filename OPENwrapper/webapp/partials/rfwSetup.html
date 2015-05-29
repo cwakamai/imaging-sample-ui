@@ -1,0 +1,94 @@
+<form class="form-horizontal row" role="form" ng-submit="verify(rfwInfo)">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="side-padding">
+                <label class="control-label dull-header">
+                	User Name
+                </label>
+            </div>
+            <div class="col-md-12 padding-bottom">
+                <input ng-hide="isRFWEnabled && !editing" id="userNameInput" class="form-control" type="text" placeholder="Example Name" ng-model="rfwInfo.user">
+            	</input>
+                <span ng-show="isRFWEnabled && !editing">
+                    <mark>{{rfwInfo.user}}</mark>
+                </span>
+            </div>
+            <div class="side-padding">
+                <label class="control-label dull-header" style="padding-left: 0px; text-aline: left">
+                	NetStorage HTTP API Domain
+                </label>
+            </div>
+            <div class="col-md-12 padding-bottom">
+                <input ng-hide="isRFWEnabled && !editing" id="nsAPIInput" class="form-control" type="text" placeholder="http://example.nsu.akamaihd.net" ng-model="rfwInfo.httpApiDomain">
+            	</input>
+                <span ng-show="isRFWEnabled && !editing">
+                    <mark>{{rfwInfo.httpApiDomain}}</mark>
+                </span>
+            </div>
+            <div class="side-padding">
+                <label class="control-label dull-header" style="padding-left: 0px; text-aline: left">
+                	NetStorage Download Domain
+                </label>
+            </div>
+            <div class="col-md-12 padding-bottom">
+                <input ng-hide="isRFWEnabled && !editing" id="nsDownloadDomain" class="form-control" type="text" placeholder="http://example.download.akamai.com" ng-model="rfwInfo.downloadDomain">
+            	</input>
+                <span ng-show="isRFWEnabled && !editing">
+                    <mark>{{rfwInfo.downloadDomain}}</mark>
+                </span>
+            </div>
+            <div class="side-padding">
+                <label class="control-label dull-header" style="padding-left: 0px; text-aline: left">
+            		G2o Key
+                </label>
+            </div>
+            <div class="col-md-12 padding-bottom">
+                <input ng-hide="isRFWEnabled && !editing" id="g2oKey" class="form-control" type="text" placeholder="XXXXXXXXXXX" ng-model="rfwInfo.g2o">
+            	</input>
+                <span ng-show="isRFWEnabled && !editing">
+                    <mark>##########################</mark>
+                </span>
+            </div>
+            <div class="side-padding">
+                <label class="control-label dull-header" style="padding-left: 0px; text-aline: left">
+            		NetStorage CP Code
+                </label>
+            </div>
+            <div class="col-md-12 padding-bottom">
+                <input ng-hide="isRFWEnabled && !editing" id="cpCode" class="form-control" type="number" placeholder="123456" ng-model="rfwInfo.rootDirectory">
+            	</input>
+                <span ng-show="isRFWEnabled && !editing">
+                    <mark>{{rfwInfo.rootDirectory}}</mark>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="form-group col-sm-10 col-md-10" ng-hide="isRFWEnabled">
+        <div class="col-md-3 col-md-offset-6">
+        	<button id="verify" type="submit" ng-style="verifyStyle={'width': '100%'}" class="btn btn-info" ng-click="verify(rfwInfo)">
+        		Verify
+     		</button>
+        </div>
+    </div>
+    <div class="form-group col-sm-10 col-md-10" ng-show="isRFWEnabled && !editing">
+        <div class="col-md-3 col-md-offset-4">
+            <button id="edit" type="button" ng-style="verifyStyle={'width': '100%'}" class="btn btn-info" ng-click="editing = true">
+                Edit
+            </button>
+        </div>
+        <div class="col-md-3">
+            <button id="delete" type="button" ng-style="verifyStyle={'width': '100%'}" class="btn btn-danger" ng-click="deleteRFW()">
+                Delete
+            </button>
+        </div>
+    </div>
+    <div class="form-group col-sm-10 col-md-10" ng-show="editing">
+        <div class="col-md-3 col-md-offset-6">
+            <button id="update" type="submit" ng-style="verifyStyle={'width': '100%'}" class="btn btn-info" ng-click="verify(rfwInfo)">
+                Update
+            </button>
+        </div>
+    </div>
+</form>

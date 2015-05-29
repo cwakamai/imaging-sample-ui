@@ -29,19 +29,16 @@
 
             scope.resetAddImageFields = function() {
                 scope.addImageFields = {
-                    newImageId: null,
                     newImageUrl: null,
                     newBulkUrls: null,
                     newTag: null
                 };
             };
 
-            scope.resetAddImageFields();
-
             scope.addImage = function(addImageFields) {
                 var tags = null;
                 var imageUrl = addImageFields.newImageUrl;
-                var imageId = addImageFields.newImageId === '' ? undefined : addImageFields.newImageId;
+                var imageId = undefined;
                 var bulkImageUrls = [];
                 var imageResources = [];
                 var imageCollectionResource = {};
@@ -62,7 +59,7 @@
                     });
                 }
 
-                imageCollectionResource = ResourceFactory.createImageCollectionResource(imageResources);
+                imageCollectionResource = ResourceFactory.createImageSetResource(imageResources);
 
                 ApiConnector.addImage(imageCollectionResource).then(function(result) {
                     if (result) {
@@ -140,29 +137,6 @@
                 }
             };
 
-            scope.addImagesToProduct = function(product) {
-                var imageIds = [];
-                var i = 0;
-                var j = scope.images.length;
-
-                if (scope.isProductEnabled) {
-                    for (i = 0; i < j; i++) {
-                        if (scope.images[i].selected) {
-                            imageIds.push(scope.images[i].id);
-                        }
-                    }
-
-                    var productResource = ResourceFactory.createProductResource(product.id, product.name, imageIds);
-                    ApiConnector.addImageIdsToProduct(product.id, productResource);
-
-                    for (i = 0; i < j; i++) {
-                        if (scope.images[i].selected) {
-                            scope.images[i].selected = false;
-                        }
-                    }
-                }
-            };
-
             scope.goAddImages = function() {
                 scope.imageView = 'add';
             };
@@ -173,30 +147,34 @@
             };
 
             function init() {
+
+                if (!scope.rfwChecked){
+                    scope.updateRFWstatus();
+                }
+
+                scope.resetAddImageFields();
                 scope.addImagesWithIds = true;
                 scope.images = [];
                 scope.imageView = 'catalog';
                 scope.findBy = 'all';
                 scope.filterContent = null;
                 scope.selectedImage = null;
-                scope.isProductEnabled = SystemConstants.getIsProductEnabled();
+                
+                ApiConnector.RFWstatus().then(function(bool){
+                    scope.rfwPoliciesExist = bool;
+                });
 
-                if (scope.isProductEnabled) {
-                    scope.products = [];
-                    ApiConnector.getAllProducts().then(function(productIds) {
-                        if (productIds !== null) {
-                            $.each(productIds.items, function(index, product) {
-                                ApiConnector.getProduct(product.id).then(function(productResource) {
-                                    scope.products.push(productResource);
-                                });
-                            });
-                        }
-                    });
-                }
+                ApiConnector.getRFWPolicies().then(function(rfwPolicies) {
+                    if (rfwPolicies) {
+                        scope.rfwPolicies = rfwPolicies.items;
+                    } else {
+                        scope.rfwPolicies = null;
+                    }
+                });
             }
 
             init();
+
         }
     ]);
-
 })();

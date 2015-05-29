@@ -47,7 +47,6 @@ app.directive("selectablePagedImageList", ["ApiConnector", "$q", function(ApiCon
                         scope.pageNumbers.push(i + 1);
                     }
                     loadImages(images.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
-
                 }
             };
 
@@ -222,7 +221,6 @@ app.directive("pagedJobList", ['ApiConnector', '$filter', function(ApiConnector,
                 if (!isNaN(scope.limit()) && filteredJobs) {
                     filter('recent')(filteredJobs);
                     scope.pageNumbers = generatePageNumbers(filteredJobs.length, scope.limit());
-
                     scope.visibleJobs = filteredJobs.slice((scope.currentPage - 1) * scope.limit(), (scope.currentPage * scope.limit()));
                 }
             }
@@ -296,7 +294,6 @@ app.directive("pagedJobList", ['ApiConnector', '$filter', function(ApiConnector,
 
         },
         templateUrl: "partials/directive-templates/paged-job-list.html"
-
     };
 }]);
 
@@ -309,12 +306,14 @@ app.directive("pagedPolicyList", ['ApiConnector', '$filter', function(ApiConnect
             remove: "&",
             select: "&"
         },
-        link: function(scope, element) {
+        link: function(scope, element, attributes) {
             var pageByLimit = scope.limit();
+
             var resetList = function(policies) {
                 scope.visiblePolicies = [];
                 scope.pageNumbers = [];
                 scope.currentPage = 1;
+                
                 if (!isNaN(pageByLimit) && policies) {
                     var numOfPages = policies.length / pageByLimit;
 
@@ -322,7 +321,6 @@ app.directive("pagedPolicyList", ['ApiConnector', '$filter', function(ApiConnect
                         scope.pageNumbers.push(i + 1);
                     }
                     loadPolicies(policies.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
-
                 }
             };
 
@@ -370,9 +368,160 @@ app.directive("pagedPolicyList", ['ApiConnector', '$filter', function(ApiConnect
                     'policyId': policyId
                 });
             };
-
         },
         templateUrl: "partials/directive-templates/paged-policy-list.html"
+    };
+}]);
+
+app.directive("pagedRfwPolicyList", ['ApiConnector', '$filter', function(ApiConnector, filter) {
+    return {
+        restrict: 'E',
+        scope: {
+            rfwpolicies: "=",
+            limit: "&",
+            remove: "&",
+            select: "&"
+        },
+        link: function(scope, element, attributes) {
+            var pageByLimit = scope.limit();
+
+            var resetList = function(rfwPolicies) {
+                scope.visibleRFWPolicies = [];
+                scope.pageNumbers = [];
+                scope.currentPage = 1;
+                
+                if (!isNaN(pageByLimit) && rfwPolicies) {
+                    var numOfPages = rfwPolicies.length / pageByLimit;
+
+                    for (var i = 0; i < numOfPages; i++) {
+                        scope.pageNumbers.push(i + 1);
+                    }
+                    loadRFWPolicies(rfwPolicies.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+            };
+
+            var loadRFWPolicies = function(rfwPolicies) {
+                if (rfwPolicies) {
+                    scope.visibleRFWPolicies = rfwPolicies;
+                }
+            };
+
+            resetList(scope.rfwpolicies);
+
+            scope.$watchCollection('rfwpolicies', function(newVal, oldVal) {
+                resetList(newVal);
+            });
+
+            scope.nextPage = function() {
+                if (scope.currentPage < scope.pageNumbers.length) {
+                    scope.currentPage = scope.currentPage + 1;
+                    loadRFWPolicies(scope.rfwpolicies.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+            };
+
+            scope.prevPage = function() {
+                if (scope.currentPage > 1) {
+                    scope.currentPage = scope.currentPage - 1;
+                    loadRFWPolicies(scope.rfwpolicies.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+            };
+
+            scope.goToRFWPolicyPage = function(index) {
+                if (0 < index < scope.pageNumbers.length) {
+                    scope.currentPage = index;
+                    loadRFWPolicies(scope.rfwpolicies.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+            };
+
+            scope.removeRFWPolicy = function(rfwPolicyID) {
+                scope.remove({
+                    'rfwPolicyID': rfwPolicyID
+                });
+            };
+
+            scope.viewRFWPolicy = function(rfwPolicyID) {
+                scope.select({
+                    'rfwPolicyID': rfwPolicyID
+                });
+            };
+        },
+        templateUrl: "partials/directive-templates/paged-rfwpolicy-list.html"
+    };
+}]);
+
+app.directive("pagedImageCollectionList", ['ApiConnector', function(ApiConnector) {
+    return {
+        restrict: 'E',
+        scope: {
+            imagecollections: "=",
+            remove: "&",
+            select: "&"
+        },
+        link: function(scope, element, attributes) {
+            var pageByLimit = 20;
+
+            var resetList = function(imagecollections) {
+                scope.visibleImageCollections = [];
+                scope.pageNumbers = [];
+                scope.currentPage = 1;
+
+                if (imagecollections) {
+                    var numOfPages = imagecollections.length / pageByLimit;
+
+                    for (var i = 0; i < numOfPages; i++) {
+                        scope.pageNumbers.push(i + 1);
+                    }
+                    loadImageCollections(imagecollections);
+                } else {
+                }
+            };
+
+            var loadImageCollections = function(imagecollections) {
+                if (imagecollections) {
+                    scope.visibleImageCollections = imagecollections;
+                }
+            };
+
+            resetList(scope.imagecollections);
+
+            scope.$watchCollection('imagecollections', function(newVal, oldVal) {
+                resetList(newVal);
+            });
+
+            scope.nextPage = function() {
+                if (scope.currentPage < scope.pageNumbers.length) {
+                    scope.currentPage = scope.currentPage + 1;
+                    loadImageCollections(scope.imagecollections.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+            };
+
+            scope.prevPage = function() {
+                if (scope.currentPage > 1) {
+                    scope.currentPage = scope.currentPage - 1;
+                    loadImageCollections(scope.imagecollections.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+            };
+
+            scope.goToImageCollectionPage = function(index) {
+                if (0 < index < scope.pageNumbers.length) {
+                    scope.currentPage = index;
+                    loadImageCollections(scope.imagecollections.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+            };
+
+            scope.removeImageCollection = function(imageCollectionID) {
+                scope.remove({
+                    'imageCollectionID': imageCollectionID
+                });
+            };
+
+            scope.viewImageCollection = function(imageCollectionID) {
+                scope.select({
+                    'imageCollectionID': imageCollectionID
+                });
+            };
+        },
+        templateUrl: "partials/directive-templates/paged-image-collection-list.html"
     };
 }]);
 
@@ -399,7 +548,6 @@ app.directive("pagedImageList", ['ApiConnector', '$filter', function(ApiConnecto
                         scope.pageNumbers.push(i + 1);
                     }
                     loadImages(images.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit)));
-
                 }
             };
 
@@ -449,10 +597,8 @@ app.directive("pagedImageList", ['ApiConnector', '$filter', function(ApiConnecto
             };
         },
         templateUrl: "partials/directive-templates/paged-image-list.html"
-
     };
 }]);
-
 
 app.directive('transformStep', function() {
     return {
@@ -523,7 +669,7 @@ app.directive('searchGroup', function() {
                 }
             };
         },
-        template: "<div class=\"btn-group\">" +
+        template: "<div class=\"btn-group\" ng-init=\"findBy=\'all\'\">" +
             "<button id=\"findAll\" type=\"button\" class=\"btn btn-default\" ng-click=\"changeSearchTerm('all')\" ng-class=\"{active: findBy == 'all'}\">All</button>" +
             "<button id=\"findByTag\" type=\"button\" class=\"btn btn-default\" ng-click=\"changeSearchTerm('tag')\" ng-class=\"{active: findBy == 'tag'}\">Tag</button>" +
             "<button id=\"findById\" type=\"button\" class=\"btn btn-default\" ng-click=\"changeSearchTerm('id')\" ng-class=\"{active: findBy == 'id'}\">ID</button>" +
@@ -531,7 +677,6 @@ app.directive('searchGroup', function() {
             "</div>"
     };
 });
-
 
 app.directive('bulkStatus', function() {
     return {
@@ -595,6 +740,28 @@ app.directive('download', function($compile) {
 
             elm.replaceWith($compile(
                 '<a id=\"download_' + scope.policy.id + '\" download="' + scope.policyJsonDataName + '" href="' + scope.policyJsonData + '">' +
+                'Download' +
+                '</a>'
+            )(scope));
+        }
+    };
+});
+
+app.directive('downloadic', function($compile) {
+    return {
+        restrict: 'E',
+        scope: {
+            imagecollection: '=imagecollection'
+        },
+        link: function(scope, element, attrs) {
+            var fileBlob = new Blob([angular.toJson(scope.imagecollection)], {
+                type: "application/json"
+            });
+            scope.imageCollectionJsonData = URL.createObjectURL(fileBlob);
+            scope.imageCollectionJsonDataName = scope.imagecollection.id + "-imagecollection";
+
+            element.replaceWith($compile(
+                '<a id=\"download_' + scope.imagecollection.id + '\" download="' + scope.imageCollectionJsonDataName + '" href="' + scope.imageCollectionJsonData + '">' +
                 'Download' +
                 '</a>'
             )(scope));

@@ -30,7 +30,7 @@
         function() {
             var imSampleVersion = 0.1;
 
-            var apiHost = "http://localhost:8421/";
+            var apiHost = "https://198.18.154.4/";
 
             return {
                 getApiHost: function() {

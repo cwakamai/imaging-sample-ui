@@ -6,18 +6,18 @@
             </div>
             <div class="col-sm-8">
                 <button id="addPolicyBtn" style="margin-left:10px" class="btn btn-success pull-right" ng-click="goCreatePolicy()">Add Policy</button>
-                <button id="uplaodPolicyBtn" style="margin-left:10px" class="btn btn-primary pull-right" ng-click="goUploadPolicy()">Upload Policy</button>
+<!--                 <button id="uplaodPolicyBtn" style="margin-left:10px" class="btn btn-primary pull-right" ng-click="goUploadPolicy()">Upload Ready for Web Policy</button> -->
             </div>
         </form>
         <main>
-            <paged-policy-list policies="userPolicies" limit="20" remove="removePolicy(policyId)" select="goPolicy(policyId)">
-            </paged-policy-list>
+            <paged-rfw-policy-list rfwpolicies="userRFWPolicies" limit="20" remove="removeRFWPolicy(rfwPolicyId)" select="goRFWPolicy(rfwPolicyId)">
+            </paged-rfw-policy-list>
         </main>
     </div>
     <div ng-switch-when="policy">
         <div class="row">
             <div class="col-md-5 col-md-offset-1">
-                <a id="goPolicyCatalogLink" href="" class="pull-left" ng-click="goPolicyCatalog()">Back to No Touch Policy Catalog</a>
+                <a id="goPolicyCatalogLink" href="" class="pull-left" ng-click="goPolicyCatalog()">Back to RFW Policy Catalog</a>
             </div>
             <div class="col-md-5">
                 <div class="btn-group pull-right">
@@ -28,10 +28,10 @@
                         <li>
                             <download policy="currentPolicy" />
                         </li>
-                        <li>
+                         <li>
                             <a href="" id="policyPreviewBtn" type="button" style="margin-right: 5px;" ng-click="openPreview()">     Preview
                             </a>
-                        </li>
+                        </li> 
                         <li><a href="" id="duplicatePolicyBtn" type="button" style="margin-right: 5px;" ng-click="goCreatePolicyFromBase(currentPolicy)">Duplicate</a>
                         </li>
                         <li><a href="" id="editPolicyBtn" type="button" style="margin-right: 5px;" ng-click="goEditPolicy(currentPolicy)">Edit</a>
@@ -77,11 +77,11 @@
                 </span>
             </h5>
         </div>
-    </div>
+    </div> 
     <div ng-switch-when="createPolicy">
         <div class="row">
             <div class="col-md-10 col-md-offset-1">
-                <a href="" class="pull-left" ng-click="goPolicyCatalog()">Back to Policy Catalog</a>
+                <a href="" class="pull-left" ng-click="goPolicyCatalog()">Back to RFW Policy Catalog</a>
             </div>
         </div>
         <header class="row padding-top padding-bottom breadcrumbs">
@@ -112,20 +112,18 @@
             <div ng-switch="currentStep">
                 <div ng-switch-when="0">
                     <div class="row inner-content">
-                        <div id="goAddTransformsBtn" class="col-md-2 pull-right nav-hover" ng-click="goAddTransforms(policyId, previewUrl)">
+                        <div id="goAddTransformsBtn" class="col-md-2 pull-right nav-hover" ng-click="goAddTransforms(rfwPolicyId, previewUrl)">
                             <span class="nav-continue">Next</span>
                             <span class="glyphicon glyphicon-chevron-right arrow-size"></span>
                         </div>
                         <div class="col-sm-4 col-sm-offset-4">
                             <div class="form-group row">
-                                <label class="text-center">Policy ID *</label>
-                                <input id="policyIDInpt" required type="text" class="form-control vertical-margin-1x" placeholder="Make it unique to add or use an existing to update" ng-model="policyId">
-                                <label class="info-text" ng-if="policyId && !policyDoesExist(policyId)">
-                                    <span class="glyphicon glyphicon-ok" style="color:green"></span> Policy ID has not been used.
+                                <label class="text-center">RFW Policy ID</label>
+                                <label class="info-text" ng-if="rfwPolicyId">
+                                        <span class="glyphicon vertical-margin-1x glyphicon-ok" style="color:green"></span>
                                 </label>
-                                <label class="info-text" ng-if="policyId && policyDoesExist(policyId)">
-                                    <span class="glyphicon glyphicon-alert" style="color:gold"></span> Policy ID has was used. Overwriting existing policy.
-                                </label>
+                                <input id="policyIDInpt" required type="text" class="form-control vertical-margin-1x" placeholder="Make it unique to add or use an existing id to update" ng-model="rfwPolicyId">
+                                </input>
                             </div>
                             <div class="form-group row">
                                 <label class="text-center">Preview Image URL</label>
@@ -143,7 +141,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <h3 class="text-center">Add Transforms to No Touch Policy</h3>
+                            <h3 class="text-center">Add Transforms to RFW Policy</h3>
                         </div>
                         <div class="col-md-2">
                             <div id="goSetResolutionsBtn" class="pull-right nav-hover" ng-click="goSetResolutions(transformSteps)">
@@ -160,7 +158,7 @@
                             </select>
                         </div>
                         <div ng-class="previewUrl ? 'col-md-3' : 'col-md-5'">
-                            <label class="dull-header">Policies</label>
+                            <label class="dull-header">Ready for Web Policies</label>
                             <select id="selectUserPolicies" class="form-control" style="float: none" ng-options="userPolicy.id for userPolicy in includablePolicies" ng-model="policyToAdd" ng-change="addUserTransformToPolicy(policyToAdd); policyToAdd = null;">
                                 <option value="">None Selected</option>
                             </select>
@@ -226,7 +224,7 @@
                 <div ng-switch-when="2">
                     <div class="row inner-content">
                         <div class="col-md-2 col-md-offset-1">
-                            <div id="goBackAddTransforms" class="pull-left nav-hover" ng-click="goAddTransforms(policyId, previewUrl)">
+                            <div id="goBackAddTransforms" class="pull-left nav-hover" ng-click="goAddTransforms(rfwPolicyId, previewUrl)">
                                 <span class="glyphicon glyphicon-chevron-left arrow-size"></span>
                                 <span class="nav-continue">Back</span>
                             </div>
@@ -236,13 +234,13 @@
                             </h3>
                         </div>
                         <div ng-if="policyOutput.qSelector == 'quality'" class="col-md-2">
-                            <div id="goReviewPolicy" class="pull-right nav-hover" ng-click="goReviewPolicy(policyResolutions, policyOutput, policyOutput.qSelector)">
+                            <div id="goReviewRFWPolicy" class="pull-right nav-hover" ng-click="goReviewRFWPolicy(policyResolutions, policyOutput, policyOutput.qSelector)">
                                 <span class="nav-continue">Next</span>
                                 <span class="glyphicon glyphicon-chevron-right arrow-size"></span>
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <div ng-if="policyOutput.qSelector == 'pQuality'" id="goReviewPolicy" class="pull-right nav-hover" ng-click="goReviewPolicy(policyResolutions, policyOutput.pQuality, policyOutput.qSelector)">
+                            <div ng-if="policyOutput.qSelector == 'pQuality'" id="goReviewRFWPolicyPQ" class="pull-right nav-hover" ng-click="goReviewRFWPolicy(policyResolutions, policyOutput.pQuality, policyOutput.qSelector)">
                                 <span class="nav-continue">Next</span>
                                 <span class="glyphicon glyphicon-chevron-right arrow-size"></span>
                             </div>
@@ -253,8 +251,7 @@
                             <form>
                                 <div class="form-group">
                                     <label>Widths</label>
-                                    <input id="policyWidthsInpt" type="text" class="form-control" ng-model="policyResolutions.widths" placeholder="Comma separated list of widths">
-                                    <span class="info-text">If nothing is specified defaults of 5000, 2048, 1024, 640, 320 will be used</span>
+                                    <input id="policyWidthsInpt" type="text" class="form-control" ng-model="policyResolutions.widths" placeholder="Please enter a single integer width">
                                 </div>
                             </form>
                         </div>
@@ -315,7 +312,7 @@
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <h3 class="text-center">Review Your No Touch Policy
+                            <h3 class="text-center">Review Your RFW Policy
                             </h3>
                         </div>
                         <div class="col-md-2">
@@ -335,7 +332,7 @@
                     </div>
                     <div class="row inner-content">
                         <div class="col-md-6 col-md-offset-2">
-                            <h3>{{policyId}}</h3>
+                            <h3>{{rfwPolicyId}}</h3>
                             <h4>Transforms</h4>
                             <ol>
                                 <li ng-repeat="step in transformSteps">
@@ -382,5 +379,5 @@
         </main>
     </div>
 </div>
-<div ng-include="'partials/modals/upload-policy.html'"></div>
+<!-- <div ng-include="'partials/modals/upload-rfwpolicy.html'"></div> -->
 <div ng-include="'partials/modals/preview.html'"></div>

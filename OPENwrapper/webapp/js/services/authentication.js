@@ -29,7 +29,7 @@
     app.factory('AuthService', ['$http', '$location', '$route',
         function(http, location, route) {
             var lunaToken = null;
-            var contractId = "akamai";
+            var contractId = "3-WNKABF";
             return {
                 getLunaToken: function() {
                     return lunaToken;
@@ -63,3 +63,4 @@
         }
     ]);
 })();
+ 

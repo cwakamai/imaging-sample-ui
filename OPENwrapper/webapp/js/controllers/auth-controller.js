@@ -30,12 +30,16 @@
             scope.lunaToken = null;
 
             scope.login = function(lunaToken) {
-                ApiConnector.verifyLunaToken(lunaToken).then(function(data) {
-                    if (data && typeof data.httpStatus === 'undefined') {
+                ApiConnector.verifyLunaToken(lunaToken).then(function(responseWapper) {
+                    if (responseWapper.requestSuccess) {
                         AuthService.setLunaToken(lunaToken);
                         AuthService.goToLandingPage();
                     } else {
-                        alert(data.detail);
+                        if (responseWapper.response.data && responseWapper.response.data.detail) {
+                            alert(responseWapper.response.data.detail);
+                        } else {
+                            alert("An unexpected error occurred! \nPlease check your browser console for error detail.");
+                        }
                     }
                 });
             };

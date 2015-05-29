@@ -33,6 +33,9 @@
 
         var isProductEnabled = false;
 
+        //var icTypes = ["AkaImage", "Color", "Gallery", "Image", "Rotatable"];
+
+        var icTypes = ["Gallery"];
 
         var constructs = {
             "gravity": ["North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest", "Center"],
@@ -44,7 +47,8 @@
             "subsamplequality": ["full", "half", "quarter"],
             "browser": ["Safari", "Chrome", "IE", "Generic"],
             "resizetype": ["normal", "upsize", "downsize"],
-            "scaledimension": ["width", "height"]
+            "scaledimension": ["width", "height"],
+            "aspectTypes": ["ignore","fit","fill"]
         };
 
         var transformations = [{
@@ -142,10 +146,11 @@
                     "default": 100
                 }, //   and "height" be present.
                 {
-                    "name": "maintainAspect",
-                    "type": "booleanResize",
+                    "name": "aspect",
+                    "type": "options",
                     "required": false,
-                    "default": true
+                    "options":"aspectTypes",
+                    "default": "fit"
                 }, // Optional. Default is true.
                 {
                     "name": "type",
@@ -176,7 +181,52 @@
                     "minInclusive": false
                 } // Required. Float multiple of input height.
             ]
-        }];
+        }, {
+            "name": "Crop",
+            "inputs": [{
+                    "name": "width",
+                    "type": "int",
+                    "required": true,
+                    "default": 0,
+                    "max": 5000,
+                    "min": 0
+                },
+                {
+                    "name": "height",
+                    "type": "int",
+                    "required": true,
+                    "default": 0,
+                    "max": 5000,
+                    "min": 0                
+                },
+                {
+                    "name": "xPosition",
+                    "type": "int",
+                    "required": true,
+                    "default": 0,
+                    "max": 5000,
+                    "min": 0
+                },
+                {
+                    "name": "yPosition",
+                    "type": "int",
+                    "required": true,
+                    "default": 0,
+                    "max": 5000,
+                    "min": 0
+                },
+                {
+                    "name": "gravity",
+                    "type": "options",
+                    "options": "gravity",
+                    "required": false,
+                    "default": "NorthWest"
+                }
+            ]
+        },  {
+            "name": "Grayscale"
+        }
+    ];
 
 
         return {
@@ -188,6 +238,9 @@
             },
             getSystemTransformsByName: function(transformName) {
                 return transformations[transformName];
+            },
+            getIcTypes: function() {
+                return icTypes;
             },
             getConstructs: function() {
                 return constructs;

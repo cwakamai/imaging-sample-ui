@@ -25,9 +25,9 @@
     value('version', '0.1');
 
     // Service definition
-    app.service('ApiConnector', ['$http', 'AuthService', 'Configuration',
+    app.service('ApiConnector', ['$q','$http', 'AuthService', 'Configuration',
 
-        function(http, auth, config) {
+        function(q, http, auth, config) {
             // LUNA TOKEN VALIDATION
             this.verifyLunaToken = function(lunaToken) {
                 return http.get(config.getApiHost() + 'imaging/v0/policies', {
@@ -38,9 +38,15 @@
                         }
                     })
                     .then(function(successData) {
-                        return successData.data;
+                        return { 
+                            requestSuccess: true,
+                            response: successData.data
+                        };
                     }, function(errorData) {
-                        return errorData.data;
+                        return {
+                            requestSuccess: false,
+                            response: errorData
+                        };
                     });
             };
 
@@ -89,8 +95,8 @@
                     });
             };
 
-            this.addImage = function(imageCollectionResource) {
-                return http.post(config.getApiHost() + 'imaging/v0/images', angular.toJson(imageCollectionResource))
+            this.addImage = function(imageResource) {
+                return http.post(config.getApiHost() + 'imaging/v0/images', angular.toJson(imageResource))
                     .then(function(successData) {
                         return successData.data;
                     }, function(errorData) {
@@ -143,9 +149,9 @@
                     });
             };
 
-            // PRODUCTS API
-            this.getProduct = function(productId) {
-                return http.get(config.getApiHost() + "imaging/v0/products/" + productId)
+            // Ordered Image Collection API
+            this.getAllImageCollections = function() {
+                return http.get(config.getApiHost() + 'imaging/v0/imagecollections')
                     .then(function(successData) {
                         return successData.data;
                     }, function(errorData) {
@@ -153,89 +159,8 @@
                     });
             };
 
-            this.getAllProducts = function() {
-                return http.get(config.getApiHost() + "imaging/v0/products")
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(errorData) {
-                        return null;
-                    });
-            };
-
-            this.getProductsByName = function(name) {
-                return http.get(config.getApiHost() + "imaging/v0/products", {
-                        params: {
-                            name: name
-                        }
-                    })
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(errorData) {
-                        return null;
-                    });
-            };
-
-            this.getProductsByTags = function(tags) {
-                return http.get(config.getApiHost() + "imaging/v0/products", {
-                        params: {
-                            tags: tags
-                        }
-                    })
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(errorData) {
-                        return null;
-                    });
-            };
-
-            this.createProduct = function(productCollectionResource) {
-                return http.post(config.getApiHost() + "imaging/v0/products", productCollectionResource)
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(errorData) {
-                        return null;
-                    });
-            };
-
-            this.removeProduct = function(productId) {
-                return http.delete(config.getApiHost() + "imaging/v0/products/" + productId)
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(errorData) {
-                        return null;
-                    });
-            };
-
-
-            this.getProductTags = function(productId) {
-                return http.get(config.getApiHost() + "imaging/v0/products/" + productId + "/tags")
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(errorData) {
-                        return null;
-                    });
-            };
-
-            this.addTagToProduct = function(productId, productResource) {
-                return http.post(config.getApiHost() + "imaging/v0/products/" + productId + "/tags", angular.toJson(productResource))
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(errorData) {
-                        return null;
-                    });
-            };
-
-            this.removeTagFromProduct = function(productId, tagName) {
-                return http.delete(config.getApiHost() + "imaging/v0/products/" + productId + "/tags/" + tagName)
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(errorData) {
-                        return null;
-                    });
-            };
-
-            this.removeAllTagsFromProduct = function(productId) {
-                return http.delete(config.getApiHost() + "imaging/v0/products/" + productId + "/tags")
+            this.getImageCollection = function(imageCollectionId) {
+                return http.get(config.getApiHost() + 'imaging/v0/imagecollections/' + imageCollectionId)
                     .then(function(successData) {
                         return successData.data;
                     }, function(errorData) {
@@ -243,8 +168,8 @@
                     });
             };
 
-            this.getProductImageIds = function(productId) {
-                return http.get(config.getApiHost() + "imaging/v0/products/" + productId + "/imageIds")
+            this.addImageCollection = function(imageCollectionResource) {
+                return http.put(config.getApiHost() + 'imaging/v0/imagecollections/' + imageCollectionResource.id, angular.toJson(imageCollectionResource))
                     .then(function(successData) {
                         return successData.data;
                     }, function(errorData) {
@@ -252,9 +177,8 @@
                     });
             };
 
-            this.addImageIdsToProduct = function(productId, productResource) {
-
-                return http.post(config.getApiHost() + "imaging/v0/products/" + productId + "/imageIds", angular.toJson(productResource))
+            this.addImageCollectionFromJson = function(imageCollectionJson) {
+                return http.post(config.getApiHost() + 'imaging/v0/imagecollections', imageCollectionJson)
                     .then(function(successData) {
                         return successData.data;
                     }, function(errorData) {
@@ -262,101 +186,13 @@
                     });
             };
 
-            this.removeAllImagesFromProduct = function(productId) {
-
-                return http.delete(config.getApiHost() + "imaging/v0/products/" + productId + "/imageIds")
+            this.removeImageCollection = function(imageCollectionId) {
+                return http.delete(config.getApiHost() + 'imaging/v0/imagecollections/' + imageCollectionId)
                     .then(function(successData) {
                         return successData.data;
                     }, function(errorData) {
                         return null;
                     });
-            };
-
-            this.removeImageFromProduct = function(imageId, productId) {
-                return http.delete(config.getApiHost() + "imaging/v0/products/" + productId + "/imageIds/" + imageId)
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(errorData) {
-                        return null;
-                    });
-            };
-
-            // JOBS API
-            this.getJobs = function() {
-                return http.get(config.getApiHost() + 'imaging/v0/jobs')
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(error) {
-                        return null;
-                    });
-            };
-
-            this.performJobAction = function(jobId, action) {
-                if (jobId !== null && action !== null) {
-                    return http.post(config.getApiHost() + 'imaging/v0/jobs', {
-                            params: {
-                                jobId: jobId,
-                                action: action
-                            }
-                        })
-                        .then(function(successData) {
-                            return successData.data;
-                        }, function(error) {
-                            return null;
-                        });
-                } else {
-                    return null;
-                }
-            };
-
-            this.getJob = function(jobId) {
-                return http.get(config.getApiHost() + 'imaging/v0/jobs/' + jobId)
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(error) {
-                        return null;
-                    });
-            };
-
-            this.addJob = function(jobResource) {
-                return http.post(config.getApiHost() + 'imaging/v0/jobs', angular.copy(jobResource))
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(error) {
-                        return null;
-                    });
-            };
-
-            this.getJobItems = function(jobId) {
-                return http.get(config.getApiHost() + 'imaging/v0/jobs/' + jobId + '/items')
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(error) {
-                        return null;
-                    });
-            };
-
-            this.getJobErrorItems = function(jobId) {
-                return http.get(config.getApiHost() + 'imaging/v0/jobs/' + jobId + '/errors')
-                    .then(function(successData) {
-                        return successData.data;
-                    }, function(error) {
-                        return null;
-                    });
-            };
-
-            //PREVIEW API
-            this.previewImageTransformation = function(imageSrc, planJson) {
-                return http.get(config.getApiHost() + 'imaging/v0/preview', {
-                    params: {
-                        src: imageSrc,
-                        plan: planJson
-                    }
-                }).then(function(successData) {
-                    return successData.data;
-                }, function(error) {
-                    return null;
-                });
             };
 
             // POLICIES API
@@ -424,6 +260,19 @@
             };
 
             // PREVIEW
+            this.previewImageTransformation = function(imageSrc, planJson) {
+                return http.get(config.getApiHost() + 'imaging/v0/preview', {
+                    params: {
+                        src: imageSrc,
+                        plan: planJson
+                    }
+                }).then(function(successData) {
+                    return successData.data;
+                }, function(error) {
+                    return null;
+                });
+            };
+
             this.preview = function(plan, url) {
                 return http.post(config.getApiHost() + 'imaging/v0/preview/encode', null, {
                         params: {
@@ -437,6 +286,84 @@
                         throw errorData.data;
                     });
             };
+
+            // RFW
+            this.registerRFW = function(rfwInfo){
+                return http.put(config.getApiHost() + 'imaging/v0/netstorage', rfwInfo)
+                    .then(function(successData) {
+                        return successData.data;
+                    }, function(error) {
+                        return null;
+                    });
+            };
+
+            this.getRFW = function(){
+                return http.get(config.getApiHost() + 'imaging/v0/netstorage')
+                    .then(function(successData) {
+                        return successData.data;
+                    }, function(error) {
+                        return null;
+                    });
+            };
+           
+            this.deleteRFW = function(){
+                return http.delete(config.getApiHost() + 'imaging/v0/netstorage')
+                .then(function(successData) {
+                    return successData.data;
+                }, function(error) {
+                    return null;
+                });
+            };
+
+            this.RFWstatus = function(){
+                var deferred = q.defer();
+                
+                this.getRFW().then(function(data){
+                    deferred.resolve(!!data);
+                }, function (error){
+                    deferred.reject(error);
+                });
+                
+                return deferred.promise;
+            };
+
+            // RFW POLICIES
+            this.getRFWPolicies = function(){
+                return http.get(config.getApiHost() + 'imaging/v0/policies/rfw')
+                .then(function(successData) {
+                    return successData.data;
+                }, function(error) {
+                    return null;
+                });
+            };
+
+            this.getRFWPolicy = function(rfwPolicyID){
+                return http.get(config.getApiHost() + 'imaging/v0/policies/rfw/' + rfwPolicyID)
+                .then(function(successData) {
+                    return successData.data;
+                }, function(error) {
+                    return null;
+                });
+            };
+
+            this.addRFWPolicy = function(rfwPolicyResource){
+                return http.put(config.getApiHost() + 'imaging/v0/policies/rfw/' + rfwPolicyResource.id, angular.toJson(rfwPolicyResource))
+                .then(function(successData) {
+                    return successData.data;
+                }, function(error) {
+                    return null;
+                });
+            };
+
+            this.deleteRFWPolicy = function(rfwPolicyID){
+                return http.delete(config.getApiHost() + 'imaging/v0/policies/rfw/' + rfwPolicyID)
+                    .then(function(successData) {
+                        return successData.data;
+                    }, function(error) {
+                        return null;
+                    });
+            };
+
 
         }
     ]);

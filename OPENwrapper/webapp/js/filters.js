@@ -53,7 +53,7 @@
         };
     }).filter('bypass', function() {
         return function(url) {
-            return bypass_url;
+            return url;
         };
     });
 
