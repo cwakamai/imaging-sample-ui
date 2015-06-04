@@ -27,8 +27,12 @@
     app.controller('ImageCtrl', ['$scope', '$q', 'ApiConnector', 'ResourceFactory', 'SystemConstants',
         function(scope, q, ApiConnector, ResourceFactory, SystemConstants) {
 
+            scope.rfwPolicies = [];
+            scope.rfwIsEnabled = false;
+
             scope.resetAddImageFields = function() {
                 scope.addImageFields = {
+                    newImageId: null,
                     newImageUrl: null,
                     newBulkUrls: null,
                     newTag: null
@@ -38,10 +42,12 @@
             scope.addImage = function(addImageFields) {
                 var tags = null;
                 var imageUrl = addImageFields.newImageUrl;
-                var imageId = undefined;
+                var imageId = addImageFields.newImageId === '' ? undefined : addImageFields.newImageId;
+                var rfwPolicyId = addImageFields.rfwPolicy.id;
                 var bulkImageUrls = [];
                 var imageResources = [];
                 var imageCollectionResource = {};
+                var jobTag = "";
 
                 if (addImageFields.newTag) {
                     tags = addImageFields.newTag.split(",");
@@ -63,8 +69,14 @@
 
                 ApiConnector.addImage(imageCollectionResource).then(function(result) {
                     if (result) {
+                        // for each image in imageJob, runImageJob()
+                        $.each(result.items, function(index, image) {
+                            scope.runImageJob(image.id, rfwPolicyId, jobTag);
+                        });
+
                         scope.resetAddImageFields();
                         scope.goCatalogView();
+
                     } else {
                         alert("ERROR: Unable to add image(s)");
                     }
@@ -146,6 +158,30 @@
                 scope.images = [];
             };
 
+            scope.getRFWPolicies = function() {
+                return ApiConnector.getRFWPolicies().then(function(retrievedPolicies) {
+                    if (retrievedPolicies) {
+                        scope.rfwPolicies = retrievedPolicies.items;
+                        scope.rfwIsEnabled = true;
+                    } else {
+                        scope.rfwPolicies = null;
+                    }
+                });
+            };
+
+            scope.runImageJob = function(imagesIds, rfwPolicyId, jobTag) {
+                ApiConnector.runImageJob(imagesIds, rfwPolicyId);
+            };
+
+            scope.getJob = function(policyId) {
+                ApiConnector.getJob(policyId).then(function(data){
+                    return data;
+                },function(error){
+                    console.log("Error ", error);
+                    return null;
+                });
+            };
+
             function init() {
 
                 if (!scope.rfwChecked){
@@ -164,13 +200,7 @@
                     scope.rfwPoliciesExist = bool;
                 });
 
-                ApiConnector.getRFWPolicies().then(function(rfwPolicies) {
-                    if (rfwPolicies) {
-                        scope.rfwPolicies = rfwPolicies.items;
-                    } else {
-                        scope.rfwPolicies = null;
-                    }
-                });
+                scope.getRFWPolicies();
             }
 
             init();

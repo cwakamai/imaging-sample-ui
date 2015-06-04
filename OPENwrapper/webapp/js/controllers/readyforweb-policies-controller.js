@@ -517,6 +517,7 @@
                 scope.resetNewPolicyFields();
                 scope.getRFWPolicies();
             }
+            
             init();
         }
         

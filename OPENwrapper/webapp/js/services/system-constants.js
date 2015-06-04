@@ -223,7 +223,17 @@
                     "default": "NorthWest"
                 }
             ]
-        },  {
+        }, { 
+            "name": "BackgroundColor",
+            "inputs": [{
+                    "name": "color",
+                    "info": "As 6 character Hex String, Eg. 00BB4F",
+                    "type": "color",
+                    "required": true,
+                    "default": "FFFFFF"
+                }
+            ]
+        }, {
             "name": "Grayscale"
         }
     ];

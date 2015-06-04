@@ -159,6 +159,7 @@
 
                 var policyTransforms = [];
                 var invalidInputMessages = [];
+                var color = "";
 
                 $.each(transformSteps, function(index, transformStep) {
 
@@ -192,7 +193,7 @@
                                         if (input.value <= input.max && input.value > input.min) {
                                             transform[input.name] = input.value;
                                         } else {
-                                            invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
+                                            invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid.");
                                         }
                                     }
                                 } else if (input.required) {
@@ -206,6 +207,15 @@
                                     };
                                 } else {
                                     invalidInputMessages.push("The image URL in " + transform.transformation + " is invalid. ");
+                                }
+                            }
+                            if (input.type === "color") {
+                                // Make sure it's a valid color value 000000-FFFFFF
+                                if (input.value && /^([0-9a-fA-F]{3}){1,2}$/g.test(input.value)) {
+                                    color = "#"+input.value;
+                                    transform[input.name] = color;
+                                } else {
+                                    invalidInputMessages.push("The color in " + transform.transformation + " is invalid. Please provide a 3 or 6 character HEX value from 000000 to FFFFFF");
                                 }
                             }
                             if (input.type === "transform") {

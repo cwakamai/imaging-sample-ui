@@ -530,7 +530,6 @@ app.directive("pagedImageList", ['ApiConnector', '$filter', function(ApiConnecto
         restrict: 'E',
         scope: {
             images: "=",
-            showProduct: "=",
             limit: "&",
             remove: "&",
             toggle: "&toggle"
@@ -562,8 +561,6 @@ app.directive("pagedImageList", ['ApiConnector', '$filter', function(ApiConnecto
             scope.$watchCollection('images', function(newVal, oldVal) {
                 resetList(newVal);
             });
-
-            scope.isProductEnabled = scope.showProduct;
 
             scope.nextPage = function() {
                 if (scope.currentPage < scope.pageNumbers.length) {

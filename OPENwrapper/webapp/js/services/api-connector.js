@@ -149,6 +149,28 @@
                     });
             };
 
+            this.runImageJob = function(images, policyId) {
+                var job = {};
+                job.imageIds = images;
+                job.policyId = policyId;
+                return http.post(config.getApiHost() + "imaging/v0/images/run", job)
+                    .then(function(successData){
+                        return successData.data;
+                    },function(errorData){
+                        return null;
+                    })
+            };
+
+            this.getJob = function(policyID) {
+
+                return http.get(config.getApiHost() + 'imaging/v0/images?policyId=' + policyID)
+                    .then(function(successData) {
+                        return successData.data;
+                    }, function(error) {
+                        return null;
+                    });
+            };
+
             // Ordered Image Collection API
             this.getAllImageCollections = function() {
                 return http.get(config.getApiHost() + 'imaging/v0/imagecollections')

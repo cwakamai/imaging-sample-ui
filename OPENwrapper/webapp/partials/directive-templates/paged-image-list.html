@@ -17,23 +17,21 @@
 <table class="table">
     <thead>
         <tr>
-            <th ng-if="isProductEnabled" style="width: 5%;">
-            </th>
             <th style="width: 15%">
                 Original Image
             </th>
-            <th style="width: 83%">
+            <th style="width: 70%">
                 Image ID
             </th>
-            <th style="width: 2%;">
+            <th style="width: 12%">
+                Job Complete
+            </th>
+            <th style="width: 3%;">
             </th>
         </tr>
     </thead>
     <tbody>
         <tr ng-repeat="image in visibleImages" ng-class="{'selected-list-item': image.selected}">
-            <td ng-if="isProductEnabled">
-                <input id="checkbox{{index}}Input" type="checkbox" ng-model="image.selected" ng-click="toggleImageSelection(image)">
-            </td>
             <td class="pointer">
                 <a href="{{image.url | bypass}}" target="_blank">
                     <img ng-src="{{image.url | bypass}}" class="list-icon img-responsive">
@@ -41,6 +39,20 @@
             </td>
             <td>
                 {{image.id}}
+            </td>
+            <td id="jobStatus" class="pointer">
+                <span ng-show="image.policies['.rfw'].status === 'PASSED'">.rfw<span style="margin-left: 40%" class="glyphicon glyphicon-ok"></span></span>
+                <span ng-show="image.policies['.rfw'].status === 'FAILED'">.rfw<span style="margin-left: 40%;" class="glyphicon glyphicon-ban-circle"></span></span>
+                <span ng-show="image.policies['.rfw'].status === 'PENDING' || image.policies['.rfw'].status === 'STARTED'">.rfw<span style="margin-left: 40%;" class="glyphicon glyphicon-refresh"></span></span>
+                <span ng-show="image.policies['.rfw'].status === 'WARNING'">.rfw<span style="margin-left: 40%;" class="glyphicon glyphicon-exclamation-sign"></span></span>
+               
+                <div ng-repeat="policy in image.policies">
+                    <!-- <div ng-show="policyName !== '.rfw'"> -->
+                        {{image.policies[policy.toString()]}}
+                        <span ng-show="policy.status === 'PASSED'" class="glyphicon glyphicon-ok"></span>
+                        <span ng-show="policy.status === 'FAILED'" class="glyphicon glyphicon-ban-circle"></span>
+                    <!-- </div> -->
+                </div>
             </td>
             <td id="removeImageBtn" class="pointer" ng-click="removeImage(image.id, $index)">
                 <span class="glyphicon glyphicon-remove remove-icon"></span>

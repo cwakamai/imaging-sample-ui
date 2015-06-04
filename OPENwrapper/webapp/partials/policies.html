@@ -186,25 +186,27 @@
                                                 <em>{{input.name | capitalize}}</em>
                                                 <span ng-show="input.required">*</span>
                                             </label>
-                                            <input id="intInput{{$index + 1}}" ng-if="input.type === 'int'" type="number" max="{{input.max}}" min="{{input.min}}" class="form-control" ng-init="input.value = input.value == null ? input.default : input.value" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
-
-
-                                            <input id="intResizeInput{{$index + 1}}" ng-if="input.type === 'intResize'" type="number" max="{{input.max}}" min="{{input.min}}" class="form-control" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
-
-                                            <input id="floatInput{{$index + 1}}" ng-if="input.type === 'float'" type="number" step="any" max="{{input.max}}" min="{{input.min}}" class="form-control" ng-init="input.value = input.value == null ? input.default : input.value" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
-
+                                           <span ng-if="input.type === 'int'">
+                                                <input id="intInput{{$index + 1}}" type="number" max="{{input.max}}" min="{{input.min}}" class="form-control" ng-init="input.value = input.value == null ? input.default : input.value" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
+                                            </span>
+                                            <span ng-if="input.type === 'intResize'">
+                                                <input id="intResizeInput{{$index + 1}}" type="number" max="{{input.max}}" min="{{input.min}}" class="form-control" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
+                                            </span>
+                                            <span ng-if="input.type === 'float'">
+                                                <input id="floatInput{{$index + 1}}" type="number" step="any" max="{{input.max}}" min="{{input.min}}" class="form-control" ng-init="input.value = input.value == null ? input.default : input.value" style="float: none" ng-required="{{input.ng-requireded}}" placeholder="{{attribute}}" ng-model="input.value">
+                                            </span>
                                             <span ng-if="input.type === 'booleanComposite'">
                                                 <input id="booleanCompositeInput{{$index + 1}}" type="checkbox" ng-init="input.value = input.value == null ? input.default : input.value" style="margin: 10px; font-size: 2em;" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value" ng-change="onChangeOfDisablingCompositeScaling(transformStep)">
                                             </span>
-
                                             <span ng-if="input.type === 'booleanResize'">
                                                 <input id="booleanResizeInput{{$index + 1}}" type="checkbox" ng-init="input.value = input.value == null ? input.default : input.value" style="margin: 10px; font-size: 2em;" ng-disabled="!bothHeightAndWidthSpecified(transformStep)" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
                                             </span>
-
-                                            <div ng-if="input.type === 'image'">
+                                            <span ng-if="input.type === 'image'">
                                                 <input id="compImageUrlInpt{{$index}}" type="text" class="form-control" placeholder="Image URL" style="float: none" ng-required="{{input.required}}" ng-model="input.imageUrl">
-                                            </div>
-
+                                            </span>
+                                            <span ng-if="input.type === 'color'">
+                                                <input id="colorInpt{{$index}}" placeholder="FFFFFF" type="text" class="form-control" style="float: none" ng-required="{{input.required}}" ng-model="input.value">
+                                            </span>
                                             <select id="selectOptionInpt{{$index + 1}}" class="form-control" ng-if="input.type === 'options'" style="float: none" ng-init="input.value = input.value == null ? input.default : input.value" ng-options="option as option for option in constructs[input.options]" ng-model="input.value">
                                                 <option value="">Default</option>
                                             </select>
@@ -339,7 +341,7 @@
                             <h4>Transforms</h4>
                             <ol>
                                 <li ng-repeat="step in transformSteps">
-                                    {{step.name}}
+                                    {{step.name}} {{step.value}}
                                 </li>
                             </ol>
                             <h4>Resolutions</h4>

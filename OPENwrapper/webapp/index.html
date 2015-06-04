@@ -13,7 +13,7 @@
 
 <body ng-controller="NavigationCtrl" class="container-fluid">
     <header id="header" class="row padding-bottom">
-        <div class="navbar navbar-fixed-top im-header" role="navigation">
+        <div class="navbar navbar-fixed-top im-header" rfole="navigation">
             <div class="container-fluid">
                 <button id="logOut" class="btn btn-link pull-right" ng-if="location.path() !== '/login'" ng-click="logOut()">Log Out</button>
                 <div class="navbar-header">
@@ -62,17 +62,17 @@
                 </li>
                 <li ng-if="!checkRFW()" class="pointer">
                     <a id="ReadyForWebSetupTabLink" class="list-group-item list-group-item-nav" ng-class="{active: location.path() === '/rfwsetup'}" ng-click="goRFWSetup()">
-                        <span class="glyphicon glyphicon-flash nav-icon"></span> Ready For Web Setup
+                        <span class="glyphicon glyphicon-cloud nav-icon"></span> Ready For Web Setup
                     </a>
                 </li>
                 <li ng-if="checkRFW()" class="pointer">
                     <a id="ReadyForWebSetupTabLink" class="list-group-item list-group-item-nav" ng-class="{active: location.path() === '/rfwsetup'}" ng-click="goRFWSetup()">
-                        <span class="glyphicon glyphicon-flash nav-icon"></span> Ready For Web
+                        <span class="glyphicon glyphicon-cloud nav-icon"></span> Ready For Web
                     </a>
                 </li>
                 <li class="pointer" ng-show="isRFWEnabled">
                     <a id="ReadyForWebPoliciesTabLink" class="list-group-item list-group-item-nav" ng-class="{active: location.path() === '/rfwpolicies'}" ng-click="goRFW()">
-                        <span class="glyphicon glyphicon-road nav-icon"></span> RFW Policies
+                        <span class="glyphicon glyphicon-picture nav-icon"></span> RFW Policies
                     </a>
                 </li>
             </ul>
