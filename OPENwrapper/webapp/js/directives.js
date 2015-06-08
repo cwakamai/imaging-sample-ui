@@ -777,6 +777,19 @@ app.directive('downloadic', function($compile) {
     };
 });
 
+app.directive('confirmClick', [function(){
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            element.bind("click", function (event) {
+                if ( window.confirm("Are you sure you want to enable Ready for Web?  This will switch the origin server of your property to the configured NetStorage location")) {
+                    scope.$eval(attr.clickaction);
+                }
+            });
+        }
+    };
+}]);
+
 app.directive("upload", [function() {
     return {
         restrict: 'A',
