@@ -3,7 +3,7 @@
         <div class="row">
             <div class="side-padding">
                 <label class="control-label dull-header">
-                	User Name
+                	Netstorage Upload User Name
                 </label>
             </div>
             <div class="col-md-12 padding-bottom">
@@ -19,7 +19,7 @@
                 </label>
             </div>
             <div class="col-md-12 padding-bottom">
-                <input ng-hide="isRFWEnabled && !editing" id="nsAPIInput" class="form-control" type="text" placeholder="http://example.nsu.akamaihd.net" ng-model="rfwInfo.httpApiDomain">
+                <input ng-hide="isRFWEnabled && !editing" id="nsAPIInput" class="form-control" type="text" placeholder="example.nsu.akamaihd.net" ng-model="rfwInfo.httpApiDomain">
             	</input>
                 <span ng-show="isRFWEnabled && !editing">
                     <mark>{{rfwInfo.httpApiDomain}}</mark>
@@ -31,7 +31,7 @@
                 </label>
             </div>
             <div class="col-md-12 padding-bottom">
-                <input ng-hide="isRFWEnabled && !editing" id="nsDownloadDomain" class="form-control" type="text" placeholder="http://example.download.akamai.com" ng-model="rfwInfo.downloadDomain">
+                <input ng-hide="isRFWEnabled && !editing" id="nsDownloadDomain" class="form-control" type="text" placeholder="example.download.akamai.com" ng-model="rfwInfo.downloadDomain">
             	</input>
                 <span ng-show="isRFWEnabled && !editing">
                     <mark>{{rfwInfo.downloadDomain}}</mark>
@@ -39,7 +39,7 @@
             </div>
             <div class="side-padding">
                 <label class="control-label dull-header" style="padding-left: 0px; text-aline: left">
-            		G2o Key
+            		Netstorage G2o Key
                 </label>
             </div>
             <div class="col-md-12 padding-bottom">

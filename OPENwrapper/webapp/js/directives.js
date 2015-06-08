@@ -536,6 +536,8 @@ app.directive("pagedImageList", ['ApiConnector', '$filter', function(ApiConnecto
         },
         link: function(scope, element) {
             var pageByLimit = scope.limit();
+            var errorDetails = {};
+
             var resetList = function(images) {
                 scope.visibleImages = [];
                 scope.pageNumbers = [];
@@ -581,6 +583,15 @@ app.directive("pagedImageList", ['ApiConnector', '$filter', function(ApiConnecto
                     scope.currentPage = index;
                     loadImages(scope.images.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
                 }
+            };
+
+            scope.goShowError = function(error) {
+                errorDetails = error.toString();
+                // console.log(error);
+                $("#show-error").modal({
+                    backdrop: "static",
+                    keyboard: true
+                });
             };
 
             scope.removeImage = function(imageId, index) {

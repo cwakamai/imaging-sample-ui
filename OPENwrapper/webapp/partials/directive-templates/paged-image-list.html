@@ -14,13 +14,13 @@
         </li>
     </ul>
 </nav>
-<table class="table">
+<table class="table" style="max-width:100%;">
     <thead>
         <tr>
             <th style="width: 15%">
                 Original Image
             </th>
-            <th style="width: 70%">
+            <th style="width: 70%; max-width:70%; word-break: break-all;">
                 Image ID
             </th>
             <th style="width: 12%">
@@ -37,21 +37,16 @@
                     <img ng-src="{{image.url | bypass}}" class="list-icon img-responsive">
                 </a>
             </td>
-            <td>
+            <td style="overflow:hidden; word-break: break-all;">
                 {{image.id}}
             </td>
             <td id="jobStatus" class="pointer">
-                <span ng-show="image.policies['.rfw'].status === 'PASSED'">.rfw<span style="margin-left: 40%" class="glyphicon glyphicon-ok"></span></span>
-                <span ng-show="image.policies['.rfw'].status === 'FAILED'">.rfw<span style="margin-left: 40%;" class="glyphicon glyphicon-ban-circle"></span></span>
-                <span ng-show="image.policies['.rfw'].status === 'PENDING' || image.policies['.rfw'].status === 'STARTED'">.rfw<span style="margin-left: 40%;" class="glyphicon glyphicon-refresh"></span></span>
-                <span ng-show="image.policies['.rfw'].status === 'WARNING'">.rfw<span style="margin-left: 40%;" class="glyphicon glyphicon-exclamation-sign"></span></span>
-               
-                <div ng-repeat="policy in image.policies">
-                    <!-- <div ng-show="policyName !== '.rfw'"> -->
-                        {{image.policies[policy.toString()]}}
+                <div ng-repeat="(policyId, policy) in image.policies">
                         <span ng-show="policy.status === 'PASSED'" class="glyphicon glyphicon-ok"></span>
                         <span ng-show="policy.status === 'FAILED'" class="glyphicon glyphicon-ban-circle"></span>
-                    <!-- </div> -->
+                        <span ng-show="policy.status === 'PENDING'" class="glyphicon glyphicon-refresh"></span>
+                        <span ng-show="policy.status === 'WARNING'" class="glyphicon glyphicon-exclamation-sign"></span>
+                        <span>{{policyId}}<span>
                 </div>
             </td>
             <td id="removeImageBtn" class="pointer" ng-click="removeImage(image.id, $index)">

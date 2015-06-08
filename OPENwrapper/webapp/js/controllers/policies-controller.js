@@ -334,6 +334,7 @@
             scope.refreshPreview = function(transforms) {
                 try {
                     scope.transformSteps = transforms;
+                    console.log(scope.transformSteps);
                     previewPartialPolicy(ResourceFactory.validateAndCreateTransformResource(scope.transformSteps));
                 } catch (errorMessages) {
                     alert(errorMessages.join().replace(/,/g, "\n"));
@@ -468,7 +469,8 @@
                     var plan = [];
 
                     if (transforms !== null && typeof transforms != 'undefined') {
-                        plan = transforms;
+                        plan = transforms;                      
+                        plan.push({"transformation":"BestFor", "browser":"generic"});
                     }
 
                     var transformPlan = {
