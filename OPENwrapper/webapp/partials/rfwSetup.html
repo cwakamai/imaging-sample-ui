@@ -1,5 +1,13 @@
 <form class="form-horizontal row" role="form" ng-submit="verify(rfwInfo)">
     <div class="col-md-12">
+        <h1 class="text-center">   
+            IMPORTANT!
+        </h1>
+        <h4 class="text-justify col-md-6 col-md-offset-3">
+            Specify a NetStorage location to store Ready for Web images. If Ready for Web is enabled, this net storage location will become the origin server for the traffic associated with your API token. This means that the images currently being served may be invalidated by switching the location of your origin.
+        </h4>
+    </div>
+    <div class="col-md-12">
         <div class="row">
             <div class="side-padding">
                 <label class="control-label dull-header">
@@ -65,6 +73,7 @@
     </div>
 
     <!-- Submit -->
+    <!-- alert("Are you sure you want to enable Ready for Web?  This will switch the origin server of your property to the configured NetStorage location"); On OKAY: verify(rfwInfo), On CANCEL: do nothing -->
     <div class="form-group col-sm-10 col-md-10" ng-hide="isRFWEnabled">
         <div class="col-md-3 col-md-offset-6">
         	<button id="verify" type="submit" ng-style="verifyStyle={'width': '100%'}" class="btn btn-info" ng-click="verify(rfwInfo)">
