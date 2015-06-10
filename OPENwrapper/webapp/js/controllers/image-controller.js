@@ -43,13 +43,14 @@
                 var tags = null;
                 var imageUrl = addImageFields.newImageUrl;
                 var imageId = addImageFields.newImageId === '' ? undefined : addImageFields.newImageId;
-                var rfwPolicyId = addImageFields.rfwPolicy.id;
+                var rfwPolicyId = !addImageFields.hasOwnProperty('rfwPolicy') ? undefined : addImageFields.rfwPolicy.id;
                 var bulkImageUrls = [];
                 var imageResources = [];
                 var imageCollectionResource = {};
                 var jobTag = "";
 
                 if (addImageFields.newTag) {
+                    tags.replace(/\s+/g, ' ');
                     tags = addImageFields.newTag.split(",");
                 }
 
@@ -170,7 +171,8 @@
             };
 
             scope.runImageJob = function(imagesIds, rfwPolicyId, jobTag) {
-                ApiConnector.runImageJob(imagesIds, rfwPolicyId);
+                if (rfwPolicyId)
+                    ApiConnector.runImageJob(imagesIds, rfwPolicyId);
             };
 
             scope.getJob = function(policyId) {
