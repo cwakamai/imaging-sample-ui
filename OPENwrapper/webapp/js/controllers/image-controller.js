@@ -50,8 +50,7 @@
                 var jobTag = "";
 
                 if (addImageFields.newTag) {
-                    tags.replace(/\s+/g, ' ');
-                    tags = addImageFields.newTag.split(",");
+                    tags = addImageFields.newTag.replace(/\s+/g, '').split(",");
                 }
 
                 if (addImageFields.newImageUrl) {
