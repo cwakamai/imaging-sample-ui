@@ -48,9 +48,19 @@
                 var imageResources = [];
                 var imageCollectionResource = {};
                 var jobTag = "";
+                var failOut = false;
 
                 if (addImageFields.newTag) {
                     tags = addImageFields.newTag.replace(/\s+/g, '').split(",");
+                }
+
+                if (addImageFields.newRFWTag){
+                    if (addImageFields.newRFWTag.match(/^[a-zA-Z]*$/)[0].length !== addImageFields.newRFWTag.length) {
+                        alert("Tags can only be a single alphabetic word");
+                        failOut = true;
+                    }
+                    else
+                        jobTag = addImageFields.newRFWTag;
                 }
 
                 if (addImageFields.newImageUrl) {
@@ -67,20 +77,22 @@
 
                 imageCollectionResource = ResourceFactory.createImageSetResource(imageResources);
 
-                ApiConnector.addImage(imageCollectionResource).then(function(result) {
-                    if (result) {
-                        // for each image in imageJob, runImageJob()
-                        $.each(result.items, function(index, image) {
-                            scope.runImageJob(image.id, rfwPolicyId, jobTag);
-                        });
+                if (!failOut){
+                    ApiConnector.addImage(imageCollectionResource).then(function(result) {
+                        if (result) {
+                            // for each image in imageJob, runImageJob()
+                            $.each(result.items, function(index, image) {
+                                scope.runImageJob(image.id, rfwPolicyId, jobTag);
+                            });
 
-                        scope.resetAddImageFields();
-                        scope.goCatalogView();
+                            scope.resetAddImageFields();
+                            scope.goCatalogView();
 
-                    } else {
-                        alert("ERROR: Unable to add image(s)");
-                    }
-                });
+                        } else {
+                            alert("ERROR: Unable to add image(s)");
+                        }
+                    });
+                }
             };
 
             scope.getImages = function(findBy, filterContent) {
@@ -171,7 +183,7 @@
 
             scope.runImageJob = function(imagesIds, rfwPolicyId, jobTag) {
                 if (rfwPolicyId)
-                    ApiConnector.runImageJob(imagesIds, rfwPolicyId);
+                    ApiConnector.runImageJob(imagesIds, rfwPolicyId, jobTag);
             };
 
             scope.getJob = function(policyId) {

@@ -149,16 +149,17 @@
                     });
             };
 
-            this.runImageJob = function(images, policyId) {
+            this.runImageJob = function(images, policyId, jobTag) {
                 var job = {};
                 job.imageIds = images;
                 job.policyId = policyId;
+                job.tag = jobTag;
                 return http.post(config.getApiHost() + "imaging/v0/images/run", job)
                     .then(function(successData){
                         return successData.data;
                     },function(errorData){
                         return null;
-                    })
+                    });
             };
 
             this.getJob = function(policyID) {
