@@ -221,6 +221,13 @@
                     "options": "gravity",
                     "required": false,
                     "default": "NorthWest"
+                },
+                {
+                    "name": "allowExpansion",
+                    "info": "Allows crop to expand the canvas of an image if the crop area falls outside the existing canvas",
+                    "type": "booleanComposite",
+                    "required": false,
+                    "default": false
                 }
             ]
         }, { 
