@@ -27,9 +27,6 @@
     app.controller('ImageCtrl', ['$scope', '$q', 'ApiConnector', 'ResourceFactory', 'SystemConstants',
         function(scope, q, ApiConnector, ResourceFactory, SystemConstants) {
 
-            scope.rfwPolicies = [];
-            scope.rfwIsEnabled = false;
-
             scope.resetAddImageFields = function() {
                 scope.addImageFields = {
                     newImageId: null,
@@ -174,7 +171,6 @@
                 return ApiConnector.getRFWPolicies().then(function(retrievedPolicies) {
                     if (retrievedPolicies) {
                         scope.rfwPolicies = retrievedPolicies.items;
-                        scope.rfwIsEnabled = true;
                     } else {
                         scope.rfwPolicies = null;
                     }
@@ -196,10 +192,12 @@
             };
 
             function init() {
+                ApiConnector.RFWstatus().then(function(bool){
+                    scope.rfwIsEnabled = bool;
+                    scope.rfwPoliciesExist = bool;
+                });
 
-                if (!scope.rfwChecked){
-                    scope.updateRFWstatus();
-                }
+                scope.rfwPolicies = [];
 
                 scope.resetAddImageFields();
                 scope.addImagesWithIds = true;
@@ -209,11 +207,8 @@
                 scope.filterContent = null;
                 scope.selectedImage = null;
                 
-                ApiConnector.RFWstatus().then(function(bool){
-                    scope.rfwPoliciesExist = bool;
-                });
-
                 scope.getRFWPolicies();
+                scope.getImages('all', null);
             }
 
             init();

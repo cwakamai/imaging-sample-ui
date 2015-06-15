@@ -5,8 +5,12 @@
                 <input id="policySearchInpt" type="text" class="form-control" id="tag" placeholder="Filter By ID" ng-model="searchCriteria">
             </div>
             <div class="col-sm-8">
-                <button id="addPolicyBtn" style="margin-left:10px" class="btn btn-success pull-right" ng-click="goCreatePolicy()">Add Policy</button>
-                <button id="uplaodPolicyBtn" style="margin-left:10px" class="btn btn-primary pull-right" ng-click="goUploadPolicy()">Upload Policy</button>
+                <button id="addPolicyBtn" style="margin-left:10px" class="btn btn-success pull-right" ng-click="goCreatePolicy()">
+                    Add Policy
+                </button>
+                <button id="uplaodPolicyBtn" style="margin-left:10px" class="btn btn-primary pull-right" ng-click="goUploadPolicy()">
+                    Upload Policy
+                </button>
             </div>
         </form>
         <main>
@@ -17,7 +21,9 @@
     <div ng-switch-when="policy">
         <div class="row">
             <div class="col-md-5 col-md-offset-1">
-                <a id="goPolicyCatalogLink" href="" class="pull-left" ng-click="goPolicyCatalog()">Back to No Touch Policy Catalog</a>
+                <a id="goPolicyCatalogLink" href="" class="pull-left" ng-click="goPolicyCatalog()">
+                    Back to No Touch Policy Catalog
+                </a>
             </div>
             <div class="col-md-5">
                 <div class="btn-group pull-right">
@@ -32,9 +38,15 @@
                             <a href="" id="policyPreviewBtn" type="button" style="margin-right: 5px;" ng-click="openPreview()">     Preview
                             </a>
                         </li>
-                        <li><a href="" id="duplicatePolicyBtn" type="button" style="margin-right: 5px;" ng-click="goCreatePolicyFromBase(currentPolicy)">Duplicate</a>
+                        <li>
+                            <a href="" id="duplicatePolicyBtn" type="button" style="margin-right: 5px;" ng-click="goCreatePolicyFromBase(currentPolicy)">
+                                Duplicate
+                            </a>
                         </li>
-                        <li><a href="" id="editPolicyBtn" type="button" style="margin-right: 5px;" ng-click="goEditPolicy(currentPolicy)">Edit</a>
+                        <li>
+                            <a href="" id="editPolicyBtn" type="button" style="margin-right: 5px;" ng-click="goEditPolicy(currentPolicy)">
+                                Edit
+                            </a>
                         </li>
                     </ul>
                 </div>

@@ -201,7 +201,7 @@
             };
 
             this.addImageCollectionFromJson = function(imageCollectionJson) {
-                return http.post(config.getApiHost() + 'imaging/v0/imagecollections', imageCollectionJson)
+                return http.put(config.getApiHost() + 'imaging/v0/imagecollections/' + imageCollectionJson.id, imageCollectionJson)
                     .then(function(successData) {
                         return successData.data;
                     }, function(errorData) {

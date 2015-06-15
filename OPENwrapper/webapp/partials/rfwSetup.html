@@ -63,7 +63,7 @@
                 </label>
             </div>
             <div class="col-md-12 padding-bottom">
-                <input ng-hide="isRFWEnabled && !editing" id="cpCode" class="form-control" type="number" placeholder="123456" ng-model="rfwInfo.rootDirectory">
+                <input ng-hide="isRFWEnabled && !editing" id="cpCode" class="form-control" type="text" placeholder="123456" ng-model="rfwInfo.rootDirectory">
             	</input>
                 <span ng-show="isRFWEnabled && !editing">
                     <mark>{{rfwInfo.rootDirectory}}</mark>

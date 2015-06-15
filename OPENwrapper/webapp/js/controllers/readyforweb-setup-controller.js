@@ -34,6 +34,8 @@
         		ApiConnector.registerRFW(fresh_rfwInfo)
                     .then(function(successData) {
                         confirmRFWdata();
+                        scope.$parent.isRFWEnabled = true;
+                        route.reload();
                     }, function(error) {
                         alert(error);
                     });
@@ -61,6 +63,7 @@
                     if (rfwData) {
                         scope.rfwInfo = rfwData;
                         scope.rfwInfo.rootDirectory = parseInt(rfwData.rootDirectory);
+                        scope.isRFWEnabled = true;
                     }
                 }, function(error) {
                     alert(error);

@@ -77,27 +77,39 @@
                 route.reload();
             };
 
+            scope.goImageCollections = function() {
+                scope.updateRFWstatus();
+                location.path('/imagecollections');
+                route.reload();
+            };
+
             scope.goPolicyCreator = function() {
+                scope.updateRFWstatus();
                 location.path('/policy');
                 route.reload();
             };
             
             scope.goRFWSetup = function() {
-                location.path('/rfwsetup');
-                route.reload();
+                ApiConnector.RFWstatus().then(function(bool){
+                    scope.isRFWEnabled = bool;
+                    location.path('/rfwsetup');
+                    route.reload();
+                });
             };
 
             scope.goRFW = function() {
-                location.path('/rfwpolicies');
-                route.reload();
-            };
-
-            scope.goImageCollections = function() {
-                location.path('/imagecollections');
-                route.reload();
+                ApiConnector.RFWstatus().then(function(bool){
+                    scope.isRFWEnabled = bool;
+                    if (scope.isRFWEnabled)
+                        location.path('/rfwpolicies');
+                    else
+                        location.path('/images');
+                    route.reload();
+                });
             };
 
             scope.checkRFW = function() {
+                updateRFWstatus();
                 return scope.isRFWEnabled;
             };
 

@@ -500,7 +500,7 @@
                 var policyFound = false;
                 $.each(policiesArray, function(index, policy) {
                     if (policy.id == targetPolicyId) {
-                        return true;
+                        policyFound = true;
                     }
                 });
                 return policyFound;
