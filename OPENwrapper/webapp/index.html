@@ -60,12 +60,12 @@
                         <span class="glyphicon glyphicon-list-alt nav-icon"></span> No Touch Policies
                     </a>
                 </li>
-                <li ng-if="!checkRFW()" class="pointer">
+                <li ng-if="!isRFWEnabled" class="pointer">
                     <a id="ReadyForWebSetupTabLink" class="list-group-item list-group-item-nav" ng-class="{active: location.path() === '/rfwsetup'}" ng-click="goRFWSetup()">
                         <span class="glyphicon glyphicon-cloud nav-icon"></span> Ready For Web Setup
                     </a>
                 </li>
-                <li ng-if="checkRFW()" class="pointer">
+                <li ng-if="isRFWEnabled" class="pointer">
                     <a id="ReadyForWebSetupTabLink" class="list-group-item list-group-item-nav" ng-class="{active: location.path() === '/rfwsetup'}" ng-click="goRFWSetup()">
                         <span class="glyphicon glyphicon-cloud nav-icon"></span> Ready For Web
                     </a>
