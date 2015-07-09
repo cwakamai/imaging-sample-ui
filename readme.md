@@ -27,7 +27,7 @@ sudo make install
 #### Using Package Manager
 ```sh
 sudo apt-get install git nodejs npm
-npm install -g bower
+sudo npm install -g bower
 ```
 Note that for some versions of Linux the nodejs package may be broken and you might be better off installing from source
 
@@ -49,7 +49,7 @@ bower install
 + [Install Node.js](https://www.nodejs.org/download)
 
 ```sh
-npm install -g bower
+sudo npm install -g bower
 ```
 
 
