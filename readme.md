@@ -70,9 +70,9 @@ bower install
 
 ```cmd
 npm install -g bower
-dir \path\to\ImSampleWebUI
+cd \path\to\ImSampleWebUI
 npm install
-dir webapp
+cd webapp
 bower install
 ```
 
@@ -101,7 +101,7 @@ You may need to ```chmod 775 run.sh``` before you can run the program.
 ### Windows Systems
 Open cmd.exe
 ```cmd
-dir <path>
+cd <path>
 node OPENwrapper/index.js
 ```
 
