@@ -11,27 +11,30 @@ In order to use the Sample Application, you will need a set of Image Manager {OP
 
 ### Linux
 
-Note that if you are using Ubuntu 12.04 the npm package may be broken.
+#### Using Package Manager
+```sh
+# Installing Node.js
+sudo apt-get install git nodejs npm
+# Installing Bower
+sudo npm install -g bower
+```
+
+Note that the package package may be broken as it was for some versions of ubuntu 12.04. You might be better off installing from source.
 
 #### Install From Source
 ```sh
+# Installing prerequisite packages
 sudo apt-get install g++ curl libssl-dev apache2-utils
-wget http://nodejs.org/dist/v0.10.36/node-v0.10.36.tar.gz
-tar –xvf node-v0.10.36.tar.gz
-cd node-v0.10.36
+# Getting Node.js Source
+wget http://nodejs.org/dist/v0.12.7/node-v0.12.7.tar.gz
+tar –xvf node-v0.12.7.tar.gz
+cd node-v0.12.7
 ./configure
 make
 sudo make install
 ```
 
-#### Using Package Manager
-```sh
-sudo apt-get install git nodejs npm
-sudo npm install -g bower
-```
-Note that for some versions of Linux the nodejs package may be broken and you might be better off installing from source
-
-#### Download Repository and Install Node Packages
+#### Download Repository and Install Packages
 ```sh
 git clone https://github.com/akamai-open/imaging-sample-ui.git imaging-sample-ui
 cd ./imaging-sample-ui/OPENwrapper
