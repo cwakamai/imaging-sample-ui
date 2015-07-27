@@ -2,9 +2,9 @@
 
 This package is provided as an easy way to get started using Akamai's Image Manager APIs.  API Reference can be found at https://developer.akamai.com/api/imaging/imaging/reference.html
 
-This Sample Application illustrates how all of the Image Manager APIs can be used.
+This Application illustrates how all of the Image Manager APIs can be used.
 
-In order to use the Sample Application, you will need a set of Image Manager {OPEN} credentials, and the API token generated when enabling Image Manager in Property Manager.
+In order to use the DAM, you will need a set of Image Manager {OPEN} credentials, and the API token generated when enabling Image Manager in Property Manager.
 
 
 ## {OPEN} Node.js Server Installation
@@ -66,7 +66,7 @@ bower install
 
 ### Windows
 + [Install Node.js](https://www.nodejs.org/download)
-+ [Download Sample Client Package](https://github.com/akamai-open/imaging-sample-ui/archive/master.zip)
++ [Download Client Package](https://github.com/akamai-open/imaging-sample-ui/archive/master.zip)
 + Unzip the folder
 + Open a command line: **cmd.exe**
 
@@ -79,11 +79,11 @@ cd webapp
 bower install
 ```
 
-## Running the application server
+## Running the DAM (Node Server + Webapp)
 
 ### Configuration
 
-The Sample DAM application will need you to update a configuration file to add your OPEN credentials. 
+The DAM application will need you to update a configuration file to add your OPEN credentials. 
 
 + Edit path/to/imaging-sample-ui/OPENwrapper/src/conf.json
 + Change the credentials to the ones you recieved from Luna
@@ -128,7 +128,7 @@ node OPENwrapper/index.js -c /path/to/config.json
 
 This will run the server with the specified configuration file which **MUST** be valid JSON. If you haven't changed the configuration, it should be running at [http://localhost:8421](http://localhost:8421)
 
-## Sample DAM UI Deployment
+## DAM UI Deployment
 
 ### Install Bower Package Manager
 
