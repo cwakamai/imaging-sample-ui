@@ -165,7 +165,7 @@ Place the libraries in ```OPENwrapper/webapp``` and update the paths in the ```O
 
 Launch a web browser and navigate to the web server URL. The default URL on the system it is running on should be http://localhost:8421
 
-If you are accessing the DAM from another machine you should connect to http://<host_server_ip>:8421
+If you are accessing the DAM from another machine you should connect to http://[host_server_ip]:8421
 
 
 ## License
