@@ -96,7 +96,7 @@ The DAM application will need you to update a configuration file to add your OPE
 }
 ```
 
-### Unix-based systems
+### Unix (Linux/Mac) based systems
 ```sh
 cd <path_to>/imaging-sample-ui
 ./run.sh
@@ -161,9 +161,11 @@ Download the following libraries
 
 Place the libraries in ```OPENwrapper/webapp``` and update the paths in the ```OPENwrapper/webapp/index.html```
 
-### Launch
+## Accessing the DAM once it is launched
 
-Launch a web browser and navigate to the web server URL
+Launch a web browser and navigate to the web server URL. The default URL on the system it is running on should be http://localhost:8421
+
+If you are accessing the DAM from another machine you should connect to http://<host_server_ip>:8421
 
 
 ## License
