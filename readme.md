@@ -80,16 +80,18 @@ bower install
 
 ### Configuration
 
-By default the Sample DAM application will expect the OPEN Node.js server to be listening at the same origin, if you like to change this
+The Sample DAM application will need you to update a configuration file to add your OPEN credentials. 
 
-+ Edit ```/path/to/sampleapp/OPENwrapper/webapp/js/configuration.js```
-+ Change the apiHost to your new url, with the format of *protocol://domain:port/*
-For example
-```
-var apiHost = "http://sampledomain:6000/";
-```
-+ Edit path/to/sampleapp/OPENwrapper/src/conf.json
++ Edit path/to/imaging-sample-ui/OPENwrapper/src/conf.json
 + Change the credentials to the ones you recieved from Luna
+``` js
+{
+	"client_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+	"client_secret":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
+	"access_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+	"base_uri":"https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.imaging.akamaiapis.net"
+}
+```
 
 ### Unix-based systems
 ```sh
