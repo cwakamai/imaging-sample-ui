@@ -1,13 +1,20 @@
+<scirpt src="js/multiselect/isteven-multi-select.js"></script>
 <div ng-switch="imageView">
     <div ng-switch-when="add">
         <div class="row padding-bottom">
             <div class="col-md-10">
-                <a id="backImagesLink" href="" class="pull-left" ng-click="goCatalogView();">Back to Image Catalog</a>
+                <a id="backImagesLink" href="" class="pull-left" ng-click="goCatalogView();">
+                    Back to Image Catalog
+                </a>
             </div>
             <div class="col-md-2">
                 <div class="pull-right" style="margin-left: 10px">
-                    <button id="addImagesWithIdsBtn" ng-show="!addImagesWithIds" class="btn btn-info" ng-click="addImagesWithIds=true">Add Individual Images</button>
-                    <button id="addBulkImagesBtn" ng-show="addImagesWithIds" class="btn btn-info" ng-click="addImagesWithIds=false">Add Bulk Images</button>
+                    <button id="addImagesWithIdsBtn" ng-show="!addImagesWithIds" class="btn btn-info" ng-click="addImagesWithIds=true">
+                        Add Individual Images
+                    </button>
+                    <button id="addBulkImagesBtn" ng-show="addImagesWithIds" class="btn btn-info" ng-click="addImagesWithIds=false">
+                        Add Bulk Images
+                    </button>
                 </div>
             </div>
         </div>
@@ -18,7 +25,9 @@
                 <div ng-show="addImagesWithIds">
                     <div class="row">
                         <div class="side-padding">
-                            <label class="control-label dull-header">Source Image URL</label>
+                            <label class="control-label dull-header">
+                                Source Image URL
+                            </label>
                         </div>
                         <div class="col-md-6 padding-bottom">
                             <input id="imageUrlInpt" class="form-control" type="text" placeholder="http://www.example.com/source_image.jpg" ng-model="addImageFields.newImageUrl">
@@ -26,7 +35,9 @@
                     </div>
                     <div class="row">
                         <div class="side-padding">
-                            <label class="control-label dull-header" style="padding-left: 0px; text-aline: left">Target Path</label>
+                            <label class="control-label dull-header" style="padding-left: 0px; text-aline: left">
+                                Target Path
+                            </label>
                         </div>
                         <div class="col-md-6 padding-bottom">
                             <input id="imageIdInpt" class="form-control" type="text" placeholder="/images/myImage.jpg" ng-model="addImageFields.newImageId">
@@ -37,11 +48,15 @@
                 <!-- BULK IMAGE UPLOAD -->
                 <div ng-show="!addImagesWithIds">
                     <div class="form-group row side-padding">
-                        <label for="buldImageUrl" class="control-label dull-header">Source Image URLs</label>
+                        <label for="buldImageUrl" class="control-label dull-header">
+                            Source Image URLs
+                        </label>
                         <textarea id="bulkImageUrlsInpt" class="form-control" placeholder="New line separated urls." ng-model="addImageFields.newBulkUrls" rows="10"></textarea>
                     </div>
                     <div class="col-md-12 padding-bottom">
-                        <h2 for="bulkTargetPathNotice" class="dull-header">The Target Path is automatically generated and will match the ID of each image</h2>
+                        <h2 for="bulkTargetPathNotice" class="dull-header">
+                            The Target Path is automatically generated and will match the ID of each image
+                        </h2>
                     </div>
                 </div>
 
@@ -61,7 +76,7 @@
                 <div ng-if="rfwPoliciesExist" class="container padding-left row">
                     <div class="col-md-12 padding-left">
                         <div class="row">
-                            <h3 class="gray-light text-center col-md-7">Ready For Web</h3>
+                            <h3 class="gray-light text-center col-md-4 col-md-offset-3">Ready For Web</h3>
                         </div>
                         <div class="row">
                             <div class="form-group padding-bottom col-md-3">
@@ -71,11 +86,11 @@
                                 </select>
                             </div>
                             <div class="col-md-1"></div>
-                            <div class="form-group padding-bottom col-md-4">
+                            <div class="form-group padding-bottom col-md-3">
                                 <label for="rfwTag" class="control-label dull-header">
                                     Job Tag
                                 </label>
-                                <input id="rfwTagInpt" type="text" class="form-control" ng-model="addImageFields.newRFWTag" placeholder="Single tag for RFW job, alphabetic characters only">
+                                <input id="rfwTagInpt" type="text" class="form-control" ng-model="addImageFields.newRFWTag" placeholder="A tag for the RFW job(s)">
                             </div>
                         </div>
                     </div>
@@ -83,8 +98,83 @@
 
                 <!-- Submit -->
                 <div class="form-group col-sm-10">
-                    <div class="col-md-2 col-md-offset-2 ">
-                        <button type="submit" id="addNewImagesBtn" class="btn btn-success" style="width: 100%;">Add Images</button>
+                    <div class="col-md-2 col-md-offset-3 ">
+                        <button type="submit" id="addNewImagesBtn" class="btn btn-success" style="width: 100%;">
+                            Add Images
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div ng-switch-when="delete">
+        <div class="row">
+            <div class="col-md-4">
+                <a id="backImagesLink" href="" class="pull-left" ng-click="goCatalogView();">
+                    Back to Image Catalog
+                </a>
+            </div>
+            <div class="col-md-4 header">
+                <h1>Bulk Delete<h1>
+            </div>
+            <div class="col-md-3 pull-right">
+                <div class="pull-right">
+                    <button id="goAddImagesBtn" class="btn btn btn-primary pull-right" ng-click="goAddImages()" style="margin-left: 10px;">
+                        Add Images
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row form-horizontal padding-top">
+            <div class="col-md-5 col-sm-4">
+                <input type="text" id="imageSearchContentInpt" ng-keydown="checkKey($event, findBy, filterContent)" ng-disabled="findBy === 'all'" class="form-control" id="tagFilter" ng-model="filterContent" placeholder="ID or tag or URL">
+            </div>
+            <div class="col-md-5 col-sm-4">
+                <search-group term="findBy" filter="filterContent"></search-group>
+                <button id="imageSearchBtn" class="btn btn btn-primary" ng-click="getImages(findBy, filterContent)" style="margin-left: 10px;">
+                    Search
+                </button>
+            </div>
+            <div class="col-md-12">
+                <hr class="dark-line side-padding">
+            </div>
+            <div class="row" ng-if="images.length > 0">
+                <div class="col-md-12">
+                    <paged-image-checklist images="images" limit="15"></paged-image-checklist>
+                </div>
+            </div>
+            <p ng-if="images.length == 0" class="dull-header col-md-12 padding-top">
+                Search for images
+            </p>
+        </div>
+    </div>
+    <div ng-switch-when="purge">
+        <div>
+            <div class="col-md-10">
+                <a id="backImagesLink" href="" class="pull-left" ng-click="goCatalogView();">
+                    Back to Image Catalog
+                </a>
+            </div>
+            <div class="col-md-2">
+                <button ng-if="rfwIsEnabled" id="goAddImagesBtn" class="btn btn-primary" ng-click="goAddImages()" style="margin-left: 10px;">
+                    Add Images
+                </button>
+            </div>
+        </div>
+        <form class="form-horizontal row" role="form" ng-submit="purgeImages(imagesToPurge)">
+            <div class="col-md-12">
+                <div class="form-group row side-padding">
+                    <label for="purgeImageURLs" class="control-label dull-header">
+                        Image URLs to Purge
+                    </label>
+                    <textarea id="purgeImageURLs" class="form-control" placeholder="New line separated urls." ng-model="imagesToPurge" rows="10"></textarea>
+                </div>
+                <!-- Submit -->
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <button type="submit" id="bulkPurgeImagesBtn" class="btn btn-success" style="width: 100%;">
+                            Purge Images
+                        </button>
                     </div>
                 </div>
             </div>
@@ -92,24 +182,49 @@
     </div>
     <div ng-switch-when="catalog">
         <div class="row form-horizontal padding-top">
-            <div class="col-md-4 col-sm-4">
-                <input type="text" id="imageSearchContentInpt" ng-disabled="findBy === 'all'" class="form-control" id="tagFilter" ng-model="filterContent" placeholder="ID or tag or URL">
+            <div class="col-md-5 col-sm-5">
+                <input type="text" id="imageSearchContentInpt" ng-keydown="checkKey($event, findBy, filterContent)" ng-disabled="findBy === 'all'" class="form-control" id="tagFilter" ng-model="filterContent" placeholder="ID or tag or URL">
             </div>
-            <div class="col-md-5 col-sm-4">
-                <search-group term="findBy" filter="filterContent"></search-group>
-                <button id="imageSearchBtn" class="btn btn btn-primary" ng-click="getImages(findBy, filterContent)" style="margin-left: 10px;">Search</button>
-            </div>
-            <div class="col-md-3 col-sm-2">
-                <button id="goAddImagesBtn" class="btn btn btn-success pull-right" ng-click="goAddImages()" style="margin-left: 10px;">Add Images</button>
+            <div class="col-md-5 col-sm-5 pull-right">
+                <div class="pull-right">
+                    <button ng-if="rfwIsEnabled" id="goAddImagesBtn" class="btn btn-primary" ng-click="goAddImages()" style="margin-left: 10px;">
+                        Add Images
+                    </button>
+                    <button id="purgeBtn" class="btn btn-danger" ng-click="goMassDelete()">
+                        Bulk Delete
+                    </button>
+                </div>
             </div>
         </div>
-        <hr class="dark-line side-padding">
-        <div class="row" ng-if="images.length > 0">
+        <div class="col-md-5">
+            <hr class="dark-line side-padding">
+        </div>
+        <div class="col-md-12 col-sm-12">
+            <div class="row">
+                <search-group term="findBy" class="pull-left" filter="filterContent"></search-group>
+                <div class="col-md-3">
+                    <button id="imageSearchBtn" class="btn btn btn-primary pull-right" ng-click="getImages(findBy, filterContent)" style="margin-left: 10px;">
+                        Search
+                    </button>
+                    <button class="btn btn btn-primary pull-right" ng-click="getImages('all', null)" style="margin-left: 10px;">
+                        Refresh
+                    </button>
+                <div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <hr class="dark-line side-padding">
+        </div>
+        <div class="col-md-12 row" ng-if="images.length > 0">
             <div class="col-md-12">
-                <paged-image-list images="images" limit="10" remove="removeImage(imageId, index)" ></paged-image-list>
+                <paged-image-list images="images" limit="10" remove="removeImage(imageId, index)"></paged-image-list>
             </div>
         </div>
-        <p ng-if="images.length == 0" class="dull-header">Search for images</p>
+        <div class="col-md-12 row" ng-if="images.length == 0">
+            <p class="dull-header">
+                No Results, Search for images
+            </p>
+        </div>
     </div>
 </div>
 

@@ -132,11 +132,17 @@
 
                 return policyResolutionResource;
             },
-            createPolicyOutputsDefaultsResource: function(quality, perceptualQuality) {
-                var policyOutputsDefaultsResource = {
-                    quality: quality,
-                    perceptualQuality: perceptualQuality
-                };
+            createPolicyOutputsDefaultsResource: function(quality, perceptualQuality, qSelector) {
+                if (qSelector == "pQuality"){
+                    var policyOutputsDefaultsResource = {
+                        perceptualQuality: perceptualQuality
+                    };
+                } else{
+                    var policyOutputsDefaultsResource = {
+                        quality: quality
+                    };
+                }
+
                 return policyOutputsDefaultsResource;
             },
             createOutputResource: function(defaults) {

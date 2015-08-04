@@ -1,19 +1,33 @@
 <div ng-switch="icView">
     <div ng-switch-when="catalog">
         <form class="padding-bottom padding-top side-padding row">
-            <div class="col-sm-4">
-                <input id="imageCollectionSearchInpt" type="text" class="form-control col-md-5" id="tag" placeholder="Filter By ID" ng-model="searchCriteria"></input>
-            </div>
-            <div class="pull-right">
-                <button id="createImageCollectionBtn" class="btn btn-success" ng-click="goCreateImageCollection()">
-                        Create Image Collection
-                </button>
-                <button id="uploadImageCollectionBtn" class="btn btn-primary" ng-click="goUploadImageCollection()">
-                        Upload Image Collection
-                </button>
-                <button id="pasteImageCollectionBtn" class="btn btn-primary" ng-click="goPasteImageCollection()">
-                        Paste Image Collection
-                </button>
+            <div class="col-md-12">
+                <div class="col-md-8">
+                    <div class="col-md-6">
+                        <input id="imageCollectionSearchInpt" type="text" class="form-control" id="tag" placeholder="Search for Image Collection by ID" ng-model="searchCriteria"></input>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="imageSearchBtn" class="btn btn btn-primary" ng-click="searchForIC(searchCriteria)">
+                            Search
+                        </button>
+                        <button class="btn btn btn-primary" ng-click="getAllImageCollections()" style="margin-left: 10px;">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="pull-right">
+                        <button id="createImageCollectionBtn" class="btn btn-success" ng-click="goCreateImageCollection()">
+                                Create IC
+                        </button>
+                        <button id="uploadImageCollectionBtn" class="btn btn-primary" ng-click="goUploadImageCollection()">
+                                Upload IC
+                        </button>
+                        <button id="pasteImageCollectionBtn" class="btn btn-primary" ng-click="goPasteImageCollection()">
+                                Paste IC
+                        </button>
+                    </div>
+                </div>
             </div>
         </form>
         <hr></hr>
@@ -80,10 +94,13 @@
                         <h5> {{currentImageCollection.definition.type}} Images: </h5>
                         <div ng-if"currentImageCollection.definition.hasOwnProperty('items')" ng-repeat="image in currentImageCollection.definition.items">
                             <div class="side-padding">
-                                Image ID: <a href="{{image.imageId}}">{{image.imageId}}</a>
+                                Image ID: {{image.imageId}}
                             </div>
                             <div class="side-padding">
                                 Type: {{image.type}}
+                            </div>
+                            <div class="side-padding">
+                                <a ng-href="{{image.url}}">Original Image</a>
                             </div>
                             <hr ng-if="(currentImageCollection.definition.items.length > 0) && ($index != currentImageCollection.definition.items.length-1)"></hr>
                         </div>
@@ -136,13 +153,16 @@
                 <div class="row inner-content">
                     <div class="col-sm-4 col-sm-offset-4">
                         <div class="form-group row">
-                            <label class="text-center">Image Collection ID *</label>
+                            <label class="text-center">Image Collection ID</label>
                             <input id="IcIDInpt" required type="text" class="form-control vertical-margin-1x" placeholder="Make it unique to add or use an existing ID to update" ng-model="IcId"></input>
-                            <label class="info-text" ng-if="IcId && !imageCollectionExists(IcId)">
+                            <label class="info-text" ng-if="IcId && charsAreValid(IcId) && !imageCollectionExists(IcId)">
                                 <span class="glyphicon glyphicon-ok" style="color:green"></span> Image Collection ID is free.
                             </label>
-                            <label class="info-text" ng-if="IcId && imageCollectionExists(IcId)">
+                            <label class="info-text" ng-if="IcId && charsAreValid(IcId) && imageCollectionExists(IcId)">
                                 <span class="glyphicon glyphicon-alert" style="color:gold"></span> This Image Collection ID has been used. Overwriting existing Image Collection.
+                            </label>
+                            <label class="info-text" ng-if="IcId && !charsAreValid(IcId)">
+                                <span class="glyphicon glyphicon-ban-circle" style="color:red"></span> Your Image Collection ID uses ineligible characters. Acceptable Characters are alphabetic [A-Za-z], underscore and hyphen [_-]
                             </label>
                         </div>
                         <div id="goAddImageCollectionBtn" class="pull-right nav-hover" ng-click="goChooseType(IcId)">
@@ -163,7 +183,7 @@
                     <div class="col-md-4 padding-bottom">
                         <div class="row col-md-6">
                             <label class="text-center">Image Collection Type</label>
-                            <select id="selectIcType" class="form-control" style="float: none" ng-options="type for type in icTypes" ng-model="icType">
+                            <select id="selectIcType" class="form-control" style="float: none" ng-init="icType='Gallery'" ng-options="type for type in icTypes" ng-model="icType">
                                 <option value="">None Selected</option>
                             </select>
                         </div>
@@ -187,7 +207,7 @@
                 <div class="row">
                     <div class="col-md-10 col-md-offset-1">
                         <div class="row">
-                            <h4 class="pull-left side-padding">Add new images to {{currentImageCollection.id}}</h4>
+                            <h4 class="pull-left side-padding">Add new images to {{currentImageCollection.icId}}</h4>
                             <div class="pull-right">
                                 <button id="addNewImageBtn" ng-show="addExistingImages" class="btn btn-info" ng-click="addExistingImages = false">Add New Images</button>
                                 <button id="addExistingImageBtn" ng-show="!addExistingImages" class="btn btn-info" ng-click="addExistingImages = true">Add Existing Images</button>
@@ -229,16 +249,25 @@
                                 <p ng-show="filteredImages === null || filteredImages.length == 0">
                                     <em>No Images</em>
                                 </p>
-
+                                <div class="row padding-bottom">
+                                    <div class="col-md-1">
+                                        <h5>&nbsp;&nbsp;&nbsp;&nbsp;Image</h5>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <h5>&nbsp;&nbsp;&nbsp;ID</h5>
+                                    </div>                        
+                                    <div class="col-md-1">
+                                    </div>
+                                </div>
                                 <li class="list-group-item dropdown" ng-class="{'selected-list-item': image.selected}" ng-repeat="image in filteredImages | orderBy: 'id'">
                                     <div class="row">
                                         <div class="col-md-1">
                                             <img ng-src="{{image.url}}" class="list-icon img-responsive">
                                         </div>
-                                        <div class="col-md-5">
-                                            Image Id: {{image.id}}
+                                        <div class="col-md-10">
+                                            {{image.id}}
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-1">
                                             <input id="selectImage{{index}}Inpt" type="checkbox" ng-model="image.selected" class="pull-right">
                                         </div>
                                     </div>

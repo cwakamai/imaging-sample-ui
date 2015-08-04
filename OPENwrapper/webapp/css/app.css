@@ -502,3 +502,6 @@ a.list-group-item-nav.active, a.list-group-item-nav.active:hover, a.list-group-i
 .grid-next.disabled:after {
     border-color: gray;
 }
+.standard-button-width {
+    min-width:190px;
+}

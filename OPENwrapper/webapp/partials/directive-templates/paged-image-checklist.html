@@ -1,0 +1,62 @@
+<nav class="text-center" ng-if="pageNumbers.length > 1">
+     <ul class="pagination">
+        <li class="pointer" ng-class="{disabled: currentPage === 1}">
+            <a id="prevPageLink" ng-click="prevPage()" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li id="{{index}}PageLink" class="pointer" ng-repeat="index in pageNumbers" ng-click="goToImagePage(index)" ng-class="{active: currentPage === index}"><a>{{index}}</a>
+        </li>
+        <li class="pointer" ng-class="{disabled: currentPage === pageNumbers.length}">
+            <a id="nextPageLink" ng-click="nextPage()" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+<table class="table padding-bottom" style="max-width:100%;">
+    <thead>
+        <tr>
+            <th style="width: 10%">
+                Original Image
+            </th>
+            <th style="width: 87%; max-width:82%; word-break: break-all;">
+                Image ID
+            </th>
+            <th style="width: 3%;">
+                <button ng-if="allChecked" id="checked" class="glyphicon glyphicon-remove" ng-click="flipAll(false)">
+                </button>
+                <button ng-if="!allChecked" id="unchecked" class="glyphicon glyphicon-ok" ng-click="flipAll(true)">
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="image in visibleImages" ng-class="{'selected-list-item': image.selected}">
+            <td class="pointer">
+                <a href="{{image.url | bypass}}" target="_blank">
+                    <img style="max-width:75px; max-height:75px;" ng-src="{{image.url | bypass}}" class="list-icon img-responsive">
+                </a>
+            </td>
+            <td style="overflow:hidden; word-break: break-all;">
+                {{image.id}}
+            </td>
+            <td id="selectImageChk">
+                <input type="checkbox" ng-change="updateList(image, image_$index, $index, currentPage)" ng-model="image_$index" ng-init="image_$index=getTFValue(currentPage, $index)"></input>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="col-md-12">
+    <!-- <div class="col-md-2 col-md-offset-4"> -->
+    <div class="col-md-2 col-md-offset-5">
+        <button class="btn btn-danger" ng-if="images.length != 0" ng-click="bulkDeleteImages()">
+            Delete Images
+        </button>
+    </div>
+<!--     <div>
+        <button class="btn btn-danger" ng-if="images.length != 0" ng-click="purgeImages()">
+            Purge Images
+        </button>
+    </div> -->
+</div>

@@ -380,7 +380,7 @@ app.directive("pagedRfwPolicyList", ['ApiConnector', '$filter', function(ApiConn
             rfwpolicies: "=",
             limit: "&",
             remove: "&",
-            select: "&"
+            choose: "&"
         },
         link: function(scope, element, attributes) {
             var pageByLimit = scope.limit();
@@ -433,14 +433,14 @@ app.directive("pagedRfwPolicyList", ['ApiConnector', '$filter', function(ApiConn
                 }
             };
 
-            scope.removeRFWPolicy = function(rfwPolicyID) {
+            scope.delete = function(rfwPolicyID) {
                 scope.remove({
                     'rfwPolicyID': rfwPolicyID
                 });
             };
 
-            scope.viewRFWPolicy = function(rfwPolicyID) {
-                scope.select({
+            scope.select = function(rfwPolicyID) {
+                scope.choose({
                     'rfwPolicyID': rfwPolicyID
                 });
             };
@@ -603,8 +603,182 @@ app.directive("pagedImageList", ['ApiConnector', '$filter', function(ApiConnecto
                     }
                 });
             };
+
+            scope.isRFWPolicy = function(policyID) {
+                ApiConnector.getRFWPolicy(policyID).then(function(success){
+                    return true;
+                },function(fail){
+                    return false;
+                });
+            };
         },
         templateUrl: "partials/directive-templates/paged-image-list.html"
+    };
+}]);
+
+app.directive("pagedImageChecklist", ['ApiConnector', '$route', '$filter', function(ApiConnector, route, filter) {
+    return {
+        restrict: 'E',
+        scope: {
+            images: "=",
+            limit: "&"
+        },
+        link: function(scope, element) {
+            var pageByLimit = scope.limit();
+            var errorDetails = {};
+            var imagesToDelete = [];
+            var rfwPolicies = [];
+            var rtPolicies = [];
+            
+            scope.allChecked = false;
+
+            var resetList = function(images) {
+                scope.visibleImages = [];
+                scope.pageNumbers = [];
+                scope.currentPage = 1;
+                scope.tfValues = [];
+
+                if (!isNaN(pageByLimit) && images) {
+                    var numOfPages = images.length / pageByLimit;
+
+                    for (var i = 0; i < numOfPages; i++) {
+                        scope.pageNumbers.push(i + 1);
+                    }
+                    loadImages(images.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit)));
+                }
+                if (!scope.tfValues[0]){
+                    for (i = 0; i < numOfPages; i++){
+                        scope.tfValues.push([]);
+                    }
+                }
+            };
+
+            var loadImages = function(images) {
+                if (images) {
+                    scope.visibleImages = images;
+                }
+            };
+
+            resetList(scope.images);
+
+            scope.$watchCollection('images', function(newVal, oldVal) {
+                resetList(newVal);
+            });
+
+            scope.nextPage = function() {
+                if (scope.currentPage < scope.pageNumbers.length) {
+                    scope.currentPage = scope.currentPage + 1;
+                    loadImages(scope.images.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+                scope.updateChecked();
+            };
+
+            scope.prevPage = function() {
+                if (scope.currentPage > 1) {
+                    scope.currentPage = scope.currentPage - 1;
+                    loadImages(scope.images.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+                scope.updateChecked();
+            };
+
+            scope.goToImagePage = function(index) {
+                if (0 < index < scope.pageNumbers.length) {
+                    scope.currentPage = index;
+                    loadImages(scope.images.slice((scope.currentPage - 1) * pageByLimit, (scope.currentPage * pageByLimit) - 1));
+                }
+                scope.updateChecked();
+            };
+
+            scope.goShowError = function(error) {
+                errorDetails = error.toString();
+                // console.log(error);
+                $("#show-error").modal({
+                    backdrop: "static",
+                    keyboard: true
+                });
+            };
+
+            scope.removeImage = function(imageId, index) {
+                ApiConnector.removeImage(imageId).then(function(results) {
+                    if (results) {
+                        scope.images.splice((scope.currentPage - 1) * pageByLimit + index, 1);
+                    } else {
+                        alert("ERROR: Unable to delete image.");
+                    }
+                });
+            };
+
+            scope.flipAll = function(pageSelected) {
+                if (!pageSelected)
+                    $('input[type=checkbox][id!=main]:checked').click();
+                else
+                    $('input[type=checkbox][id!=main]').not(':checked').click();
+
+                scope.updateChecked();
+            };
+
+            scope.bulkDeleteImages = function() {
+                if (imagesToDelete.length > 0) {
+                    $.each(imagesToDelete, function(index, image) {
+                        ApiConnector.removeImage(image.id).then(function(results){
+                            if (results){
+                                scope.images.splice((scope.currentPage - 1) * pageByLimit + index, 1);
+                            } else {
+                                alert("ERROR: Unable to delete image " + image.id);
+                            }
+                        },function(error){
+                            console.log(error);
+                            alert("There was a problem deleting image " + image.id, error);
+                        });
+                    });
+                    scope.updateChecked();
+                    route.reload();
+                }
+            };
+
+            scope.getTFValue = function(currentPage, index) {
+                if (scope.tfValues[currentPage-1][index])
+                    return scope.tfValues[currentPage-1][index];
+                else
+                    return false;
+            };
+
+            scope.setTFValue = function(currentPage, index, value) {
+                scope.tfValues[currentPage-1][index] = value;
+            };
+
+            scope.updateChecked = function(){
+                scope.allChecked = true;
+                $.each(scope.visibleImages, function(index, image){
+                    if (imagesToDelete.indexOf(image) === -1){
+                        scope.allChecked = false;
+                    }
+                });
+            };
+
+            scope.updateList = function(image, addOrRemove, index, currentPage){
+                if (addOrRemove){
+                    imagesToDelete.push(image);
+                } else {
+                    var imageIndex = imagesToDelete.indexOf(image);
+                    imagesToDelete.splice(imageIndex, 1);
+                }
+                scope.setTFValue(currentPage, index, addOrRemove);
+                scope.updateChecked();
+            };
+
+            scope.purgeImages = function() {
+                if (imagesToDelete.length > 0) {
+                    
+                    ApiConnector.purge(imagesToDelete);
+
+                    scope.updateChecked();
+                    route.reload();
+                }
+            };
+
+        },
+        templateUrl: "partials/directive-templates/paged-image-checklist.html"
     };
 }]);
 

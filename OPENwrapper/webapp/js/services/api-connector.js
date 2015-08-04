@@ -109,7 +109,7 @@
                     .then(function(successData) {
                         return successData.data;
                     }, function(errorData) {
-                        return null;
+                        return errorData;
                     });
             };
 
@@ -170,6 +170,35 @@
                     }, function(error) {
                         return null;
                     });
+            };
+
+            this.getImageWithStatus = function(policyId, status) {
+                if (policyId && status){
+                    return http.get(config.getApiHost() + 'imaging/v0/images?policyId=' + policyId + '&status=' + status)
+                        .then(function(successData){
+                            return successData.data;
+                        }, function(errorData){
+                            console.log("error", errorData.data)
+                            return errorData.data;
+                        }
+                    );
+                } else {
+                    alert("You need both policyId and status to get images with a status policyId: " + policyId + " status: " + status);
+                }
+            };
+
+            this.purge = function(imagesArray) {
+                if (imagesArray && imagesArray.length > 0){
+                    return http.post(config.getApiHost() + 'imaging/v0/images/purge')
+                        .then(function(successData){
+                            console.log("Purge successful");
+                        },function(error){
+                            console.log("Couldn't Purge", error.data);
+                            alert("Failed to purge images. System returned the error :\n" + error.data.detail);
+                        });
+                } else {
+                    // TODO No images to purge
+                }
             };
 
             // Ordered Image Collection API
@@ -362,11 +391,11 @@
 
             this.getRFWPolicy = function(rfwPolicyID){
                 return http.get(config.getApiHost() + 'imaging/v0/policies/rfw/' + rfwPolicyID)
-                .then(function(successData) {
-                    return successData.data;
-                }, function(error) {
-                    return null;
-                });
+                    .then(function(successData) {
+                        return successData.data;
+                    }, function(error) {
+                        return null;
+                    });
             };
 
             this.addRFWPolicy = function(rfwPolicyResource){

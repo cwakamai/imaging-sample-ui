@@ -1,16 +1,28 @@
 <div ng-switch="policyView">
     <div ng-switch-when="catalog">
         <form class="padding-bottom padding-top side-padding row">
-            <div class="col-sm-4">
-                <input id="policySearchInpt" type="text" class="form-control" id="tag" placeholder="Filter By ID" ng-model="searchCriteria">
-            </div>
-            <div class="col-sm-8">
-                <button id="addPolicyBtn" style="margin-left:10px" class="btn btn-success pull-right" ng-click="goCreatePolicy()">
-                    Add Policy
-                </button>
-                <button id="uplaodPolicyBtn" style="margin-left:10px" class="btn btn-primary pull-right" ng-click="goUploadPolicy()">
-                    Upload Policy
-                </button>
+            <div class="col-md-12">
+                <div class="col-md-9">
+                    <div class="col-md-5">
+                        <input id="policySearchInpt" type="text" class="form-control" id="tag" placeholder="Search for Policy By ID" ng-model="searchCriteria">
+                    </div>
+                    <div class="col-md-4">
+                        <button id="imageSearchBtn" class="btn btn btn-primary" ng-click="searchForPolicy(searchCriteria)">
+                            Search
+                        </button>
+                        <button class="btn btn btn-primary" ng-click="getPolicies()" style="margin-left: 10px;">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3 pull-right">
+                    <button id="addPolicyBtn" style="margin-left:10px" class="btn btn-success pull-right" ng-click="goCreatePolicy()">
+                        Add Policy
+                    </button>
+                    <button id="uplaodPolicyBtn" style="margin-left:10px" class="btn btn-primary pull-right" ng-click="goUploadPolicy()">
+                        Upload Policy
+                    </button>
+                </div>
             </div>
         </form>
         <main>
@@ -22,7 +34,7 @@
         <div class="row">
             <div class="col-md-5 col-md-offset-1">
                 <a id="goPolicyCatalogLink" href="" class="pull-left" ng-click="goPolicyCatalog()">
-                    Back to No Touch Policy Catalog
+                    Back to Real Time Policy Catalog
                 </a>
             </div>
             <div class="col-md-5">
@@ -93,7 +105,7 @@
     <div ng-switch-when="createPolicy">
         <div class="row">
             <div class="col-md-10 col-md-offset-1">
-                <a href="" class="pull-left" ng-click="goPolicyCatalog()">Back to Policy Catalog</a>
+                <a href="" class="pull-left" ng-click="goPolicyCatalog()">Back to Real Time Policy Catalog</a>
             </div>
         </div>
         <header class="row padding-top padding-bottom breadcrumbs">
@@ -130,13 +142,16 @@
                         </div>
                         <div class="col-sm-4 col-sm-offset-4">
                             <div class="form-group row">
-                                <label class="text-center">Policy ID *</label>
+                                <label class="text-center">Real Time Policy ID</label>
                                 <input id="policyIDInpt" required type="text" class="form-control vertical-margin-1x" placeholder="Make it unique to add or use an existing to update" ng-model="policyId">
-                                <label class="info-text" ng-if="policyId && !policyDoesExist(policyId)">
-                                    <span class="glyphicon glyphicon-ok" style="color:green"></span> Policy ID has not been used.
+                                <label class="info-text" ng-if="policyId && charsAreValid(policyId) && !policyDoesExist(policyId)">
+                                    <span class="glyphicon glyphicon-ok" style="color:green"></span> Real Time Policy ID has not been used.
                                 </label>
-                                <label class="info-text" ng-if="policyId && policyDoesExist(policyId)">
-                                    <span class="glyphicon glyphicon-alert" style="color:gold"></span> Policy ID has was used. Overwriting existing policy.
+                                <label class="info-text" ng-if="policyId && charsAreValid(policyId) && policyDoesExist(policyId)">
+                                    <span class="glyphicon glyphicon-alert" style="color:gold"></span> Real Time Policy ID has was used. Overwriting existing policy.
+                                </label>
+                                <label class="info-text" ng-if="policyId && !charsAreValid(policyId)">
+                                    <span class="glyphicon glyphicon-ban-circle" style="color:red"></span> The Real Time Policy ID you have chosen uses ineligible characters. Acceptable Characters are alphabetic [A-Za-z], underscore and hyphen [_-]
                                 </label>
                             </div>
                             <div class="form-group row">
@@ -155,7 +170,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <h3 class="text-center">Add Transforms to No Touch Policy</h3>
+                            <h3 class="text-center">Add Transforms to <b>{{policyId}}</b></h3>
                         </div>
                         <div class="col-md-2">
                             <div id="goSetResolutionsBtn" class="pull-right nav-hover" ng-click="goSetResolutions(transformSteps)">
@@ -178,7 +193,7 @@
                             </select>
                         </div>
                         <div class="col-md-6 text-center" ng-if="previewUrl">
-                            <p class="dull-header">Policy Preview</p>
+                            <p class="dull-header">Real Time Policy Preview</p>
                             <div ng-click="refreshPreview(transformSteps)" class="pointer refresh-preview">
                                 <span class="glyphicon glyphicon-refresh"></span>
                                 <label> Refresh Preview</label>
@@ -246,7 +261,7 @@
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <h3 class="text-center">Set Resolutions
+                            <h3 class="text-center">Set Resolutions for <b>{{policyId}}</b>
                             </h3>
                         </div>
                         <div ng-if="policyOutput.qSelector == 'quality'" class="col-md-2">
@@ -329,7 +344,7 @@
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <h3 class="text-center">Review Your No Touch Policy
+                            <h3 class="text-center">Review <b>{{policyId}}</b>
                             </h3>
                         </div>
                         <div class="col-md-2">
@@ -385,7 +400,7 @@
                 <div ng-switch-when="4">
                     <div class="col-sm-6 col-sm-offset-3">
                         <h3 class="text-center">
-                            Great! Your policy was Created/Updated!
+                            Great! Your real time policy was Created/Updated!
                         </h3>
                         <button id="addAnotherPolicyBtn" class="btn btn-success center-block" ng-click="goCreatePolicy()">
                             Click to Add Another

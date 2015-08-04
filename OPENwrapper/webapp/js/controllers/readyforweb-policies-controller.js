@@ -41,12 +41,13 @@
                 }
             };
 
-            // Go to the Add Transform step of create policy
             scope.goAddTransforms = function(rfwPolicyId, url) {
+                var re = /^[a-zA-Z_-]*$/;
+
                 if (url) {
                     scope.previewUrl = url;
                 }
-                if (rfwPolicyId !== null && typeof rfwPolicyId !== 'undefined') {
+                if (rfwPolicyId !== null && typeof rfwPolicyId !== 'undefined' && re.test(rfwPolicyId)) {
                     scope.getRFWPolicies().then(function() {
 
                         scope.includablePolicies = [];
@@ -64,10 +65,9 @@
                             scope.currentStep = 1;
                         }
                     });
-                }
+                } else {}
             };
 
-            // Go to the Set Resolutions step of create policy
             scope.goSetResolutions = function(transformSteps) {
                 try {
                     validatedTransformations = ResourceFactory.validateAndCreateTransformResource(transformSteps);
@@ -77,7 +77,6 @@
                 }
             };
 
-            // Go to the Review step of create policy
             scope.goReviewRFWPolicy = function(resolutions, output, qualityType) {
                 if (qualityType==="pQuality") {
                     scope.policyOutput.pQuality = output;
@@ -115,7 +114,6 @@
                 }
             };
 
-            // Go to the create policy workflow
             scope.goCreatePolicy = function() {
                 scope.policyView = 'createPolicy';
                 scope.resetNewPolicyFields();
@@ -169,8 +167,8 @@
                 });
             };
 
-            scope.removeRFWPolicy = function(rfwPolicyId) {
-                ApiConnector.deleteRFWPolicy(rfwPolicyId).then(function(success) {
+            scope.removeRFWPolicy = function(rfwPolicyID) {
+                ApiConnector.deleteRFWPolicy(rfwPolicyID).then(function(success) {
                     if (success) {
                         scope.getRFWPolicies();
                     }
@@ -187,7 +185,7 @@
 
                     var resolutions = ResourceFactory.createPolicyResolutionResource(null, widths);
 
-                    var defaults = ResourceFactory.createPolicyOutputsDefaultsResource(scope.policyOutput.quality, scope.policyOutput.pQuality);
+                    var defaults = ResourceFactory.createPolicyOutputsDefaultsResource(scope.policyOutput.quality, scope.policyOutput.pQuality, scope.policyOutput.qSelector);
 
                     var outputs = ResourceFactory.createOutputResource(defaults);
 
@@ -199,7 +197,32 @@
                     }, function(error) {
                         alert("Failed to create policy.\nServer returned HTTP " + error.status + ": " + error.data.detail);
                     });
+                } else {
+                    console.log(scope.rfwPolicyId);
                 }
+            };
+
+            scope.searchForRFWPolicy = function(rfwPolicyID){
+                scope.userRFWPolicies = [];
+                
+                ApiConnector.getRFWPolicy(rfwPolicyID).then(function(rfwPolicies) {
+                    if (Array.isArray(rfwPolicies))
+                        scope.userRFWPolicies = rfwPolicies;
+                    else
+                        scope.userRFWPolicies[0] = rfwPolicies;
+                });
+            };
+
+            scope.charsAreValid = function(rfwPolicyID){
+                var re = /^[A-Za-z_-]*$/g;
+                return (rfwPolicyID && re.test(rfwPolicyID));
+            };
+
+            scope.rfwPolicyDoesExist = function(rfwPolicyID) {
+                if (rfwPolicyID) {
+                    return findPolicyFromPoliciesArray(scope.userRFWPolicies, rfwPolicyID);
+                }
+                return false;
             };
 
             // Setup for when creating a new policy and using another policy as base 
@@ -221,16 +244,24 @@
                         // when we find a transform in the base policy that we want to include, populate it with the original config values.
                         if (transformInput) {
                             $.each(transform, function(propertyName, value) {
-                                $.each(transformInput.inputs, function(inputIndex, input) {
-                                    if (propertyName === input.name) {
-                                        if (propertyName == 'image') {
-                                            input.imageUrl = value.url;
-                                            // not copying the composite policy because we currently have no reference to policy id
-                                        } else {
-                                            input.value = value;
+                                if (transformInput.inputs){
+                                    $.each(transformInput.inputs, function(inputIndex, input) {
+                                        // Remove # from color hexcode
+                                        if (transform.transformation === "BackgroundColor"){
+                                            transform.color=transform.color.replace(/^./, '');
                                         }
-                                    }
-                                });
+                                        if (propertyName === input.name) {
+                                            if (propertyName == 'image') {
+                                                input.imageUrl = value.url;
+                                                // not copying the composite policy because we currently have no reference to policy id
+                                            } else {
+                                                input.value = value;
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    transform.transformation === "Greyscale";
+                                }
                             });
 
                             scope.transformSteps.push(transformInput);
@@ -239,7 +270,7 @@
                 }
 
                 if (basePolicy.resolutions && basePolicy.resolutions.widths) {
-                    scope.policyResolutions.widths = basePolicy.resolutions.widths;
+                    scope.policyResolutions.widths = basePolicy.resolutions.widths.toString();
                 } else {
                     scope.policyResolutions = {
                         widths: null
@@ -247,7 +278,15 @@
                 }
 
                 if (basePolicy.outputs) {
-                    scope.policyOutput.quality = basePolicy.outputs.defaults.quality;
+                    if (basePolicy.outputs.defaults.quality){
+                        scope.policyOutput.quality = basePolicy.outputs.defaults.quality;
+                        scope.policyOutput.qSelector = 'quality';
+                        scope.policyOutput.pQuality = null;
+                    } else{
+                        scope.policyOutput.pQuality = basePolicy.outputs.defaults.perceptualQuality;
+                        scope.policyOutput.qSelector = 'pQuality';
+                        scope.policyOutput.quality = null;
+                    }
                 }
             };
 
@@ -277,7 +316,6 @@
                 }
             };
 
-            // adding a user defined transform to a policy's transformation
             scope.addUserTransformToPolicy = function(userTransform) {
                 if (userTransform) {
                     scope.selectRFWPolicy(userTransform.id).then(function(policy) {
@@ -293,7 +331,6 @@
                 }
             };
 
-            // removing a policy's transformation
             scope.removeTransformStep = function(index) {
                 if (scope.transformSteps.length > 0) {
                     scope.transformSteps.splice(index, 1);
@@ -490,7 +527,7 @@
                 var policyFound = false;
                 $.each(policiesArray, function(index, policy) {
                     if (policy.id == targetPolicyId) {
-                        return true;
+                        policyFound = true;
                     }
                 });
                 return policyFound;

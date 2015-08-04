@@ -61,12 +61,12 @@
             });
 
             routeProvider.when('/rfwsetup', {
-                templateUrl: 'partials/rfwsetup.html',
+                templateUrl: 'partials/rfwSetup.html',
                 controller: 'RFWSetupCtrl'
             }); 
 
             routeProvider.when('/rfwpolicies', {
-                templateUrl: 'partials/rfwpolicies.html',
+                templateUrl: 'partials/rfwPolicies.html',
                 controller: 'RFWPoliciesCtrl'
             });            
 

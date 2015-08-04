@@ -24,8 +24,8 @@
 
     var app = angular.module('ImageManagementSample.controllers.image', []);
 
-    app.controller('ImageCtrl', ['$scope', '$q', 'ApiConnector', 'ResourceFactory', 'SystemConstants',
-        function(scope, q, ApiConnector, ResourceFactory, SystemConstants) {
+    app.controller('ImageCtrl', ['$scope', '$route', '$q', 'ApiConnector', 'ResourceFactory', 'SystemConstants',
+        function(scope, route, q, ApiConnector, ResourceFactory, SystemConstants) {
 
             scope.resetAddImageFields = function() {
                 scope.addImageFields = {
@@ -116,6 +116,8 @@
                                         scope.images = images;
                                     });
                                 }
+                            },function(error){
+                                scope.images = [];
                             });
                     } else if ('id' === findBy) {
                         ApiConnector.getImage(filterContent)
@@ -123,6 +125,8 @@
                                 if (imageResource !== null) {
                                     scope.images = [imageResource];
                                 }
+                            },function(error){
+                                scope.images = [];
                             });
                     } else if ('url' === findBy) {
                         ApiConnector.getImagesByUrl(filterContent)
@@ -135,6 +139,8 @@
                                         scope.images = images;
                                     });
                                 }
+                            },function(error){
+                                scope.images = [];
                             });
                     } else {
                         // shouldn't get here, do nothing
@@ -165,12 +171,24 @@
             scope.goCatalogView = function() {
                 scope.imageView = 'catalog';
                 scope.images = [];
+                scope.getImages('all', null);
+            };
+
+            scope.goMassDelete = function() {
+                scope.imageView = "delete";
+                scope.images = [];
+                scope.getImages('all', null);
+            };
+
+            scope.goBulkPurge = function(){
+                scope.imageView = 'purge';
             };
 
             scope.getRFWPolicies = function() {
                 return ApiConnector.getRFWPolicies().then(function(retrievedPolicies) {
                     if (retrievedPolicies) {
                         scope.rfwPolicies = retrievedPolicies.items;
+                        scope.rfwPolicies.splice(0, 1); // Get rid of .rfw, it will be run on the image anyway
                     } else {
                         scope.rfwPolicies = null;
                     }
@@ -191,6 +209,74 @@
                 });
             };
 
+            scope.checkKey = function(event, findBy, filterContent){
+                if(event.keyCode == 13)
+                    scope.getImages(findBy, filterContent);
+            };
+
+            scope.purgeImages = function(imagesToDelete) {
+                if (imagesToDelete && imagesToDelete.length > 0) {
+                    
+                    var bulkImageUrls = imagesToDelete.split(/\r?\n/);
+                    console.log(bulkImageUrls);
+                    // ApiConnector.purge(bulkImageUrls);
+
+                    alert("Images successfully purged");
+                    scope.imageView = 'catalog';
+                    scope.images = [];
+                    scope.getImages('all', null);
+                }
+            };
+
+            scope.getAllWarnErrors = function(){
+                var allWarnErrors = [];
+                var allPolicies = [];
+                var queue = [];
+
+                queue.push(ApiConnector.getAllPolicies().then(function(retRTpolicies){
+                    $.each(retRTpolicies.items,function(index, rtPolicy){
+                        allPolicies.push(rtPolicy.id);
+                    });
+                }));
+
+                queue.push(ApiConnector.getRFWPolicies().then(function(retRFWpolicies){
+                    $.each(retRFWpolicies.items,function(index, rfwPolicy){
+                        allPolicies.push(rfwPolicy.id);
+                    });
+                }));
+
+                q.all(queue).then(function(){
+                    queue = [];
+
+                    // Only try if there are images to have jobs in the first place
+                    if (scope.images.length) {
+
+                        $.each(allPolicies, function(index, policy){
+                            // console.log("policy to be got: ", policy);
+                            queue.push(ApiConnector.getImageWithStatus(policy, 'FAILED')
+                                .then(function(failedImageData){
+                                            allWarnErrors.concat(failedImageData.items);
+                                        },function(error){
+                                            console.log("There was an error getting failed images", error);
+                                        }));
+                            queue.push(ApiConnector.getImageWithStatus(policy, 'WARNING')
+                                .then(function(warnImageData){
+                                            allWarnErrors.concat(warnImageData.items);
+                                        },function(error){
+                                            console.log("There was an error getting images with warnings", error);
+                                        }));
+                        });
+
+                        q.all(queue).then(function(){
+                            
+                            if (null !== allWarnErrors && allWarnErrors.length) {
+                                scope.images = allWarnErrors.items;
+                            }
+                        });
+                    }
+                });
+            };
+
             function init() {
                 ApiConnector.RFWstatus().then(function(bool){
                     scope.rfwIsEnabled = bool;
@@ -201,6 +287,8 @@
 
                 scope.resetAddImageFields();
                 scope.addImagesWithIds = true;
+                scope.bulkPurging = false;
+                scope.getImages('all', null);
                 scope.images = [];
                 scope.imageView = 'catalog';
                 scope.findBy = 'all';
@@ -208,7 +296,6 @@
                 scope.selectedImage = null;
                 
                 scope.getRFWPolicies();
-                scope.getImages('all', null);
             }
 
             init();
