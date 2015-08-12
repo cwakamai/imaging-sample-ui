@@ -232,6 +232,7 @@
                 var allWarnErrors = [];
                 var allPolicies = [];
                 var queue = [];
+                var uniqueImages = [];
 
                 queue.push(ApiConnector.getAllPolicies().then(function(retRTpolicies){
                     $.each(retRTpolicies.items,function(index, rtPolicy){
@@ -252,25 +253,35 @@
                     if (scope.images.length) {
 
                         $.each(allPolicies, function(index, policy){
-                            // console.log("policy to be got: ", policy);
+                            console.log("policy to be got: ", policy);
                             queue.push(ApiConnector.getImageWithStatus(policy, 'FAILED')
                                 .then(function(failedImageData){
+                                            console.log(failedImageData);
                                             allWarnErrors.concat(failedImageData.items);
                                         },function(error){
                                             console.log("There was an error getting failed images", error);
                                         }));
                             queue.push(ApiConnector.getImageWithStatus(policy, 'WARNING')
                                 .then(function(warnImageData){
+                                            console.log(warnImageData);
                                             allWarnErrors.concat(warnImageData.items);
                                         },function(error){
                                             console.log("There was an error getting images with warnings", error);
                                         }));
                         });
+                
 
                         q.all(queue).then(function(){
-                            
+                            console.log(allWarnErrors);
                             if (null !== allWarnErrors && allWarnErrors.length) {
                                 scope.images = allWarnErrors.items;
+
+                                //Flatten array UNTESTED
+                                $.each(scope.images, function(index, image){
+                                    if($.inArray(image, uniqueImages) === -1) uniqueImages.push(image);
+                                });
+
+                                scope.images = uniqueImages;
                             }
                         });
                     }

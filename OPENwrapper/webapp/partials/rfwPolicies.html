@@ -145,7 +145,7 @@
                                     <span class="glyphicon glyphicon-alert" style="color:gold"></span> RFW Policy ID is in use. Will overwrite existing policy.
                                 </label>
                                 <label class="info-text" ng-if="rfwPolicyId && !charsAreValid(rfwPolicyId)">
-                                    <span class="glyphicon glyphicon-ban-circle" style="color:red"></span> RFW Policy ID uses ineligible characters. Acceptable Characters are alphabetic [A-Za-z], underscore and hyphen [_-]
+                                    <span class="glyphicon glyphicon-ban-circle" style="color:red"></span> RFW Policy ID uses ineligible characters. Acceptable Characters are alphanumeric [A-Z][a-z][0-9], underscore and hyphen [_-]
                                 </label>
                             </div>
                             <div class="form-group row">
@@ -182,6 +182,7 @@
                         </div>
                         <div ng-class="previewUrl ? 'col-md-3' : 'col-md-5'">
                             <label class="dull-header">Ready for Web Policies</label>
+                            <span class="glyphicon glyphicon-info-sign" style="color:blue;" title="This will add all transformations in the selected policy to the current policy overwriting all conflicts."></span>
                             <select id="selectUserPolicies" class="form-control" style="float: none" ng-options="userPolicy.id for userPolicy in includablePolicies" ng-model="policyToAdd" ng-change="addUserTransformToPolicy(policyToAdd); policyToAdd = null;">
                                 <option value="">None Selected</option>
                             </select>
@@ -204,41 +205,35 @@
                                     <div ng-repeat="input in transformStep.inputs">
                                         <div ng-if="inputShouldBeDisplayed(input, transformStep)">
                                             <label ng-if="input.name" class="control-label">
-                                                <em>{{input.name | capitalize}}</em>
+                                                <em ng-attr-title="{{input.info}}">{{input.name | capitalize}}</em>
                                                 <span ng-show="input.required">*</span>
                                             </label>
-
-                                            <span ng-if="input.type === 'int'">
+                                            <span ng-attr-title="{{input.info}}" ng-if="input.type === 'int'">
                                                 <input id="intInput{{$index + 1}}" type="number" max="{{input.max}}" min="{{input.min}}" class="form-control" ng-init="input.value = input.value == null ? input.default : input.value" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
                                             </span>
-
-                                            <span ng-if="input.type === 'intResize'">
+                                            <span ng-attr-title="{{input.info}}" ng-if="input.type === 'intResize'">
                                                 <input id="intResizeInput{{$index + 1}}" type="number" max="{{input.max}}" min="{{input.min}}" class="form-control" style="float: none" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
                                             </span>
-                                            
-                                            <span ng-if="input.type === 'float'">
+                                            <span ng-attr-title="{{input.info}}" ng-if="input.type === 'float'">
                                                 <input id="floatInput{{$index + 1}}" type="number" step="any" max="{{input.max}}" min="{{input.min}}" class="form-control" ng-init="input.value = input.value == null ? input.default : input.value" style="float: none" ng-required="{{input.ng-requireded}}" placeholder="{{attribute}}" ng-model="input.value">
                                             </span>
-
-                                            <span ng-if="input.type === 'booleanComposite'">
+                                            <span ng-attr-title="{{input.info}}" ng-if="input.type === 'booleanComposite'">
                                                 <input id="booleanCompositeInput{{$index + 1}}" type="checkbox" ng-init="input.value = input.value == null ? input.default : input.value" style="margin: 10px; font-size: 2em;" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value" ng-change="onChangeOfDisablingCompositeScaling(transformStep)">
                                             </span>
-
-                                            <span ng-if="input.type === 'booleanResize'">
+                                            <span ng-attr-title="{{input.info}}" ng-if="input.type === 'booleanResize'">
                                                 <input id="booleanResizeInput{{$index + 1}}" type="checkbox" ng-init="input.value = input.value == null ? input.default : input.value" style="margin: 10px; font-size: 2em;" ng-disabled="!bothHeightAndWidthSpecified(transformStep)" ng-required="{{input.required}}" placeholder="{{attribute}}" ng-model="input.value">
                                             </span>
-
-                                            <span ng-if="input.type === 'image'">
+                                            <span ng-attr-title="{{input.info}}" ng-if="input.type === 'image'">
                                                 <input id="compImageUrlInpt{{$index}}" type="text" class="form-control" placeholder="Image URL" style="float: none" ng-required="{{input.required}}" ng-model="input.imageUrl">
                                             </span>
-
-                                            <span ng-if="input.type === 'color'">
-                                                <input id="colorInpt{{$index}}" placeholder="" type="text" class="form-control" style="float: none" ng-required="{{input.required}}" ng-model="input.value">
+                                            <span ng-attr-title="{{input.info}}" ng-if="input.type === 'color'">
+                                                <input id="colorInpt{{$index}}" placeholder="FFFFFF" type="text" class="form-control" style="float: none" ng-required="{{input.required}}" ng-model="input.value">
                                             </span>
-
-                                            <select id="selectOptionInpt{{$index + 1}}" class="form-control" ng-if="input.type === 'options'" style="float: none" ng-init="input.value = input.value == null ? input.default : input.value" ng-options="option as option for option in constructs[input.options]" ng-model="input.value">
-                                                <option value="">Default</option>
-                                            </select>
+                                            <span ng-attr-title="{{input.info}}" ng-if="input.type === 'options'">
+                                                <select id="selectOptionInpt{{$index + 1}}" class="form-control" style="float: none" ng-init="input.value = input.value == null ? input.default : input.value" ng-options="option as option for option in constructs[input.options]" ng-model="input.value">
+                                                    <option value="">Default</option>
+                                                </select>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

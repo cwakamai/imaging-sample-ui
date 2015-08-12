@@ -45,13 +45,11 @@
 
             // Go to the Add Transform step of create policy
             scope.goAddTransforms = function(policyId, url) {
-                var re = /^[a-zA-Z_-]*$/;
-
                 if (url) {
                     // This needs to be checked with a HEAD http request
                     scope.previewUrl = url;
                 }
-                if (policyId !== null && typeof policyId !== 'undefined' && re.test(policyId)) {
+                if (scope.charsAreValid(policyId)) {
                     scope.getPolicies().then(function() {
 
                         scope.includablePolicies = [];
@@ -69,7 +67,9 @@
                             scope.currentStep = 1;
                         }
                     });
-                } else {}
+                } else {
+                    console.log("invalid characters");
+                }
             };
 
             // Go to the Set Resolutions step of create policy
@@ -213,7 +213,7 @@
             };
 
             scope.charsAreValid = function(policyId){
-                var re = /^[A-Za-z_-]*$/g;
+                var re = /^[A-Za-z0-9_-]*$/g;
                 return (policyId && re.test(policyId));
             };
 
@@ -438,26 +438,34 @@
             };
 
             scope.goUploadPolicy = function() {
+                console.log("file uploader0", fileUploader);
+                console.log("0", scope.policyFile);
                 $("#upload-policy").modal({
                     backdrop: "static"
                 });
                 scope.policyFile = null;
+                console.log("0.5", scope.policyFile);
             };
 
             scope.uploadPolicy = function(policyFile) {
-                scope.policyFile = policyFile;
-                var newPolicyJson = angular.fromJson(scope.policyFile);
-
-                if (validateMaxNumPolicies(scope.userPolicies, newPolicyJson.id)) {
-                    alert("You have reached the maximum number of policies.");
-                } else {
-                    ApiConnector.addPolicy(newPolicyJson).then(function(success) {
-                        if (success) {
-                            scope.getPolicies();
-                            scope.resetFileUpload();
-                            $("#upload-policy").modal('hide');
-                        }
-                    });
+                try {
+                    scope.policyFile = policyFile;
+                    var newPolicyJson = angular.fromJson(scope.policyFile);
+                    if (validateMaxNumPolicies(scope.userPolicies, newPolicyJson.id)) {
+                        alert("You have reached the maximum number of policies.");
+                    } else {
+                        ApiConnector.addPolicy(newPolicyJson).then(function(success) {
+                            if (success) {
+                                scope.getPolicies();
+                                scope.resetFileUpload();
+                                $("#upload-policy").modal('hide');
+                            }
+                        }, function(error){
+                            alert("There was an error: " + error);
+                        });
+                    }
+                } catch (error){
+                    alert("Please select a file with properly formatted JSON!");
                 }
             };
 
@@ -500,6 +508,8 @@
             }
 
             function getPreviewImage(transformations, previewUrl) {
+                console.log(ApiConnector.previewCheck(previewUrl));
+
                 return ApiConnector.preview(angular.toJson(transformations), previewUrl)
                     .then(function(previewData) {
                         return previewData;

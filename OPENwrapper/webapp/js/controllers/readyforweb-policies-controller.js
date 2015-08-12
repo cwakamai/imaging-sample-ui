@@ -42,12 +42,10 @@
             };
 
             scope.goAddTransforms = function(rfwPolicyId, url) {
-                var re = /^[a-zA-Z_-]*$/;
-
                 if (url) {
                     scope.previewUrl = url;
                 }
-                if (rfwPolicyId !== null && typeof rfwPolicyId !== 'undefined' && re.test(rfwPolicyId)) {
+                if (scope.charsAreValid(rfwPolicyId)) {
                     scope.getRFWPolicies().then(function() {
 
                         scope.includablePolicies = [];
@@ -65,7 +63,9 @@
                             scope.currentStep = 1;
                         }
                     });
-                } else {}
+                } else {
+                    console.log("Invalid Characters");
+                }
             };
 
             scope.goSetResolutions = function(transformSteps) {
@@ -214,7 +214,7 @@
             };
 
             scope.charsAreValid = function(rfwPolicyID){
-                var re = /^[A-Za-z_-]*$/g;
+                var re = /^[A-Za-z0-9_-]*$/g;
                 return (rfwPolicyID && re.test(rfwPolicyID));
             };
 

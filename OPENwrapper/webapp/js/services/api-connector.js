@@ -325,6 +325,16 @@
                 });
             };
 
+            this.previewCheck = function(url){
+                return http.head(url).then(
+                    function(successData){
+                        return successData;
+                    },function(errorData){
+                        console.log("Could not do head request.", errorData);
+                    }
+                );
+            };
+
             this.preview = function(plan, url) {
                 return http.post(config.getApiHost() + 'imaging/v0/preview/encode', null, {
                         params: {

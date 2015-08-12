@@ -23,12 +23,12 @@
     'use strict';
 
     var app = angular.module('ImageManagementSample.config', []).
-    value('version', '0.1');
+    value('version', '1.0');
 
 
     app.factory('Configuration',
         function() {
-            var imSampleVersion = 0.1;
+            var imSampleVersion = 1.0;
 
             var apiHost = "http://localhost:8421/";
 

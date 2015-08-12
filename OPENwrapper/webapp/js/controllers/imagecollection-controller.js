@@ -242,7 +242,7 @@
             };
 
             scope.addImageCollection = function() {
-                if (scope.icContainer.json !== null) {
+                if (scope.icContainer.hasOwnProperty('json')) {
                     try {
                         scope.imageCollectionResource = JSON.parse(scope.icContainer.json);
                     } catch(err) {
@@ -257,6 +257,8 @@
                             alert("ERROR: Unable to add image collection(s)");
                         }
                     });
+                } else {
+                    alert('You must input JSON data representing an Image Collection into the textbox');
                 }
             };
 
@@ -336,20 +338,24 @@
             };
 
             scope.uploadImageCollection = function(imageCollectionFile) {
-                scope.imageCollectionFile = imageCollectionFile;
-                try{
-                    var newImageCollectionJson = angular.fromJson(scope.imageCollectionFile);
+                if(null !== imageCollectionFile){
+                    scope.imageCollectionFile = imageCollectionFile;
+                    try{
+                        var newImageCollectionJson = angular.fromJson(scope.imageCollectionFile);
 
-                    ApiConnector.addImageCollectionFromJson(newImageCollectionJson).then(function(success) {
-                        if (success) {
-                            scope.resetFileUpload();
-                                $("#upload-image-collection").modal('hide');
-                        }
-                    });
-                }
-                catch (error){
-                    alert("There was an error with the JSON you attempted to upload.\
-                        \nPlease ensure valid JSON that conforms to the documentation for Image Collections.\n\n" + error.toString());
+                        ApiConnector.addImageCollectionFromJson(newImageCollectionJson).then(function(success) {
+                            if (success) {
+                                scope.resetFileUpload();
+                                    $("#upload-image-collection").modal('hide');
+                            }
+                        });
+                    }
+                    catch (error){
+                        alert("There was an error with the JSON you attempted to upload.\
+                            \nPlease ensure valid JSON that conforms to the documentation for Image Collections.\n\n" + error.toString());
+                    }
+                } else {
+                    alert("Please add an Image Collection");
                 }
             };
 

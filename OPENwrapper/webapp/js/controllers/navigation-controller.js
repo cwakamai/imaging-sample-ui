@@ -28,7 +28,7 @@
         function(scope, location, route, SystemConstants, config, AuthService, ApiConnector) {
 
             scope.isProductEnabled = SystemConstants.getIsProductEnabled();
-            scope.versionNo = config.getVersion();
+            scope.versionNo = config.getVersion().toFixed(1);
             scope.isRFWEnabled = false;
 
             scope.getHeading = function() {

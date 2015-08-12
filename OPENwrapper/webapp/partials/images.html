@@ -119,7 +119,7 @@
             </div>
             <div class="col-md-3 pull-right">
                 <div class="pull-right">
-                    <button id="goAddImagesBtn" class="btn btn btn-primary pull-right" ng-click="goAddImages()" style="margin-left: 10px;">
+                    <button ng-if="rfwIsEnabled" id="goAddImagesBtn" class="btn btn btn-primary pull-right" ng-click="goAddImages()" style="margin-left: 10px;">
                         Add Images
                     </button>
                 </div>
@@ -148,38 +148,6 @@
             </p>
         </div>
     </div>
-    <div ng-switch-when="purge">
-        <div>
-            <div class="col-md-10">
-                <a id="backImagesLink" href="" class="pull-left" ng-click="goCatalogView();">
-                    Back to Image Catalog
-                </a>
-            </div>
-            <div class="col-md-2">
-                <button ng-if="rfwIsEnabled" id="goAddImagesBtn" class="btn btn-primary" ng-click="goAddImages()" style="margin-left: 10px;">
-                    Add Images
-                </button>
-            </div>
-        </div>
-        <form class="form-horizontal row" role="form" ng-submit="purgeImages(imagesToPurge)">
-            <div class="col-md-12">
-                <div class="form-group row side-padding">
-                    <label for="purgeImageURLs" class="control-label dull-header">
-                        Image URLs to Purge
-                    </label>
-                    <textarea id="purgeImageURLs" class="form-control" placeholder="New line separated urls." ng-model="imagesToPurge" rows="10"></textarea>
-                </div>
-                <!-- Submit -->
-                <div class="form-group row">
-                    <div class="col-md-2">
-                        <button type="submit" id="bulkPurgeImagesBtn" class="btn btn-success" style="width: 100%;">
-                            Purge Images
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
     <div ng-switch-when="catalog">
         <div class="row form-horizontal padding-top">
             <div class="col-md-5 col-sm-5">
@@ -187,10 +155,13 @@
             </div>
             <div class="col-md-5 col-sm-5 pull-right">
                 <div class="pull-right">
+<!--                     <button id="testWarnError" class="btn btn-warning" ng-click="getAllWarnErrors()">
+                        test
+                    </button> -->
                     <button ng-if="rfwIsEnabled" id="goAddImagesBtn" class="btn btn-primary" ng-click="goAddImages()" style="margin-left: 10px;">
                         Add Images
                     </button>
-                    <button id="purgeBtn" class="btn btn-danger" ng-click="goMassDelete()">
+                    <button id="deleteBtn" class="btn btn-danger" ng-click="goMassDelete()">
                         Bulk Delete
                     </button>
                 </div>
