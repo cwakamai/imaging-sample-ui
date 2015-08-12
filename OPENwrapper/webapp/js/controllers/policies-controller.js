@@ -213,7 +213,7 @@
             };
 
             scope.charsAreValid = function(policyId){
-                var re = /^[A-Za-z0-9_-]*$/g;
+                var re = /^\.auto$|^[A-Za-z0-9_-]*$/g;
                 return (policyId && re.test(policyId));
             };
 

@@ -23,13 +23,14 @@
     'use strict';
 
     var app = angular.module('ImageManagementSample.services.auth', []).
-    value('version', '0.1');
+    value('version', '1.0');
 
 
-    app.factory('AuthService', ['$http', '$location', '$route',
-        function(http, location, route) {
+    app.factory('AuthService', ['$http', '$location', '$route', 'Configuration',
+        function(http, location, route, config) {
             var lunaToken = null;
             var contractId = "akamai";
+
             return {
                 getLunaToken: function() {
                     return lunaToken;
@@ -52,8 +53,17 @@
                     return contractId;
                 },
                 goToLandingPage: function() {
-                    location.path('/images');
-                    route.reload();
+                    http.get(config.getApiHost() + 'imaging/v0/netstorage')
+                        .then(function(successData) {
+                            route.current.scope.__proto__.isRFWEnabled = true;
+                        },function(error){
+                            route.current.scope.__proto__.isRFWEnabled = false;
+                        }).finally(function(){
+                            location.path('/images');
+                            route.reload();
+                        });
+
+                    delete route.current.scope.__proto__.isRFWEnabled;
                 },
                 goToLoginPage: function() {
                     location.path('/login');

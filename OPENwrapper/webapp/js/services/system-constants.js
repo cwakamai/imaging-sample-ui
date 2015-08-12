@@ -22,7 +22,7 @@
     'use strict';
 
     var app = angular.module('ImageManagementSample.services.system', []).
-    value('version', '0.1');
+    value('version', '1.0');
 
     app.factory('SystemConstants', function() {
         /*

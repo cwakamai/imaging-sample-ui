@@ -22,7 +22,7 @@
 (function() {
     'use strict';
     var app = angular.module('ImageManagementSample.services.api', []).
-    value('version', '0.1');
+    value('version', '1.0');
 
     // Service definition
     app.service('ApiConnector', ['$q','$http', 'AuthService', 'Configuration',

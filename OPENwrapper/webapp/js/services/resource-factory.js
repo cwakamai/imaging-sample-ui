@@ -23,7 +23,7 @@
     'use strict';
 
     var app = angular.module('ImageManagementSample.services.resource', []).
-    value('version', '0.1');
+    value('version', '1.0');
 
     app.factory('ResourceFactory', function() {
         return {
