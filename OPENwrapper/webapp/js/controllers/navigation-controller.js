@@ -28,7 +28,7 @@
         function(scope, location, route, SystemConstants, config, AuthService, ApiConnector) {
 
             scope.isProductEnabled = SystemConstants.getIsProductEnabled();
-            scope.versionNo = config.getVersion();
+            scope.versionNo = config.getVersion().toFixed(1);
             scope.isRFWEnabled = false;
 
             scope.getHeading = function() {
@@ -38,7 +38,7 @@
                 } else if (location.path() === '/images') {
                     return "Images";
                 } else if (location.path() === '/policy') {
-                    return "No Touch Image Transformation Policies";
+                    return "Real Time Image Transformation Policies";
                 } else if (location.path() === '/imagecollections') {
                     return "Image Collections";
                 } else if (location.path() === '/rfwsetup'){

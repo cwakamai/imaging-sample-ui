@@ -33,10 +33,20 @@
             scope.verify = function(fresh_rfwInfo){
         		ApiConnector.registerRFW(fresh_rfwInfo)
                     .then(function(successData) {
-                        confirmRFWdata();
-                        scope.$parent.isRFWEnabled = true;
-                        route.reload();
+                        if (successData !== null){
+                            console.log("Completed verify, success: ", successData);
+                            confirmRFWdata();
+                            try{scope.$parent.isRFWEnabled = true;}
+                            catch(e){};
+                            route.reload();
+                        } else {
+                            scope.rfwInfo = {};
+                            console.log("Register returned null for successData", successData);
+                            alert("The Ready For Web information you have supplied is incorrect. Please ensure the values "
+                                + "you have entered properly corresponds to your netstorage account.");
+                        }
                     }, function(error) {
+                        console.log("Completed verify, error: ", error);
                         alert(error);
                     });
         	};

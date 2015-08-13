@@ -77,7 +77,7 @@
             };
 
             scope.goBackToId = function () {
-                scope.IcId = scope.currentImageCollection.id;
+                scope.IcId = scope.currentImageCollection.icId;
                 scope.currentStep=0;
             };
 
@@ -86,8 +86,8 @@
             }
 
             scope.goChooseType = function(imageCollectionID) {
-                if (!imageCollectionID) {
-                    alert("Please add an Image Collection ID to continue");
+                if (!imageCollectionID || !scope.charsAreValid(imageCollectionID)) {
+                    alert("Please use a valid Image Collection ID to continue");
                 } else {
                     scope.currentImageCollection.icId = imageCollectionID;
                     scope.currentStep = 1;
@@ -95,7 +95,9 @@
             };
 
             scope.goBackToType = function () {
-                scope.imageCollectionID = scope.currentImageCollection.id;
+                scope.imageCollectionID = scope.currentImageCollection.icId;
+                scope.icTags = scope.currentImageCollection.icTags.toString();
+                scope.icType = scope.currentImageCollection.icType;
                 scope.currentStep = 1;
             };
 
@@ -124,7 +126,13 @@
             };
 
             scope.goReviewIC = function(filteredImages){
-                scope.addExistingImagesToImageCollection(filteredImages);
+                var imagesToAdd = [];
+                $.each(filteredImages, function(index, image){
+                    if (image.hasOwnProperty('selected') && image.selected == true){
+                        imagesToAdd.push(image);
+                    }
+                })
+                scope.addExistingImagesToImageCollection(imagesToAdd);
                 scope.currentStep=3;
             };
 
@@ -147,6 +155,12 @@
                 return ApiConnector.getImageCollection(imageCollectionID).then(function(imagecollection) {
                     if (imagecollection) {
                         scope.currentImageCollection = imagecollection;
+
+                        $.each(imagecollection.definition.items, function(index, image) {
+                            ApiConnector.getImage(image.imageId).then(function(image){
+                                imagecollection.definition.items[index].url = image.url;   
+                            });
+                        });
                     } else {
                         scope.currentImageCollection = null;
                     }
@@ -162,6 +176,23 @@
                     } else {
                         scope.userImageCollections = null;
                     }
+                });
+            };
+
+            scope.searchForIC = function(id){
+                scope.userImageCollections = [];
+                
+                ApiConnector.getImageCollection(id).then(function(ics) {
+                    if (Array.isArray(ics))
+                        scope.userImageCollections = ics;
+                    else if (ics)
+                        scope.userImageCollections[0] = ics;
+                });                   
+            };
+
+            scope.getImageCollectionById = function(id){
+                ApiConnector.getImageCollection(id).then(function(imageCollectionData){
+                    return imageCollectionData;
                 });
             };
 
@@ -211,7 +242,7 @@
             };
 
             scope.addImageCollection = function() {
-                if (scope.icContainer.json !== null) {
+                if (scope.icContainer.hasOwnProperty('json')) {
                     try {
                         scope.imageCollectionResource = JSON.parse(scope.icContainer.json);
                     } catch(err) {
@@ -226,6 +257,8 @@
                             alert("ERROR: Unable to add image collection(s)");
                         }
                     });
+                } else {
+                    alert('You must input JSON data representing an Image Collection into the textbox');
                 }
             };
 
@@ -299,16 +332,31 @@
                 return toReturn;
             };
 
-            scope.uploadImageCollection = function(imageCollectionFile) {
-                scope.imageCollectionFile = imageCollectionFile;
-                var newImageCollectionJson = angular.fromJson(scope.imageCollectionFile);
+            scope.charsAreValid = function(policyId){
+                var re = /^[A-Za-z_-]*$/g;
+                return (policyId && re.test(policyId));
+            };
 
-                ApiConnector.addImageCollectionFromJson(newImageCollectionJson).then(function(success) {
-                    if (success) {
-                        scope.resetFileUpload();
-                        $("#upload-image-collection").modal('hide');
+            scope.uploadImageCollection = function(imageCollectionFile) {
+                if(null !== imageCollectionFile){
+                    scope.imageCollectionFile = imageCollectionFile;
+                    try{
+                        var newImageCollectionJson = angular.fromJson(scope.imageCollectionFile);
+
+                        ApiConnector.addImageCollectionFromJson(newImageCollectionJson).then(function(success) {
+                            if (success) {
+                                scope.resetFileUpload();
+                                    $("#upload-image-collection").modal('hide');
+                            }
+                        });
                     }
-                });
+                    catch (error){
+                        alert("There was an error with the JSON you attempted to upload.\
+                            \nPlease ensure valid JSON that conforms to the documentation for Image Collections.\n\n" + error.toString());
+                    }
+                } else {
+                    alert("Please add an Image Collection");
+                }
             };
 
             scope.resetFileUpload = function() {
@@ -345,7 +393,7 @@
             function init(){
                 scope.currentStep = 0;
                 scope.resetICFields();
-                scope.getAllImageCollections();
+                scope.getFilteredImages('all');
 			}
 
             init();

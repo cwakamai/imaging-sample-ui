@@ -1,6 +1,6 @@
 {
   "name": "ImageManagementNodeAuth",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Authorisation Packager for Akamai's IM OPEN APIs and server for SampleUI",
   "main": "index.js",
   "repository": {

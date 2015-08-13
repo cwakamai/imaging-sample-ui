@@ -22,7 +22,7 @@
     'use strict';
 
     var app = angular.module('ImageManagementSample.services.system', []).
-    value('version', '0.1');
+    value('version', '1.0');
 
     app.factory('SystemConstants', function() {
         /*
@@ -51,7 +51,17 @@
             "aspectTypes": ["ignore","fit","fill"]
         };
 
-        var transformations = [{
+        var transformations = [{ 
+            "name": "BackgroundColor",
+            "inputs": [{
+                    "name":     "color",
+                    "info":     "A 6 character Hex String, Eg. 00BB4F",
+                    "type":     "color",
+                    "required": true,
+                    "default":  "FFFFFF"
+                }
+            ]
+        }, {
             "name": "Composite",
             "inputs": [{
                     "name": "image",
@@ -75,9 +85,10 @@
                     "default": 0
                 }, // Optional. Default = 0. Integer y position.
                 {
-                    "name": "gravity",
-                    "type": "options",
-                    "options": "gravity",
+                    "name":     "gravity",
+                    "info":     "Where to position the second image relative to the center of the first",
+                    "type":     "options",
+                    "options":  "gravity",
                     "required": false,
                     "default": "NorthWest"
                 }, // Optional. Default = "NorthWest". Gravity string.
@@ -102,84 +113,6 @@
                     "required": false,
                     "default": "width"
                 }
-            ]
-        }, {
-            "name": "MaxColors",
-            "inputs": [{
-                    "name": "colors",
-                    "type": "int",
-                    "required": true,
-                    "max": 256,
-                    "min": 1,
-                    "default": 256
-                } // Required. Integer of colors the input image should be reduced to.
-            ]
-        }, {
-            "name": "Opacity",
-            "inputs": [{
-                    "name": "opacity",
-                    "info": "as a fraction (i.e. 0.0 to 1.0)",
-                    "type": "float",
-                    "required": true,
-                    "max": 1.0,
-                    "min": 0.0,
-                    "minInclusive": true,
-                    "default": 1.0
-                } // Required. Float used to multiply pixel alpha values.
-            ]
-        }, {
-            "name": "Resize",
-            "inputs": [{
-                    "name": "width",
-                    "type": "intResize",
-                    "required": true,
-                    "max": 5000,
-                    "min": 1,
-                    "default": 100
-                }, // It is required that one or both of "width"
-                {
-                    "name": "height",
-                    "type": "intResize",
-                    "required": true,
-                    "max": 5000,
-                    "min": 1,
-                    "default": 100
-                }, //   and "height" be present.
-                {
-                    "name": "aspect",
-                    "type": "options",
-                    "required": false,
-                    "options":"aspectTypes",
-                    "default": "fit"
-                }, // Optional. Default is true.
-                {
-                    "name": "type",
-                    "type": "options",
-                    "options": "resizetype",
-                    "required": false,
-                    "default": "normal"
-                } // Optional. Default is "normal".
-            ]
-        }, {
-            "name": "Scale",
-            "inputs": [{
-                    "name": "width",
-                    "type": "float",
-                    "required": true,
-                    "default": 0.5,
-                    "max": 10,
-                    "min": 0,
-                    "minInclusive": false
-                }, // Required. Float multiple of input width.
-                {
-                    "name": "height",
-                    "type": "float",
-                    "required": true,
-                    "default": 0.5,
-                    "max": 10,
-                    "min": 0,
-                    "minInclusive": false
-                } // Required. Float multiple of input height.
             ]
         }, {
             "name": "Crop",
@@ -216,29 +149,126 @@
                     "min": 0
                 },
                 {
-                    "name": "gravity",
-                    "type": "options",
-                    "options": "gravity",
+                    "name":     "gravity",
+                    "info":     "Where to position the transformation relative to the center",
+                    "type":     "options",
+                    "options":  "gravity",
                     "required": false,
-                    "default": "NorthWest"
+                    "default":  "NorthWest"
                 },
                 {
-                    "name": "allowExpansion",
-                    "info": "Allows crop to expand the canvas of an image if the crop area falls outside the existing canvas",
-                    "type": "booleanComposite",
+                    "name":     "allowExpansion",
+                    "info":     "Allows crop to expand the canvas of an image if the crop area falls outside the existing canvas",
+                    "type":     "booleanComposite",
                     "required": false,
-                    "default": false
+                    "default":  false
                 }
             ]
-        }, { 
-            "name": "BackgroundColor",
+        }, {
+            "name": "HSL",
             "inputs": [{
-                    "name": "color",
-                    "info": "As 6 character Hex String, Eg. 00BB4F",
-                    "type": "color",
-                    "required": true,
-                    "default": "FFFFFF"
+                    "name":     "hue",
+                    "info":     "The number of degrees to rotate on the color wheel",
+                    "type":     "float",
+                    "required": false,
+                    "default":  0.0,
+                    "max":      360,
+                    "min":      0
+                },{
+                    "name":     "saturation",
+                    "info":     "Multiplier to adjust colour saturation",
+                    "type":     "float",
+                    "required": false,
+                    "default":  1.0,
+                    "max":      9000,
+                    "min":      0
+                },{
+                    "name":     "lightness",
+                    "info":     "Multiplier to adjust image lightness",
+                    "type":     "float",
+                    "required": false,
+                    "default":  1.0,
+                    "max":      9000,
+                    "min":      0
                 }
+            ]
+        }, {
+            "name": "MaxColors",
+            "inputs": [{
+                    "name": "colors",
+                    "type": "int",
+                    "required": true,
+                    "max": 256,
+                    "min": 1,
+                    "default": 256
+                } // Required. Integer of colors the input image should be reduced to.
+            ]
+        }, {
+            "name": "Opacity",
+            "inputs": [{
+                    "name": "opacity",
+                    "info": "How transparant you want the image to be as a fraction from 0.0 (transparant) to 1.0 (original image opacity)",
+                    "type": "float",
+                    "required": true,
+                    "max": 10.0,
+                    "min": 0.0,
+                    "minInclusive": true,
+                    "default": 1.0
+                } // Required. Float used to multiply pixel alpha values.
+            ]
+        }, {
+            "name": "Resize",
+            "inputs": [{
+                    "name": "width",
+                    "type": "intResize",
+                    "required": true,
+                    "max": 5000,
+                    "min": 1,
+                    "default": 100
+                }, // It is required that one or both of "width"
+                {
+                    "name": "height",
+                    "type": "intResize",
+                    "required": true,
+                    "max": 5000,
+                    "min": 1,
+                    "default": 100
+                }, // and "height" be present.
+                {
+                    "name": "aspect",
+                    "type": "options",
+                    "required": false,
+                    "options":"aspectTypes",
+                    "default": "fit"
+                },
+                {
+                    "name": "type",
+                    "type": "options",
+                    "options": "resizetype",
+                    "required": false,
+                    "default": "normal"
+                } // Optional. Default is "normal".
+            ]
+        }, {
+            "name": "Scale",
+            "inputs": [{
+                    "name": "width",
+                    "type": "float",
+                    "required": true,
+                    "default": 0.5,
+                    "max": 10,
+                    "min": 0,
+                    "minInclusive": false
+                }, // Required. Float multiple of input width.
+                {
+                    "name": "height",
+                    "type": "float",
+                    "required": true,
+                    "default": 0.5,
+                    "max": 10,
+                    "min": 0,
+                    "minInclusive": false
+                } // Required. Float multiple of input height.
             ]
         }, {
             "name": "Grayscale"

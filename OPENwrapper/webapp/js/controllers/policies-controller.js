@@ -46,9 +46,10 @@
             // Go to the Add Transform step of create policy
             scope.goAddTransforms = function(policyId, url) {
                 if (url) {
+                    // This needs to be checked with a HEAD http request
                     scope.previewUrl = url;
                 }
-                if (policyId !== null && typeof policyId !== 'undefined') {
+                if (scope.charsAreValid(policyId)) {
                     scope.getPolicies().then(function() {
 
                         scope.includablePolicies = [];
@@ -66,6 +67,8 @@
                             scope.currentStep = 1;
                         }
                     });
+                } else {
+                    console.log("invalid characters");
                 }
             };
 
@@ -187,7 +190,7 @@
 
                     var resolutions = ResourceFactory.createPolicyResolutionResource(null, widths);
 
-                    var defaults = ResourceFactory.createPolicyOutputsDefaultsResource(scope.policyOutput.quality, scope.policyOutput.pQuality);
+                    var defaults = ResourceFactory.createPolicyOutputsDefaultsResource(scope.policyOutput.quality, scope.policyOutput.pQuality, scope.policyOutput.qSelector);
 
                     var outputs = ResourceFactory.createOutputResource(defaults);
 
@@ -209,6 +212,22 @@
                 return false;
             };
 
+            scope.charsAreValid = function(policyId){
+                var re = /^\.auto$|^[A-Za-z0-9_-]*$/g;
+                return (policyId && re.test(policyId));
+            };
+
+            scope.searchForPolicy = function(id){
+                scope.userPolicies = [];
+                
+                ApiConnector.getPolicy(id).then(function(policies) {
+                    if (Array.isArray(policies))
+                        scope.userPolicies = policies;
+                    else if (policies)
+                        scope.userPolicies[0] = policies;
+                });
+            };
+
             // Setup for when creating a new policy and using another policy as base 
             function populateNewPolicyFieldsWithBase(basePolicy) {
                 setNewPolicyConstants();
@@ -228,16 +247,24 @@
                         // when we find a transform in the base policy that we want to include, populate it with the original config values.
                         if (transformInput) {
                             $.each(transform, function(propertyName, value) {
-                                $.each(transformInput.inputs, function(inputIndex, input) {
-                                    if (propertyName === input.name) {
-                                        if (propertyName == 'image') {
-                                            input.imageUrl = value.url;
-                                            // not copying the composite policy because we currently have no reference to policy id
-                                        } else {
-                                            input.value = value;
+                                if (transformInput.inputs){
+                                    $.each(transformInput.inputs, function(inputIndex, input) {
+                                        // Remove # from color hexcode
+                                        if (transform.transformation === "BackgroundColor"){
+                                            transform.color=transform.color.replace(/^./, '');
                                         }
-                                    }
-                                });
+                                        if (propertyName === input.name) {
+                                            if (propertyName == 'image') {
+                                                input.imageUrl = value.url;
+                                                // not copying the composite policy because we currently have no reference to policy id
+                                            } else {
+                                                input.value = value;
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    transform.transformation === "Greyscale";
+                                }
                             });
 
                             scope.transformSteps.push(transformInput);
@@ -246,7 +273,7 @@
                 }
 
                 if (basePolicy.resolutions && basePolicy.resolutions.widths) {
-                    scope.policyResolutions.widths = basePolicy.resolutions.widths;
+                    scope.policyResolutions.widths = basePolicy.resolutions.widths.toString();
                 } else {
                     scope.policyResolutions = {
                         widths: null
@@ -254,7 +281,15 @@
                 }
 
                 if (basePolicy.outputs) {
-                    scope.policyOutput.quality = basePolicy.outputs.defaults.quality;
+                    if (basePolicy.outputs.defaults.quality){
+                        scope.policyOutput.quality = basePolicy.outputs.defaults.quality;
+                        scope.policyOutput.qSelector = 'quality';
+                        scope.policyOutput.pQuality = null;
+                    }else{
+                        scope.policyOutput.pQuality = basePolicy.outputs.defaults.perceptualQuality;
+                        scope.policyOutput.qSelector = 'pQuality';
+                        scope.policyOutput.quality = null;
+                    }
                 }
             };
 
@@ -334,7 +369,6 @@
             scope.refreshPreview = function(transforms) {
                 try {
                     scope.transformSteps = transforms;
-                    console.log(scope.transformSteps);
                     previewPartialPolicy(ResourceFactory.validateAndCreateTransformResource(scope.transformSteps));
                 } catch (errorMessages) {
                     alert(errorMessages.join().replace(/,/g, "\n"));
@@ -354,37 +388,47 @@
             scope.previewFullPolicy = function(previewUrl, transformations) {
                 scope.isPreviewComplete = false;
                 var location = window.location;
-                var transformationsFinal = transformations.slice(0);
-                transformationsFinal.push({"transformation": "PNG"});
+                try{
+                    var transformationsFinal = transformations.slice(0);
+                    transformationsFinal.push({"transformation": "JPEG"});
 
-                var transformPlan = {
-                    transformation: "Compound",
-                    transformations: transformationsFinal
-                };
+                    var transformPlan = {
+                        transformation: "Compound",
+                        transformations: transformationsFinal
+                    };
 
-                getPreviewImage(transformPlan, previewUrl)
-                    .then(function(previewData) {
-                        if (previewData) {
-                            var type = previewData.headers('Content-Type');
-                            var previewImage = new Image();
-                            previewImage.onload = function() {
-                                scope.previewImageSrc = previewImage.src;
-                                scope.isPreviewError = false;
-                                scope.isPreviewComplete = true;
-                                scope.$apply();
-                            };
+                    getPreviewImage(transformPlan, previewUrl)
+                        .then(function(previewData) {
+                            if (previewData) {
+                                var type = previewData.headers('Content-Type');
+                                var previewImage = new Image();
+                                previewImage.onload = function() {
+                                    scope.previewImageSrc = previewImage.src;
+                                    scope.isPreviewError = false;
+                                    scope.isPreviewComplete = true;
+                                    scope.$apply();
+                                };
 
-                            previewImage.onerror = function() {
-                                scope.previewImageSrc = previewImage.src;
-                                scope.isPreviewError = true;
-                                scope.isPreviewComplete = true;
-                                scope.$apply();
-                            };
+                                previewImage.onerror = function() {
+                                    scope.previewImageSrc = previewImage.src;
+                                    scope.isPreviewError = true;
+                                    scope.isPreviewComplete = true;
+                                    scope.$apply();
+                                };
 
-                            previewImage.src = "data:" + type + ";base64," + previewData.data;
-                            scope.previewUrl = null;
-                        }
-                    });
+                                previewImage.src = "data:" + type + ";base64," + previewData.data;
+                                scope.previewUrl = null;
+                            }
+                        });
+                }
+                catch (error) {
+                    if (!transformations)
+                        alert("The policy you have attempted to preview has no transformations!\n\n");
+                    else {
+                        alert("There was an error with the previewing the policy you selected:\n\n" + error.toString());
+                    }
+                    console.log(error);
+                }
             };
 
             // TODO: Update for IE 12
@@ -394,26 +438,34 @@
             };
 
             scope.goUploadPolicy = function() {
+                console.log("file uploader0", fileUploader);
+                console.log("0", scope.policyFile);
                 $("#upload-policy").modal({
                     backdrop: "static"
                 });
                 scope.policyFile = null;
+                console.log("0.5", scope.policyFile);
             };
 
             scope.uploadPolicy = function(policyFile) {
-                scope.policyFile = policyFile;
-                var newPolicyJson = angular.fromJson(scope.policyFile);
-
-                if (validateMaxNumPolicies(scope.userPolicies, newPolicyJson.id)) {
-                    alert("You have reached the maximum number of policies.");
-                } else {
-                    ApiConnector.addPolicy(newPolicyJson).then(function(success) {
-                        if (success) {
-                            scope.getPolicies();
-                            scope.resetFileUpload();
-                            $("#upload-policy").modal('hide');
-                        }
-                    });
+                try {
+                    scope.policyFile = policyFile;
+                    var newPolicyJson = angular.fromJson(scope.policyFile);
+                    if (validateMaxNumPolicies(scope.userPolicies, newPolicyJson.id)) {
+                        alert("You have reached the maximum number of policies.");
+                    } else {
+                        ApiConnector.addPolicy(newPolicyJson).then(function(success) {
+                            if (success) {
+                                scope.getPolicies();
+                                scope.resetFileUpload();
+                                $("#upload-policy").modal('hide');
+                            }
+                        }, function(error){
+                            alert("There was an error: " + error);
+                        });
+                    }
+                } catch (error){
+                    alert("Please select a file with properly formatted JSON!");
                 }
             };
 
@@ -456,6 +508,8 @@
             }
 
             function getPreviewImage(transformations, previewUrl) {
+                console.log(ApiConnector.previewCheck(previewUrl));
+
                 return ApiConnector.preview(angular.toJson(transformations), previewUrl)
                     .then(function(previewData) {
                         return previewData;
@@ -470,7 +524,7 @@
 
                     if (transforms !== null && typeof transforms != 'undefined') {
                         plan = transforms;                      
-                        plan.push({"transformation":"BestFor", "browser":"generic"});
+                        plan.push({"transformation": "JPEG"});
                     }
 
                     var transformPlan = {

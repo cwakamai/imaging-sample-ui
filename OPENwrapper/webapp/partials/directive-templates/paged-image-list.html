@@ -24,7 +24,7 @@
                 Image ID
             </th>
             <th style="width: 12%">
-                Job Complete
+                Status
             </th>
             <th style="width: 3%;">
             </th>
@@ -40,17 +40,27 @@
             <td style="overflow:hidden; word-break: break-all;">
                 {{image.id}}
             </td>
-            <td id="jobStatus" class="pointer">
+            <td id="jobStatus">
                 <div ng-repeat="(policyId, policy) in image.policies">
-                        <span ng-show="policy.status === 'PASSED'" class="glyphicon glyphicon-ok"></span>
-                        <span ng-show="policy.status === 'FAILED'" class="glyphicon glyphicon-ban-circle"></span>
-                        <span ng-show="policy.status === 'PENDING'" class="glyphicon glyphicon-refresh"></span>
-                        <span ng-show="policy.status === 'WARNING'" class="glyphicon glyphicon-exclamation-sign"></span>
-                        <span>{{policyId}}<span>
+                    <span ng-show="isRFWpolicy">
+                        rfw
+                    </span>
+                    <span ng-show="policy.status === 'PASSED'" title="Policy Run Successfully" class="glyphicon glyphicon-ok">
+                        <span style="color:green;">{{policyId}}</span>
+                    </span>
+                    <span ng-show="policy.status === 'FAILED'" title="Policy Failed to Run" class="glyphicon glyphicon-ban-circle pointer">
+                        <span style="color:red;" title={{policy.errors}}>{{policyId}}</span>
+                    </span>
+                    <span ng-show="policy.status === 'PENDING'" title="Policy In Progress" class="glyphicon glyphicon-refresh">
+                        <span style="color:blue;">{{policyId}}</span>
+                    </span>
+                    <span ng-show="policy.status === 'WARNING'" title="Policy Completed with Warnings" class="glyphicon glyphicon-exclamation-sign">
+                        <span style="color:orange;" title={{policy.errors}}>{{policyId}}</span>
+                    </span>
                 </div>
             </td>
-            <td id="removeImageBtn" class="pointer" ng-click="removeImage(image.id, $index)">
-                <span class="glyphicon glyphicon-remove remove-icon"></span>
+            <td id="removeImageBtn">
+                <span class="glyphicon glyphicon-remove remove-icon pointer" ng-click="removeImage(image.id, $index)" title="Delete"></span>
             </td>
         </tr>
     </tbody>

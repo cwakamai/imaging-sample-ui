@@ -23,7 +23,7 @@
     'use strict';
 
     var app = angular.module('ImageManagementSample.services.resource', []).
-    value('version', '0.1');
+    value('version', '1.0');
 
     app.factory('ResourceFactory', function() {
         return {
@@ -132,11 +132,17 @@
 
                 return policyResolutionResource;
             },
-            createPolicyOutputsDefaultsResource: function(quality, perceptualQuality) {
-                var policyOutputsDefaultsResource = {
-                    quality: quality,
-                    perceptualQuality: perceptualQuality
-                };
+            createPolicyOutputsDefaultsResource: function(quality, perceptualQuality, qSelector) {
+                if (qSelector == "pQuality"){
+                    var policyOutputsDefaultsResource = {
+                        perceptualQuality: perceptualQuality
+                    };
+                } else{
+                    var policyOutputsDefaultsResource = {
+                        quality: quality
+                    };
+                }
+
                 return policyOutputsDefaultsResource;
             },
             createOutputResource: function(defaults) {
@@ -187,17 +193,20 @@
                                         if (input.value <= input.max && input.value >= input.min) {
                                             transform[input.name] = input.value;
                                         } else {
+                                            console.log("The " + input.name + " in " + transform.transformation + " is invalid. ", input.value, input.min, input.max);
                                             invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
                                         }
                                     } else {
-                                        if (input.value <= input.max && input.value > input.min) {
+                                        if (input.value <= input.max && input.value >= input.min) {
                                             transform[input.name] = input.value;
                                         } else {
+                                            console.log("The " + input.name + " in " + transform.transformation + " is invalid. ", input.value, input.min, input.max);
                                             invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid.");
                                         }
                                     }
                                 } else if (input.required) {
-                                    invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is invalid. ");
+                                    console.log("The " + input.name + " in " + transform.transformation + " is not there. ", input.value, input.min, input.max);
+                                    invalidInputMessages.push("The " + input.name + " in " + transform.transformation + " is not there. ");
                                 }
                             }
                             if (input.type === "image") {

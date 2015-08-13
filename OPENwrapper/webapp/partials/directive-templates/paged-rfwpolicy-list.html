@@ -26,13 +26,13 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="rfwpolicy in visibleRFWPolicies| filter:searchCriteria | orderBy:'id'" class="pointer">
-                <td id="goView_{{rfwpolicy.id}}" ng-click="viewRFWPolicy(rfwpolicy.id);" style="width: 98%; text-overflow: ellipsis; overflow: hidden; white-space:nowrap;">
-                    <span>{{rfwpolicy.id}}</span>
+            <tr ng-repeat="rfwp in visibleRFWPolicies | filter:searchCriteria | orderBy:'id'" class="pointer">
+                <td id="goView_{{rfwp[id]}}" ng-click="select(rfwp.id);" style="width: 98%; text-overflow: ellipsis; overflow: hidden; white-space:nowrap;">
+                    <span>{{rfwp.id}}</span>
                 </td>
-<!--                 <td class="text-center">
-                    <span id="removeRFWPolicyBtn" class="glyphicon glyphicon-remove remove-icon" ng-click="removeRFWPolicy(rfwpolicy.id)" ng-if="rfwpolicy.id!='.rfw'"></span>
-                </td> -->
+                <td class="text-center">
+                    <span id="removeRFWPolicyBtn" class="glyphicon glyphicon-remove remove-icon" ng-click="delete(rfwp.id)" ng-if="rfwp.id!='.rfw'"></span>
+                </td>
             </tr>
         </tbody>
     </table>
