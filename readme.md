@@ -1,3 +1,5 @@
+[![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg)]()
+
 # Image Manager APIs - Digital Asset Manager (Sample UI)
 
 This package is provided as an easy way to get started using Akamai's Image Manager APIs.  API Reference can be found at https://developer.akamai.com/api/imaging/imaging/reference.html
