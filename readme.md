@@ -98,7 +98,7 @@ The DAM application will need you to update a configuration file to add your OPE
 	},
 	"purgeConf":
 	{
-		"host":"https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.imaging.akamaiapis.net",
+		"host":"https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.purge.akamaiapis.net",
 		"client_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
 		"access_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
 		"secret":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
