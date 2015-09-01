@@ -83,7 +83,7 @@ var make_content_hash = function(request) {
       console.info("Body truncated. New value \"" + prepared_body + "\"");
     }
 
-    console.debug("PREPARED BODY", prepared_body);
+    console.debug("PREPARED BODY: ", prepared_body);
 
     var shasum = crypto.createHash('sha256');
     shasum.update(prepared_body);
@@ -149,7 +149,7 @@ var make_auth_header = function(request, client_token, access_token, client_secr
 module.exports = {
   generate_auth: function(request, client_token, client_secret, access_token, base_uri, headers_to_sign, max_body, guid, timestamp) {
 
-    _max_body = max_body || 2048;
+    _max_body = max_body || 2000000;
     _headers_to_sign = headers_to_sign || [];
 
     guid = guid || uuid.v4();

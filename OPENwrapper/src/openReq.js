@@ -39,32 +39,37 @@ var EdgeGrid = require('./api.js'),
   }).nom(),
   config = require(fs.realpathSync(args.config, './'));
 
+if (config.hasOwnProperty('client_token')){
+  var openConf = config;
+  console.log("\n***\nMISSING PURGE CREDENTIALS! Operating in legacy mode.\n***");
+} else {
+  var openConf = config.openConf,
+    purgeConf = config.purgeConf;
+}
 
 var logStream = fs.createWriteStream("imna.log", {flags:'a'});
 logger.token('config', function () {
-  return config.toString();
+  return openConf.toString();
 });
 
-if (config.client_token === null || config.client_secret === null ||
-  config.access_token === null || config.base_uri === null) {
-  console.log("CONFIG ERROR: Missing config values");
+if (!openConf.client_token || !openConf.client_secret || !openConf.access_token || !openConf.base_uri) {
+  throw "CONFIG ERROR: Improper or missing config values";
 }
 
 function sendRequestToAPI(apiRequest, apiResponse, next) {
-
   if (apiRequest.path.indexOf('/imaging') !== 0){
     next();
     return;
   }
 
   var
-    client_token = config.client_token,
-    client_secret = config.client_secret,
-    access_token = config.access_token,
-    base_uri = config.base_uri;
+    client_token = openConf.client_token,
+    client_secret = openConf.client_secret,
+    access_token = openConf.access_token,
+    base_uri = openConf.base_uri;
 
     if (base_uri.substr(base_uri.length - 1) == "/")
-      base_uri = base_uri.substr(0,base_uri.length - 1)
+      base_uri = base_uri.substr(0,base_uri.length - 1);
 
     path = apiRequest.originalUrl,
     lunaToken = apiRequest.header("luna-token"),
@@ -78,7 +83,7 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
     apiResponse.setHeader("Access-Control-Allow-Origin", "*");
     apiResponse.setHeader("Access-Control-Allow-Headers", "Luna-Token, Content-Length, Content-Type, X-Codingpedia, x-requested-with");
     apiResponse.setHeader("Access-Control-Expose-Headers", "content-length");
-    apiResponse.setHeader("Access-Control-Expose-Methods", "GET, POST, OPTIONS");
+    apiResponse.setHeader("Access-Control-Expose-Methods", "GET, PUT, POST, OPTIONS");
     apiResponse.send(HttpStatus.OK);
   } else {
     if (args.openEnabled !== 'n'){
@@ -106,10 +111,9 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
       }
 
       eg.send(function (data, response) {
-
-        apiResponse.set('Content-Type', response.headers['content-type']);
         console.log("RESPONSE RECEIVED:");
         console.log("MIME Type:"+response.headers['content-type']+"\n");
+        apiResponse.set('Content-Type', response.headers['content-type']);
         apiResponse.setHeader("Access-Control-Allow-Origin", "*");
 
         try {
@@ -135,29 +139,76 @@ function sendRequestToAPI(apiRequest, apiResponse, next) {
       };
 
       // Set up the request
-      var secure_post_req = https.request(post_options, function(res){
-        res.setEncoding('utf8');
+      var secure_post_req = https.request(post_options, 
+        function(res){
+          res.setEncoding('utf8');
 
-        if (res.statusCode >= 400){
-          var post_req = http.request(post_options, function(http_response) {
-              http_response.setEncoding('utf8');
-              http_response.on('data', function (http_chunk) {
-                  console.log('Response: ' + http_chunk);
-              });
-          });
-          post_req.write(data);
-          post_req.end();
-        } else {
-          res.on('data', function(chunk){
-            console.log('Response: ' + chunk);
-          });
-          secure_post_req.write(data);
-          secure_post_req.end();
-        }
+          if (res.statusCode >= 400){
+            var post_req = http.request(post_options, function(http_response) {
+                http_response.setEncoding('utf8');
+                http_response.on('data', function (http_chunk) {
+                    console.log('Response: ' + http_chunk);
+                });
+            });
+            post_req.write(data);
+            post_req.end();
+          } else {
+            res.on('data', function(chunk){
+              console.log('Response: ' + chunk);
+            });
+            secure_post_req.write(data);
+            secure_post_req.end();
+          }
 
-      });
+        });
     }
   }
+}
+
+function sendPurgeRequest(apiRequest, apiResponse, next) {
+  if (apiRequest.path.indexOf('/ccu') !== 0) {
+    next();
+    return;
+  }
+    // Deal with ccu purge
+    var
+      access_token = purgeConf.access_token,
+      client_token = purgeConf.client_token,
+      client_secret = purgeConf.secret,
+      base_uri = purgeConf.host;
+
+    if (base_uri.substr(base_uri.length - 1) == "/")
+      base_uri = base_uri.substr(0,base_uri.length - 1)
+
+    path = apiRequest.originalUrl,
+    method = apiRequest.method,
+    data = apiRequest.rawBody;
+
+    var eg = new EdgeGrid(client_token, client_secret, access_token, base_uri);
+
+    eg.auth({
+      "path": path,
+      "method": method,
+      "headers":
+      {
+        "Content-Type": 'application/json'
+      },
+      "body": data
+    });
+
+    eg.send(function (data, response) {
+      console.log("PURGE RESPONSE RECEIVED");
+      console.log("response: " + response.data);
+      apiResponse.setHeader("Access-Control-Allow-Origin", "*");
+      apiResponse.setHeader('Content-Type', response.headers['content-type']);
+
+      try {
+        apiResponse.status(response.statusCode).send(data);
+      } catch (e) {
+        apiResponse.set('content-type', 'application/problem+json');
+        apiResponse.status(response.statusCode).send(data);
+      }
+    });
 }
 
 var server = express();
@@ -176,13 +227,25 @@ server.use(function(req, res, next) {
   });
 });
 
+function returnCreds(req, res, next) {
+  if (req.path.indexOf('/creds') !== 0) {
+    next();
+    return;
+  }
+  res.send(!!purgeConf);
+}
+
+server.use(returnCreds);
 server.use(sendRequestToAPI);
+server.use(sendPurgeRequest);
 server.use(express.static(__dirname + '/../webapp'));
 server.use(logger(
-    {stream: { write: function(str) {
+    {stream: 
+      {write: function(str) {
           logStream.write(str);
           console.log(str);
-    }}}
+      }
+    }}
   )
 );
 

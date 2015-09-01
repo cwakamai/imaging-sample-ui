@@ -1,4 +1,17 @@
-{"client_token":"akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
-	"client_secret":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
-	"access_token":"akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
-	"base_uri":"https://akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.imaging-dev.akamaiapis.net"}
+{
+	"openConf":
+	{
+		"client_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+		"client_secret":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
+		"access_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+		"base_uri":"https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.imaging-dev.akamaiapis.net"
+	},
+	"purgeConf":
+	{
+		"host":"https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.purge.akamaiapis.net",
+		"client_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+		"access_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+		"secret":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
+		"max-body":4096
+	}
+}

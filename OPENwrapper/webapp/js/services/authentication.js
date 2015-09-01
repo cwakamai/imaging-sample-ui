@@ -23,7 +23,7 @@
     'use strict';
 
     var app = angular.module('ImageManagementSample.services.auth', []).
-    value('version', '1.0');
+    value('version', '2.0.1');
 
 
     app.factory('AuthService', ['$http', '$location', '$route', 'Configuration',

@@ -1,5 +1,3 @@
-[![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg)]()
-
 # Image Manager APIs - Digital Asset Manager (Sample UI)
 
 This package is provided as an easy way to get started using Akamai's Image Manager APIs.  API Reference can be found at https://developer.akamai.com/api/imaging/imaging/reference.html
@@ -91,10 +89,21 @@ The DAM application will need you to update a configuration file to add your OPE
 + Change the credentials to the ones you recieved from Luna
 ``` js
 {
-	"client_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
-	"client_secret":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
-	"access_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
-	"base_uri":"https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.imaging.akamaiapis.net"
+	"openConf":
+	{
+		"client_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+		"client_secret":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
+		"access_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+		"base_uri":"https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.imaging.akamaiapis.net"
+	},
+	"purgeConf":
+	{
+		"host":"https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.purge.akamaiapis.net",
+		"client_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+		"access_token":"xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+		"secret":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
+		"max-body":4096
+	}
 }
 ```
 
