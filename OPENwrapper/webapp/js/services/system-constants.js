@@ -22,13 +22,13 @@
     'use strict';
 
     var app = angular.module('ImageManagementSample.services.system', []).
-    value('version', '1.0');
+    value('version', '2.0.1');
 
     app.factory('SystemConstants', function() {
         /*
-        name: name of the transform
-        argType: options, input, both, none
-        input: array of the names of the input the use is required to 
+            name: name of the transform
+            argType: options, input, both, none
+            input: array of the names of the input the use is required to 
         */
 
         var isProductEnabled = false;

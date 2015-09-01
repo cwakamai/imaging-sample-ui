@@ -54,6 +54,9 @@
                     <span ng-show="policy.status === 'PENDING'" title="Policy In Progress" class="glyphicon glyphicon-refresh">
                         <span style="color:blue;">{{policyId}}</span>
                     </span>
+                    <span ng-show="policy.status === 'PURGED'" title="Policy has been purged" class="glyphicon glyphicon-remove-circle">
+                        <span style="color:black;">{{policyId}}</span>
+                    </span>
                     <span ng-show="policy.status === 'WARNING'" title="Policy Completed with Warnings" class="glyphicon glyphicon-exclamation-sign">
                         <span style="color:orange;" title={{policy.errors}}>{{policyId}}</span>
                     </span>

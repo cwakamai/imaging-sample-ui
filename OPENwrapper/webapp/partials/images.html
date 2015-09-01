@@ -76,8 +76,9 @@
                 <div ng-if="rfwPoliciesExist" class="container padding-left row">
                     <div class="col-md-12 padding-left">
                         <div class="row">
-                            <h3 class="gray-light text-center col-md-4 col-md-offset-3">Ready For Web</h3>
+                            <h3 class="gray-light col-md-4">Ready For Web</h3>
                         </div>
+                        <br />
                         <div class="row">
                             <div class="form-group padding-bottom col-md-3">
                                 <label for="rfwPolicy" class="control-label dull-header">Ready For Web Policy</label>
@@ -85,20 +86,12 @@
                                     <option value="">None Selected</option>
                                 </select>
                             </div>
-                            <div class="col-md-1"></div>
-                            <div class="form-group padding-bottom col-md-3">
-                                <label for="rfwTag" class="control-label dull-header">
-                                    Job Tag
-                                </label>
-                                <input id="rfwTagInpt" type="text" class="form-control" ng-model="addImageFields.newRFWTag" placeholder="A tag for the RFW job(s)">
-                            </div>
                         </div>
                     </div>
                 </div>
-
                 <!-- Submit -->
                 <div class="form-group col-sm-10">
-                    <div class="col-md-2 col-md-offset-3 ">
+                    <div class="col-md-2">
                         <button type="submit" id="addNewImagesBtn" class="btn btn-success" style="width: 100%;">
                             Add Images
                         </button>
@@ -148,6 +141,48 @@
             </p>
         </div>
     </div>
+    <div ng-switch-when="purge">
+        <div class="row">
+            <div class="col-md-4">
+                <a id="backImagesLink" href="" ng-click="goCatalogView();">
+                    Back to Image Catalog
+                </a>
+            </div>
+        </div>
+        <form ng-if="!purging" class="form-horizontal row" role="form" ng-submit="purgeImages(imagesToPurge)">
+            <div class="col-md-12">
+                <div class="form-group row side-padding">
+                    <label for="purgeImageURLs" class="control-label dull-header">
+                        Image URLs to Purge
+                    </label>
+                    <textarea id="purgeImageURLs" class="form-control" placeholder="New line separated urls." ng-model="imagesToPurge" rows="10"></textarea>
+                </div>
+                <!-- Submit -->
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <button type="submit" id="bulkPurgeImagesBtn" class="btn btn-success" style="width: 100%;">
+                            Purge Images
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div ng-if="purging">
+            <hr class="col-md-12"></hr>
+            <div class="row side-padding">
+                <label class="dull-header">
+                    Please do NOT navigate away from this page while purge is in progress.
+                </label>
+            </div>
+            <hr class="col-md-12"></hr>
+            <div class="row side-padding">
+                <label class="control-label dull-header">
+                    Purge Status Feedback
+                </label>
+                <p ng-repeat="entry in purgingStatus">{{entry}}</p>
+            </div>
+        </div>
+    </div>
     <div ng-switch-when="catalog">
         <div class="row form-horizontal padding-top">
             <div class="col-md-5 col-sm-5">
@@ -155,13 +190,13 @@
             </div>
             <div class="col-md-5 col-sm-5 pull-right">
                 <div class="pull-right">
-<!--                     <button id="testWarnError" class="btn btn-warning" ng-click="getAllWarnErrors()">
-                        test
-                    </button> -->
                     <button ng-if="rfwIsEnabled" id="goAddImagesBtn" class="btn btn-primary" ng-click="goAddImages()" style="margin-left: 10px;">
                         Add Images
                     </button>
-                    <button id="deleteBtn" class="btn btn-danger" ng-click="goMassDelete()">
+                    <button ng-if="purgeEnabled" id="purgeBulkImagesBtn" class="btn btn-info" ng-click="goBulkPurge()">
+                        Purge Images
+                    </button>
+                    <button id="purgeBtn" class="btn btn-danger" ng-click="goMassDelete()">
                         Bulk Delete
                     </button>
                 </div>

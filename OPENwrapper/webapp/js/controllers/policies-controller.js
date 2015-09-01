@@ -508,8 +508,6 @@
             }
 
             function getPreviewImage(transformations, previewUrl) {
-                console.log(ApiConnector.previewCheck(previewUrl));
-
                 return ApiConnector.preview(angular.toJson(transformations), previewUrl)
                     .then(function(previewData) {
                         return previewData;

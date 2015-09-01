@@ -22,13 +22,13 @@
 (function() {
     'use strict';
     var app = angular.module('ImageManagementSample.services.api', []).
-    value('version', '1.0');
+    value('version', '2.0.1');
 
     // Service definition
     app.service('ApiConnector', ['$q','$http', 'AuthService', 'Configuration',
 
         function(q, http, auth, config) {
-            // LUNA TOKEN VALIDATION
+// LUNA TOKEN VALIDATION
             this.verifyLunaToken = function(lunaToken) {
                 return http.get(config.getApiHost() + 'imaging/v0/policies', {
                         headers: {
@@ -50,7 +50,7 @@
                     });
             };
 
-            // IMAGES API
+// IMAGES
             this.getAllImages = function() {
                 return http.get(config.getApiHost() + 'imaging/v0/images')
                     .then(function(successData) {
@@ -149,6 +149,7 @@
                     });
             };
 
+// JOBS
             this.runImageJob = function(images, policyId, jobTag) {
                 var job = {};
                 job.imageIds = images;
@@ -163,7 +164,6 @@
             };
 
             this.getJob = function(policyID) {
-
                 return http.get(config.getApiHost() + 'imaging/v0/images?policyId=' + policyID)
                     .then(function(successData) {
                         return successData.data;
@@ -172,6 +172,7 @@
                     });
             };
 
+// STATUSES
             this.getImageWithStatus = function(policyId, status) {
                 if (policyId && status){
                     return http.get(config.getApiHost() + 'imaging/v0/images?policyId=' + policyId + '&status=' + status)
@@ -187,21 +188,54 @@
                 }
             };
 
-            this.purge = function(imagesArray) {
-                if (imagesArray && imagesArray.length > 0){
-                    return http.post(config.getApiHost() + 'imaging/v0/images/purge')
-                        .then(function(successData){
-                            console.log("Purge successful");
-                        },function(error){
-                            console.log("Couldn't Purge", error.data);
-                            alert("Failed to purge images. System returned the error :\n" + error.data.detail);
-                        });
-                } else {
-                    // TODO No images to purge
-                }
+            this.getImageStatus = function(imageId){
+                return http.get(config.getApiHost() + 'imaging/v0/images/' + imageId)
+                    .then(function(successData) {
+                        return successData.data.policies['.auto'].status;
+                    }, function(errorData) {
+                        throw errorData.data;
+                    });
             };
 
-            // Ordered Image Collection API
+// PURGE
+            // Expects the purge Id returned from a successful edge purge request
+            this.getEdgePurgeStatus = function(purgeId){
+                return http.get(config.getApiHost() + 'ccu/v2/purges/' + purgeId)
+                    .then(function(success){
+                        return success.data.purgeStatus;
+                    },function(error){
+                        return error.data;
+                    });
+            };
+
+            // Expects an array of Image URLs
+            this.edgePurge = function(imageUrls){
+                var purgeObj = {
+                    'objects' : imageUrls
+                };
+
+                return http.post(config.getApiHost() + 'ccu/v2/queues/default', purgeObj)
+                    .then(function(success){
+                        return success.data;
+                    },function(fail){
+                        return fail.data;
+                    });
+            };
+
+            // Expects an array of Image Ids
+            this.apiPurge = function(imageIds) {
+                var purgeObj = {
+                    'imageIds' : imageIds
+                };
+                return http.post(config.getApiHost() + 'imaging/v0/images/purge', purgeObj)
+                    .then(function(successData){
+                        return successData.data;
+                    }, function(error){
+                        return error.data;
+                    });
+            };
+
+// ORDERED IMAGE COLLECTION
             this.getAllImageCollections = function() {
                 return http.get(config.getApiHost() + 'imaging/v0/imagecollections')
                     .then(function(successData) {
@@ -247,7 +281,7 @@
                     });
             };
 
-            // POLICIES API
+// POLICIES
             this.getAllPolicies = function() {
                 return http.get(config.getApiHost() + 'imaging/v0/policies')
                     .then(function(successData) {
@@ -311,18 +345,19 @@
                     });
             };
 
-            // PREVIEW
+// PREVIEW
             this.previewImageTransformation = function(imageSrc, planJson) {
-                return http.get(config.getApiHost() + 'imaging/v0/preview', {
-                    params: {
-                        src: imageSrc,
-                        plan: planJson
-                    }
-                }).then(function(successData) {
-                    return successData.data;
-                }, function(error) {
-                    return null;
-                });
+                return http.get(config.getApiHost() + 'imaging/v0/preview',
+                    {
+                        params: {
+                            src: imageSrc,
+                            plan: planJson
+                        }
+                    }).then(function(successData) {
+                        return successData.data;
+                    }, function(error) {
+                        return null;
+                    });
             };
 
             this.previewCheck = function(url){
@@ -349,7 +384,7 @@
                     });
             };
 
-            // RFW
+// READY FOR WEB
             this.registerRFW = function(rfwInfo){
                 return http.put(config.getApiHost() + 'imaging/v0/netstorage', rfwInfo)
                     .then(function(successData) {
@@ -389,7 +424,7 @@
                 return deferred.promise;
             };
 
-            // RFW POLICIES
+// READY FOR WEB POLICIES
             this.getRFWPolicies = function(){
                 return http.get(config.getApiHost() + 'imaging/v0/policies/rfw')
                 .then(function(successData) {
@@ -410,11 +445,11 @@
 
             this.addRFWPolicy = function(rfwPolicyResource){
                 return http.put(config.getApiHost() + 'imaging/v0/policies/rfw/' + rfwPolicyResource.id, angular.toJson(rfwPolicyResource))
-                .then(function(successData) {
-                    return successData.data;
-                }, function(error) {
-                    return null;
-                });
+                    .then(function(successData) {
+                        return successData.data;
+                    }, function(error) {
+                        return null;
+                    });
             };
 
             this.deleteRFWPolicy = function(rfwPolicyID){
@@ -425,7 +460,15 @@
                         return null;
                     });
             };
-
+//CONFIGURATION
+            this.getConf = function(){
+                return http.get("creds")
+                    .then(function(successData) {
+                        return successData.data;
+                    }, function(error) {
+                        return null;
+                    });
+            };
 
         }
     ]);

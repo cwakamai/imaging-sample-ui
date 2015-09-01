@@ -214,7 +214,7 @@
             };
 
             scope.charsAreValid = function(rfwPolicyID){
-                var re = /^\.auto$|^[A-Za-z0-9_-]*$/g;
+                var re = /^\.rfw$|^[A-Za-z0-9_-]*$/g;
                 return (rfwPolicyID && re.test(rfwPolicyID));
             };
 
