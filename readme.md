@@ -73,7 +73,7 @@ bower install
 
 ```cmd
 npm install -g bower
-cd \path\to\ImSampleWebUI
+cd \path\to\ImSampleWebUI\OPENwrapper
 npm install
 cd webapp
 bower install
